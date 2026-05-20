@@ -8,18 +8,66 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
   MapPin, Search, CheckCircle2, Star, MessageCircle,
-  ArrowRight, Beef, ShoppingBag, TrendingUp, Shield, Syringe, Scale,
-  ChevronRight, Phone, Flame,
+  Beef, ShoppingBag, TrendingUp, Shield, Syringe, Scale,
+  ChevronRight, Flame,
 } from "lucide-react"
 import { useAuth } from "@/lib/auth-context"
 
 const LIVESTOCK_CATEGORIES = [
-  { value: "cattle", label: "Cattle", emoji: "🐄", desc: "Beef & dairy breeds", color: "bg-amber-50 text-amber-700 border-amber-200" },
-  { value: "goats", label: "Goats", emoji: "🐐", desc: "Boer, local breeds", color: "bg-green-50 text-green-700 border-green-200" },
-  { value: "sheep", label: "Sheep", emoji: "🐑", desc: "Mutton & wool", color: "bg-blue-50 text-blue-700 border-blue-200" },
-  { value: "pigs", label: "Pigs", emoji: "🐷", desc: "Large White, Landrace", color: "bg-pink-50 text-pink-700 border-pink-200" },
-  { value: "poultry", label: "Poultry", emoji: "🐔", desc: "Broilers & layers", color: "bg-yellow-50 text-yellow-700 border-yellow-200" },
-  { value: "rabbits", label: "Rabbits", emoji: "🐇", desc: "Meat rabbits", color: "bg-purple-50 text-purple-700 border-purple-200" },
+  {
+    value: "cattle", label: "Cattle", emoji: "🐄",
+    desc: "Beef bulls, dairy cows, and heifers from verified ranches across Zambia.",
+    tagline: "Premium Beef & Dairy",
+    video: "/cattle-video.mp4",
+    poster: "/livestock-cow.png",
+    gradient: "from-amber-950/80 via-amber-900/60 to-transparent",
+    accent: "text-amber-300", badge: "bg-amber-500/20 text-amber-300 border-amber-500/30",
+  },
+  {
+    value: "goats", label: "Goats", emoji: "🐐",
+    desc: "Boer goats, local breeds and mixed herds — fully vaccinated and dewormed.",
+    tagline: "Boer & Local Breeds",
+    video: "/goats-video.mp4",
+    poster: "/livestock-goats.png",
+    gradient: "from-green-950/80 via-green-900/60 to-transparent",
+    accent: "text-green-300", badge: "bg-green-500/20 text-green-300 border-green-500/30",
+  },
+  {
+    value: "sheep", label: "Sheep", emoji: "🐑",
+    desc: "Mutton sheep and wool breeds for slaughter, breeding, and fibre production.",
+    tagline: "Mutton & Wool",
+    video: "/sheep-video.mp4",
+    poster: "/livestock-hero.png",
+    gradient: "from-blue-950/80 via-blue-900/60 to-transparent",
+    accent: "text-blue-300", badge: "bg-blue-500/20 text-blue-300 border-blue-500/30",
+  },
+  {
+    value: "pigs", label: "Pigs", emoji: "🐷",
+    desc: "Large White, Landrace and crossbred pigs at market weight from established piggeries.",
+    tagline: "Large White & Landrace",
+    video: "/pigs-video.mp4",
+    poster: "/livestock-hero.png",
+    gradient: "from-pink-950/80 via-pink-900/60 to-transparent",
+    accent: "text-pink-300", badge: "bg-pink-500/20 text-pink-300 border-pink-500/30",
+  },
+  {
+    value: "poultry", label: "Poultry", emoji: "🐔",
+    desc: "Day-old chicks, market-ready broilers, and productive laying hens.",
+    tagline: "Broilers & Layers",
+    video: "/poultry-video.mp4",
+    poster: "/livestock-poultry.png",
+    gradient: "from-yellow-950/80 via-yellow-900/60 to-transparent",
+    accent: "text-yellow-300", badge: "bg-yellow-500/20 text-yellow-300 border-yellow-500/30",
+  },
+  {
+    value: "rabbits", label: "Rabbits", emoji: "🐇",
+    desc: "Meat rabbits — New Zealand White, Californian, and local breeds.",
+    tagline: "Meat Rabbits",
+    video: "/rabbits-video.mp4",
+    poster: "/livestock-hero.png",
+    gradient: "from-purple-950/80 via-purple-900/60 to-transparent",
+    accent: "text-purple-300", badge: "bg-purple-500/20 text-purple-300 border-purple-500/30",
+  },
 ]
 
 const LIVESTOCK_PRICES = [
@@ -38,69 +86,265 @@ const SAMPLE_LISTINGS = [
     id: 101, type: "Brahman Bull", category: "cattle", emoji: "🐂",
     age: "3 years", weight: "450kg", breed: "Brahman Cross",
     price: 9500, unit: "per head", qty: 2,
-    location: "Mkushi, Central Province", verified: true, vaccinated: true,
-    farmerName: "Mr. Chisulo Farm", rating: 4.9, reviews: 12, hot: true,
+    location: "Mkushi, Central", verified: true, vaccinated: true,
+    farmerName: "Chisulo Farm", rating: 4.9, reviews: 12, hot: true,
     image: "/livestock-cow.png",
     desc: "Well-fed Brahman cross bull, excellent conformation, suitable for breeding or beef.",
-  },
-  {
-    id: 102, type: "Boer Goats", category: "goats", emoji: "🐐",
-    age: "18 months", weight: "35kg avg", breed: "Boer",
-    price: 850, unit: "per head", qty: 15,
-    location: "Choma, Southern Province", verified: true, vaccinated: true,
-    farmerName: "Tembo Livestock", rating: 4.8, reviews: 24, hot: true,
-    image: "/livestock-goats.png",
-    desc: "Pure Boer goats, fully vaccinated, dewormed and ready for collection.",
-  },
-  {
-    id: 103, type: "Broiler Chickens", category: "poultry", emoji: "🐔",
-    age: "6 weeks", weight: "2.2kg avg", breed: "Ross 308",
-    price: 88, unit: "per bird", qty: 500,
-    location: "Lusaka, Lusaka Province", verified: true, vaccinated: true,
-    farmerName: "Sunrise Poultry", rating: 4.7, reviews: 67, hot: true,
-    image: "/livestock-poultry.png",
-    desc: "Market-ready Ross 308 broilers, vaccinated, well-fed on quality feed.",
   },
   {
     id: 104, type: "Heifer Cattle", category: "cattle", emoji: "🐄",
     age: "2 years", weight: "320kg avg", breed: "Angus Cross",
     price: 5400, unit: "per head", qty: 6,
-    location: "Livingstone, Southern Province", verified: false, vaccinated: true,
+    location: "Livingstone, Southern", verified: false, vaccinated: true,
     farmerName: "Mwanza Ranch", rating: 4.5, reviews: 8, hot: false,
     image: "/livestock-hero.png",
     desc: "Good quality Angus cross heifers, ready for breeding or feedlot.",
   },
   {
-    id: 105, type: "Dairy Cows", category: "cattle", emoji: "🐄",
+    id: 105, type: "Friesian Dairy Cows", category: "cattle", emoji: "🐄",
     age: "4 years", weight: "420kg avg", breed: "Friesian",
     price: 8200, unit: "per head", qty: 3,
-    location: "Kabwe, Central Province", verified: true, vaccinated: true,
+    location: "Kabwe, Central", verified: true, vaccinated: true,
     farmerName: "Green Valley Dairy", rating: 4.9, reviews: 19, hot: false,
     image: "/livestock-cow.png",
     desc: "High-yielding Friesian dairy cows producing 20+ litres/day. All in calf.",
   },
   {
-    id: 106, type: "Local Pigs", category: "pigs", emoji: "🐷",
+    id: 102, type: "Boer Goats", category: "goats", emoji: "🐐",
+    age: "18 months", weight: "35kg avg", breed: "Boer",
+    price: 850, unit: "per head", qty: 15,
+    location: "Choma, Southern", verified: true, vaccinated: true,
+    farmerName: "Tembo Livestock", rating: 4.8, reviews: 24, hot: true,
+    image: "/livestock-goats.png",
+    desc: "Pure Boer goats, fully vaccinated, dewormed and ready for collection.",
+  },
+  {
+    id: 107, type: "Local Goats", category: "goats", emoji: "🐐",
+    age: "12 months", weight: "22kg avg", breed: "Local Breed",
+    price: 450, unit: "per head", qty: 30,
+    location: "Chipata, Eastern", verified: true, vaccinated: false,
+    farmerName: "Banda Goat Farm", rating: 4.4, reviews: 7, hot: false,
+    image: "/livestock-goats.png",
+    desc: "Hardy local breed goats, excellent for meat production in any climate.",
+  },
+  {
+    id: 108, type: "Mutton Sheep", category: "sheep", emoji: "🐑",
+    age: "18 months", weight: "40kg avg", breed: "Dorper Cross",
+    price: 950, unit: "per head", qty: 20,
+    location: "Mazabuka, Southern", verified: true, vaccinated: true,
+    farmerName: "Kaunda Sheep Farm", rating: 4.6, reviews: 10, hot: false,
+    image: null,
+    desc: "Plump Dorper cross sheep ready for slaughter or breeding.",
+  },
+  {
+    id: 109, type: "Wool Sheep", category: "sheep", emoji: "🐑",
+    age: "2 years", weight: "50kg avg", breed: "Merino",
+    price: 1200, unit: "per head", qty: 8,
+    location: "Mongu, Western", verified: false, vaccinated: true,
+    farmerName: "Western Wool Farm", rating: 4.3, reviews: 4, hot: false,
+    image: null,
+    desc: "Merino wool sheep producing fine fibre, dual-purpose for wool and meat.",
+  },
+  {
+    id: 106, type: "Market Pigs", category: "pigs", emoji: "🐷",
     age: "5 months", weight: "65kg avg", breed: "Large White Cross",
     price: 1100, unit: "per head", qty: 10,
-    location: "Chipata, Eastern Province", verified: true, vaccinated: false,
+    location: "Chipata, Eastern", verified: true, vaccinated: false,
     farmerName: "Banda Piggery", rating: 4.3, reviews: 5, hot: false,
     image: null,
     desc: "Ready-to-slaughter pigs at good market weight.",
   },
+  {
+    id: 110, type: "Breeding Sows", category: "pigs", emoji: "🐷",
+    age: "1 year", weight: "90kg avg", breed: "Landrace",
+    price: 2200, unit: "per head", qty: 4,
+    location: "Lusaka, Lusaka", verified: true, vaccinated: true,
+    farmerName: "Capitol Piggery", rating: 4.7, reviews: 14, hot: true,
+    image: null,
+    desc: "Productive Landrace sows, already farrowed once, proven breeders.",
+  },
+  {
+    id: 103, type: "Broiler Chickens", category: "poultry", emoji: "🐔",
+    age: "6 weeks", weight: "2.2kg avg", breed: "Ross 308",
+    price: 88, unit: "per bird", qty: 500,
+    location: "Lusaka, Lusaka", verified: true, vaccinated: true,
+    farmerName: "Sunrise Poultry", rating: 4.7, reviews: 67, hot: true,
+    image: "/livestock-poultry.png",
+    desc: "Market-ready Ross 308 broilers, vaccinated, well-fed on quality feed.",
+  },
+  {
+    id: 111, type: "Layer Hens", category: "poultry", emoji: "🐓",
+    age: "20 weeks", weight: "1.8kg avg", breed: "Lohmann Brown",
+    price: 95, unit: "per bird", qty: 300,
+    location: "Ndola, Copperbelt", verified: true, vaccinated: true,
+    farmerName: "Copperbelt Layers", rating: 4.8, reviews: 41, hot: false,
+    image: "/livestock-poultry.png",
+    desc: "Peak production Lohmann Brown hens laying 300+ eggs per year.",
+  },
+  {
+    id: 112, type: "Meat Rabbits", category: "rabbits", emoji: "🐇",
+    age: "3 months", weight: "2.5kg avg", breed: "New Zealand White",
+    price: 180, unit: "per rabbit", qty: 50,
+    location: "Lusaka, Lusaka", verified: true, vaccinated: false,
+    farmerName: "Lusaka Rabbit Farm", rating: 4.5, reviews: 9, hot: false,
+    image: null,
+    desc: "Fast-growing New Zealand White rabbits, excellent feed conversion ratio.",
+  },
+  {
+    id: 113, type: "Californian Rabbits", category: "rabbits", emoji: "🐇",
+    age: "4 months", weight: "3kg avg", breed: "Californian",
+    price: 220, unit: "per rabbit", qty: 30,
+    location: "Kabwe, Central", verified: false, vaccinated: false,
+    farmerName: "Central Rabbit Farm", rating: 4.2, reviews: 3, hot: false,
+    image: null,
+    desc: "Plump Californian rabbits with excellent meat-to-bone ratio.",
+  },
 ]
+
+function ListingCard({ listing }: { listing: typeof SAMPLE_LISTINGS[0] }) {
+  return (
+    <Card className="overflow-hidden border-0 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group min-w-[280px] w-72 shrink-0">
+      <div className="relative h-40 overflow-hidden">
+        {listing.image ? (
+          <img src={listing.image} alt={listing.type} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+        ) : (
+          <div className="w-full h-full bg-gradient-to-br from-amber-100 to-orange-50 flex items-center justify-center">
+            <span className="text-7xl">{listing.emoji}</span>
+          </div>
+        )}
+        <div className="absolute top-2 left-2 flex gap-1.5 flex-wrap">
+          {listing.hot && <Badge className="bg-orange-500 text-white border-0 text-xs gap-1"><Flame className="w-3 h-3" />Hot</Badge>}
+          {listing.vaccinated && <Badge className="bg-blue-600 text-white border-0 text-xs gap-1"><Syringe className="w-3 h-3" />Vax</Badge>}
+        </div>
+        {listing.verified && (
+          <div className="absolute top-2 right-2">
+            <Badge className="bg-primary text-white border-0 text-xs gap-1"><CheckCircle2 className="w-3 h-3" />Verified</Badge>
+          </div>
+        )}
+      </div>
+      <CardContent className="p-4">
+        <div className="flex items-start justify-between gap-2 mb-1">
+          <div>
+            <h3 className="font-bold text-base text-foreground group-hover:text-primary transition-colors leading-tight">{listing.type}</h3>
+            <p className="text-xs text-muted-foreground">{listing.breed} · {listing.age} · {listing.weight}</p>
+          </div>
+          <div className="text-right shrink-0">
+            <div className="text-lg font-bold text-primary">K{listing.price.toLocaleString()}</div>
+            <div className="text-[10px] text-muted-foreground">{listing.unit}</div>
+          </div>
+        </div>
+        <p className="text-xs text-muted-foreground mb-2 line-clamp-2">{listing.desc}</p>
+        <div className="flex items-center gap-1 text-xs text-muted-foreground mb-3">
+          <MapPin className="w-3 h-3 shrink-0" />{listing.location} · Qty: {listing.qty}
+        </div>
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-1">
+            <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+            <span className="text-xs font-medium">{listing.rating}</span>
+            <span className="text-[10px] text-muted-foreground">({listing.reviews})</span>
+          </div>
+          <span className="text-[10px] text-muted-foreground truncate max-w-[100px]">{listing.farmerName}</span>
+        </div>
+        <div className="flex gap-2">
+          <Button className="flex-1 gap-1 bg-gradient-to-r from-primary to-emerald-600 hover:opacity-90 h-8 text-xs" size="sm">
+            <ShoppingBag className="w-3 h-3" /> Buy Now
+          </Button>
+          <Button variant="outline" size="sm" className="gap-1 h-8 text-xs">
+            <MessageCircle className="w-3 h-3" /> Chat
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+function CategorySection({
+  cat, listings, search,
+}: {
+  cat: typeof LIVESTOCK_CATEGORIES[0]
+  listings: typeof SAMPLE_LISTINGS
+  search: string
+}) {
+  const filtered = listings.filter((l) => {
+    const matchSearch = !search ||
+      l.type.toLowerCase().includes(search.toLowerCase()) ||
+      l.location.toLowerCase().includes(search.toLowerCase()) ||
+      l.breed.toLowerCase().includes(search.toLowerCase())
+    return matchSearch
+  })
+
+  if (filtered.length === 0) return null
+
+  return (
+    <section className="mb-12">
+      {/* Video Banner */}
+      <div className="relative h-52 md:h-64 rounded-2xl overflow-hidden mb-6 shadow-xl">
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+          poster={cat.poster}
+        >
+          <source src={cat.video} type="video/mp4" />
+        </video>
+        {/* Gradient overlay */}
+        <div className={`absolute inset-0 bg-gradient-to-r ${cat.gradient}`} />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+
+        {/* Content */}
+        <div className="absolute inset-0 flex flex-col justify-end p-6">
+          <Badge className={`${cat.badge} border w-fit mb-2 text-xs px-3 py-1`}>
+            {cat.emoji} {cat.tagline}
+          </Badge>
+          <h2 className={`text-3xl md:text-4xl font-bold text-white mb-1`}>
+            {cat.label}
+          </h2>
+          <p className="text-white/75 text-sm max-w-lg">{cat.desc}</p>
+        </div>
+
+        {/* Listing count badge top-right */}
+        <div className="absolute top-4 right-4">
+          <Badge className="bg-black/50 text-white border-white/20 backdrop-blur-sm">
+            {filtered.length} listing{filtered.length !== 1 ? "s" : ""}
+          </Badge>
+        </div>
+      </div>
+
+      {/* Horizontal scroll listings */}
+      <div className="flex gap-4 overflow-x-auto pb-3 scrollbar-hide">
+        {filtered.map((listing) => (
+          <ListingCard key={listing.id} listing={listing} />
+        ))}
+        {/* View all card */}
+        <div className="shrink-0 w-44 rounded-2xl border-2 border-dashed border-border flex flex-col items-center justify-center gap-3 p-6 text-center hover:border-primary/40 hover:bg-primary/5 transition-all group cursor-pointer">
+          <span className="text-4xl">{cat.emoji}</span>
+          <p className="text-sm font-medium text-muted-foreground group-hover:text-primary transition-colors">
+            Post a {cat.label.slice(0, -1) || cat.label} listing
+          </p>
+          <Link href="/new-listing">
+            <Button size="sm" variant="outline" className="h-8 text-xs gap-1">
+              <ChevronRight className="w-3 h-3" /> List Now
+            </Button>
+          </Link>
+        </div>
+      </div>
+    </section>
+  )
+}
 
 export default function LivestockPage() {
   const [selectedCategory, setSelectedCategory] = useState("all")
   const [search, setSearch] = useState("")
   const { user } = useAuth()
 
-  const filtered = SAMPLE_LISTINGS.filter((l) => {
-    const matchCat = selectedCategory === "all" || l.category === selectedCategory
-    const matchSearch = !search || l.type.toLowerCase().includes(search.toLowerCase()) ||
-      l.location.toLowerCase().includes(search.toLowerCase()) || l.breed.toLowerCase().includes(search.toLowerCase())
-    return matchCat && matchSearch
-  })
+  const visibleCategories = selectedCategory === "all"
+    ? LIVESTOCK_CATEGORIES
+    : LIVESTOCK_CATEGORIES.filter((c) => c.value === selectedCategory)
+
+  const listingsForCategory = (catValue: string) =>
+    SAMPLE_LISTINGS.filter((l) => l.category === catValue)
 
   return (
     <div className="min-h-screen bg-background">
@@ -108,12 +352,8 @@ export default function LivestockPage() {
 
       {/* Hero Section with Video Background */}
       <section className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-emerald-950 to-slate-900 text-white">
-        {/* Background video */}
         <video
-          autoPlay
-          muted
-          loop
-          playsInline
+          autoPlay muted loop playsInline
           className="absolute inset-0 w-full h-full object-cover opacity-30"
           poster="/livestock-hero.png"
         >
@@ -185,7 +425,7 @@ export default function LivestockPage() {
       </section>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12" id="listings">
-        {/* Category Filter */}
+        {/* Category Filter Tabs */}
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-foreground mb-4">Browse by Category</h2>
           <div className="flex flex-wrap gap-3">
@@ -209,15 +449,14 @@ export default function LivestockPage() {
                     : "bg-card border-border hover:border-primary/40 hover:bg-primary/5"
                 }`}
               >
-                <span>{cat.emoji}</span>
-                {cat.label}
+                <span>{cat.emoji}</span>{cat.label}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Search + Results */}
-        <div className="flex items-center gap-3 mb-6">
+        {/* Search */}
+        <div className="flex items-center gap-3 mb-8">
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
@@ -227,91 +466,20 @@ export default function LivestockPage() {
               className="pl-9 bg-card"
             />
           </div>
-          <Badge variant="outline" className="text-muted-foreground">
-            {filtered.length} listings
-          </Badge>
         </div>
 
-        {/* Listing Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {filtered.map((listing) => (
-            <Card key={listing.id} className="overflow-hidden border-0 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 group">
-              {/* Image */}
-              <div className="relative h-48 overflow-hidden">
-                {listing.image ? (
-                  <img src={listing.image} alt={listing.type} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-amber-100 to-orange-50 flex items-center justify-center">
-                    <span className="text-7xl">{listing.emoji}</span>
-                  </div>
-                )}
-                {/* Overlay badges */}
-                <div className="absolute top-3 left-3 flex gap-2">
-                  {listing.hot && (
-                    <Badge className="bg-orange-500 text-white border-0 text-xs gap-1">
-                      <Flame className="w-3 h-3" /> Hot
-                    </Badge>
-                  )}
-                  {listing.vaccinated && (
-                    <Badge className="bg-blue-600 text-white border-0 text-xs gap-1">
-                      <Syringe className="w-3 h-3" /> Vaccinated
-                    </Badge>
-                  )}
-                </div>
-                {listing.verified && (
-                  <div className="absolute top-3 right-3">
-                    <Badge className="bg-primary text-white border-0 text-xs gap-1">
-                      <CheckCircle2 className="w-3 h-3" /> Verified
-                    </Badge>
-                  </div>
-                )}
-              </div>
+        {/* Category Sections — each with its own video banner */}
+        {visibleCategories.map((cat) => (
+          <CategorySection
+            key={cat.value}
+            cat={cat}
+            listings={listingsForCategory(cat.value)}
+            search={search}
+          />
+        ))}
 
-              <CardContent className="p-5">
-                <div className="flex items-start justify-between gap-2 mb-2">
-                  <div>
-                    <h3 className="font-bold text-lg text-foreground group-hover:text-primary transition-colors">{listing.type}</h3>
-                    <p className="text-sm text-muted-foreground">{listing.breed} · {listing.age} · {listing.weight}</p>
-                  </div>
-                  <div className="text-right shrink-0">
-                    <div className="text-xl font-bold text-primary">K{listing.price.toLocaleString()}</div>
-                    <div className="text-xs text-muted-foreground">{listing.unit}</div>
-                  </div>
-                </div>
-
-                <p className="text-sm text-muted-foreground mb-3 line-clamp-2">{listing.desc}</p>
-
-                <div className="flex items-center justify-between text-sm mb-4">
-                  <span className="flex items-center gap-1 text-muted-foreground">
-                    <MapPin className="w-3.5 h-3.5" /> {listing.location}
-                  </span>
-                  <span className="text-muted-foreground">Qty: {listing.qty}</span>
-                </div>
-
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-1">
-                    <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                    <span className="text-sm font-medium">{listing.rating}</span>
-                    <span className="text-xs text-muted-foreground">({listing.reviews})</span>
-                  </div>
-                  <span className="text-xs text-muted-foreground">{listing.farmerName}</span>
-                </div>
-
-                <div className="flex gap-2">
-                  <Button className="flex-1 gap-1.5 bg-gradient-to-r from-primary to-emerald-600 hover:opacity-90" size="sm">
-                    <ShoppingBag className="w-3.5 h-3.5" /> Buy Now
-                  </Button>
-                  <Button variant="outline" size="sm" className="gap-1.5">
-                    <MessageCircle className="w-3.5 h-3.5" /> Chat
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {/* Info Cards */}
-        <section className="grid md:grid-cols-3 gap-6 mb-12">
+        {/* Trust Cards */}
+        <section className="grid md:grid-cols-3 gap-6 mb-12 mt-4">
           {[
             {
               icon: Shield, title: "Verified Sellers", color: "text-emerald-600", bg: "bg-emerald-50",
@@ -340,7 +508,7 @@ export default function LivestockPage() {
           ))}
         </section>
 
-        {/* CTA Banner */}
+        {/* Farmer CTA */}
         {user?.userType === "farmer" && (
           <div className="rounded-2xl overflow-hidden bg-gradient-to-r from-amber-600 to-orange-500 text-white p-8 flex flex-col md:flex-row items-center justify-between gap-6">
             <div>
