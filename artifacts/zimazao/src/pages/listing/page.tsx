@@ -206,7 +206,7 @@ export default function ListingDetailPage() {
             )}
 
             {/* Send Message */}
-            {user && user.id !== listing.farmerId && (
+            {user && Number(user.id) !== Number(listing.farmerId) && (
               <Card>
                 <CardHeader><CardTitle className="text-lg flex items-center gap-2"><MessageCircle className="w-5 h-5" />Message Farmer</CardTitle></CardHeader>
                 <CardContent className="space-y-3">

@@ -33,7 +33,7 @@ export default function MessagesPage() {
     api.messages.conversations()
       .then((convos) => {
         const mapped: Thread[] = convos.map((m) => {
-          const isMe = m.senderId === user.id
+          const isMe = Number(m.senderId) === Number(user.id)
           const otherId = isMe ? m.receiverId : m.senderId
           const otherName = isMe ? "Farmer" : (m.senderName ?? "User")
           return { userId: otherId, userName: otherName, lastMessage: m.content, lastTime: m.createdAt }
@@ -141,7 +141,7 @@ export default function MessagesPage() {
                 <div className="flex-1 overflow-y-auto p-4 space-y-3">
                   {loadingMsgs && <div className="flex justify-center py-4"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>}
                   {messages.map((m) => {
-                    const isMe = m.senderId === user.id
+                    const isMe = Number(m.senderId) === Number(user.id)
                     return (
                       <div key={m.id} className={`flex ${isMe ? "justify-end" : "justify-start"}`}>
                         <div className={`max-w-[75%] rounded-2xl px-4 py-2 text-sm ${isMe ? "bg-primary text-primary-foreground rounded-br-sm" : "bg-muted text-foreground rounded-bl-sm"}`}>
