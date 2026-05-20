@@ -17,6 +17,7 @@ import FarmerProfilePage from "@/pages/farmer/page";
 import OrdersPage from "@/pages/orders/page";
 import MessagesPage from "@/pages/messages/page";
 import CropCalendarPage from "@/pages/crop-calendar/page";
+import LivestockPage from "@/pages/livestock/page";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,7 @@ function Router() {
       <Route path="/register" component={RegisterPage} />
       <Route path="/dashboard" component={DashboardPage} />
       <Route path="/marketplace" component={MarketplacePage} />
+      <Route path="/livestock" component={LivestockPage} />
       <Route path="/new-listing" component={NewListingPage} />
       <Route path="/disease-detector" component={DiseaseDetectorPage} />
       <Route path="/prices" component={PricesPage} />

@@ -47,6 +47,8 @@ const categories = [
   { value: "oilseeds", label: "Oilseeds", emoji: "🌻" },
   { value: "vegetables", label: "Vegetables", emoji: "🥬" },
   { value: "fruits", label: "Fruits", emoji: "🍎" },
+  { value: "livestock", label: "Livestock", emoji: "🐄" },
+  { value: "poultry", label: "Poultry", emoji: "🐔" },
   { value: "cash_crops", label: "Cash Crops", emoji: "🌿" },
 ]
 

@@ -4,7 +4,7 @@ import { z } from "zod/v4";
 import { usersTable } from "./users";
 
 export const categoryEnum = pgEnum("category", [
-  "cereals", "legumes", "tubers", "oilseeds", "vegetables", "fruits", "other"
+  "cereals", "legumes", "tubers", "oilseeds", "vegetables", "fruits", "livestock", "poultry", "other"
 ]);
 
 export const listingsTable = pgTable("listings", {
@@ -15,6 +15,8 @@ export const listingsTable = pgTable("listings", {
   unit: text("unit").notNull(),
   quantity: text("quantity").notNull(),
   location: text("location").notNull(),
+  latitude: numeric("latitude", { precision: 10, scale: 6 }),
+  longitude: numeric("longitude", { precision: 10, scale: 6 }),
   category: categoryEnum("category").notNull().default("other"),
   description: text("description"),
   imageUrl: text("image_url"),

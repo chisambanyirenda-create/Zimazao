@@ -11,7 +11,7 @@ import { Footer } from "@/components/footer";
 import { WeatherWidget } from "@/components/weather-widget";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { TrendingUp, TrendingDown, Minus, Beef, ArrowRight, Shield, Syringe, Scale } from "lucide-react";
 import { Link } from "wouter";
 
 const quickPrices = [
@@ -84,6 +84,82 @@ export default function HomePage() {
                   </div>
                 </CardContent>
               </Card>
+            </div>
+          </div>
+        </section>
+
+        {/* Livestock Promo Section */}
+        <section className="py-0 overflow-hidden">
+          <div className="relative bg-gradient-to-br from-slate-950 via-emerald-950 to-amber-950 text-white">
+            {/* Background video */}
+            <video
+              autoPlay
+              muted
+              loop
+              playsInline
+              className="absolute inset-0 w-full h-full object-cover opacity-25"
+              poster="/livestock-hero.png"
+            >
+              <source src="/cattle-video.mp4" type="video/mp4" />
+            </video>
+            <div className="absolute inset-0 bg-gradient-to-r from-slate-950/95 via-emerald-950/80 to-slate-900/40" />
+            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+              <div className="grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                  <Badge className="bg-amber-500/20 text-amber-300 border border-amber-500/30 mb-5 text-sm px-4 py-1.5">
+                    🐄 NEW — Livestock Exchange
+                  </Badge>
+                  <h2 className="text-3xl md:text-5xl font-bold mb-4 leading-tight">
+                    Zambia's First{" "}
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-yellow-300">
+                      Livestock
+                    </span>{" "}
+                    Marketplace
+                  </h2>
+                  <p className="text-white/70 text-lg mb-6 leading-relaxed">
+                    Cattle, goats, pigs, and poultry — buy and sell with verified farmers.
+                    Live price index, vaccination certificates, and secure transactions.
+                  </p>
+                  <div className="flex flex-wrap gap-4 mb-8">
+                    {[
+                      { emoji: "🐄", label: "Cattle" },
+                      { emoji: "🐐", label: "Goats" },
+                      { emoji: "🐷", label: "Pigs" },
+                      { emoji: "🐔", label: "Poultry" },
+                      { emoji: "🐑", label: "Sheep" },
+                    ].map((item) => (
+                      <div key={item.label} className="flex items-center gap-2 bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-sm">
+                        <span className="text-xl">{item.emoji}</span>
+                        <span className="font-medium">{item.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex gap-3">
+                    <Link href="/livestock">
+                      <button className="bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold px-6 py-3 rounded-xl gap-2 flex items-center shadow-lg transition-all">
+                        <Beef className="w-4 h-4" /> Browse Livestock <ArrowRight className="w-4 h-4" />
+                      </button>
+                    </Link>
+                  </div>
+                </div>
+                <div className="hidden md:grid grid-cols-2 gap-4">
+                  {[
+                    { image: "/livestock-cow.png", label: "Brahman Bull", price: "K9,500", tag: "per head" },
+                    { image: "/livestock-goats.png", label: "Boer Goats", price: "K850", tag: "per head" },
+                    { image: "/livestock-poultry.png", label: "Broilers", price: "K88", tag: "per bird" },
+                    { image: "/livestock-hero.png", label: "Heifer Cattle", price: "K5,400", tag: "per head" },
+                  ].map((item) => (
+                    <div key={item.label} className="relative rounded-xl overflow-hidden group cursor-pointer">
+                      <img src={item.image} alt={item.label} className="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-500" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                      <div className="absolute bottom-2 left-2 right-2">
+                        <p className="text-white text-xs font-medium">{item.label}</p>
+                        <p className="text-amber-400 text-sm font-bold">{item.price} <span className="text-white/60 text-xs font-normal">{item.tag}</span></p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </section>

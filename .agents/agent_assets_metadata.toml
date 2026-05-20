@@ -1,0 +1,32 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "mm1vAWpYkAFqCRmKttCY6"
+uri = "file://artifacts/zimazao/public/livestock-hero.png"
+type = "image"
+title = "livestock-cattle-hero"
+
+[[generated]]
+id = "kc2XqyF5Dd68RXfl6T0nn"
+uri = "file://artifacts/zimazao/public/livestock-goats.png"
+type = "image"
+title = "farmer-goats"
+
+[[generated]]
+id = "FQoS5FQkT9YgIKGCA1WaK"
+uri = "file://artifacts/zimazao/public/livestock-cow.png"
+type = "image"
+title = "brahman-cattle"
+
+[[generated]]
+id = "hHRleOzRMr0VO6EjZwpxt"
+uri = "file://artifacts/zimazao/public/livestock-poultry.png"
+type = "image"
+title = "poultry-farm"
+
+[[generated]]
+id = "z_HlySCVr86evBy3RsSMk"
+uri = "file://artifacts/zimazao/public/farm-aerial.png"
+type = "image"
+title = "farm-aerial"

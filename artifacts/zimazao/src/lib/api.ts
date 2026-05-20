@@ -53,6 +53,8 @@ export const api = {
       unit: string;
       quantity: string;
       location: string;
+      latitude?: number | null;
+      longitude?: number | null;
       category: string;
       description?: string;
       imageUrl?: string;

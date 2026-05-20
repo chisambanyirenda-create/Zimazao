@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge"
-import { ShoppingBag, Camera, BarChart3, Wallet, CalendarDays, MessageCircle, ArrowRight, Zap } from "lucide-react"
+import { ShoppingBag, Camera, BarChart3, Wallet, CalendarDays, MessageCircle, ArrowRight, Zap, Beef } from "lucide-react"
 import { Link } from "wouter"
 
 const features = [
@@ -12,6 +12,16 @@ const features = [
     bgColor: "bg-primary/10",
     tag: "Most Popular",
     tagColor: "bg-primary text-primary-foreground",
+  },
+  {
+    icon: Beef,
+    title: "Livestock Exchange",
+    description: "Buy and sell cattle, goats, pigs, and poultry. Verified sellers, vaccination records, and live livestock price index.",
+    link: "/livestock",
+    color: "text-amber-600",
+    bgColor: "bg-amber-50",
+    tag: "New",
+    tagColor: "bg-amber-500 text-white",
   },
   {
     icon: Camera,
@@ -28,10 +38,10 @@ const features = [
     title: "Live Market Prices",
     description: "Real-time commodity prices from Lusaka, Ndola, Kitwe and 5 major markets. Know the best time to sell.",
     link: "/prices",
-    color: "text-amber-600",
-    bgColor: "bg-amber-50",
+    color: "text-violet-600",
+    bgColor: "bg-violet-50",
     tag: "Live Data",
-    tagColor: "bg-amber-500 text-white",
+    tagColor: "bg-violet-600 text-white",
   },
   {
     icon: Wallet,
@@ -50,7 +60,7 @@ const features = [
     link: "/crop-calendar",
     color: "text-purple-600",
     bgColor: "bg-purple-50",
-    tag: "New",
+    tag: "Seasonal",
     tagColor: "bg-purple-600 text-white",
   },
   {

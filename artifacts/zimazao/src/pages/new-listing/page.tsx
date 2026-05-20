@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   Select,
   SelectContent,
@@ -14,19 +15,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Upload, Loader2, Leaf, ArrowLeft, CheckCircle, X, ImageIcon } from "lucide-react"
+import { Upload, Loader2, Leaf, ArrowLeft, CheckCircle, X, ImageIcon, MapPin } from "lucide-react"
 import { Link } from "wouter"
 import { api } from "@/lib/api"
+import { LocationPicker } from "@/components/location-picker"
 
 const cropCategories = [
-  { value: "cereals", label: "Cereals (Maize, Sorghum, Millet)" },
-  { value: "legumes", label: "Legumes (Groundnuts, Soybeans, Beans)" },
-  { value: "tubers", label: "Tubers (Cassava, Sweet Potatoes)" },
-  { value: "oilseeds", label: "Oilseeds (Sunflower, Cotton)" },
-  { value: "vegetables", label: "Vegetables" },
-  { value: "fruits", label: "Fruits" },
-  { value: "other", label: "Other" },
+  { value: "cereals", label: "🌽 Cereals (Maize, Sorghum, Millet)" },
+  { value: "legumes", label: "🫘 Legumes (Groundnuts, Soybeans, Beans)" },
+  { value: "tubers", label: "🥔 Tubers (Cassava, Sweet Potatoes)" },
+  { value: "oilseeds", label: "🌻 Oilseeds (Sunflower, Cotton)" },
+  { value: "vegetables", label: "🥬 Vegetables" },
+  { value: "fruits", label: "🍎 Fruits" },
+  { value: "livestock", label: "🐄 Livestock (Cattle, Goats, Sheep, Pigs)" },
+  { value: "poultry", label: "🐔 Poultry (Chickens, Ducks, Turkeys)" },
+  { value: "other", label: "🌾 Other" },
 ]
+
+const isLivestockCategory = (cat: string) => cat === "livestock" || cat === "poultry"
 
 const provinces = [
   "Central", "Copperbelt", "Eastern", "Luapula", "Lusaka",
@@ -56,6 +62,15 @@ function NewListingContent() {
     description: "",
     province: "",
     district: "",
+  })
+  const [latitude, setLatitude] = useState<number | null>(null)
+  const [longitude, setLongitude] = useState<number | null>(null)
+  const [showMap, setShowMap] = useState(false)
+  const [livestockData, setLivestockData] = useState({
+    breed: "",
+    age: "",
+    weight: "",
+    vaccinated: false,
   })
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -102,14 +117,26 @@ function NewListingContent() {
     setIsSubmitting(true)
     setSubmitError(null)
     try {
+      const isLivestock = isLivestockCategory(formData.category)
+      const extraDesc = isLivestock
+        ? [
+            livestockData.breed && `Breed: ${livestockData.breed}`,
+            livestockData.age && `Age: ${livestockData.age}`,
+            livestockData.weight && `Weight: ${livestockData.weight}`,
+            livestockData.vaccinated ? "Vaccinated: Yes" : null,
+            formData.description,
+          ].filter(Boolean).join(" | ")
+        : formData.description
       await api.listings.create({
         cropName: formData.cropName,
         price: parseFloat(formData.price),
         unit: formData.unit,
         quantity: formData.quantity,
         location: formData.province + (formData.district ? `, ${formData.district}` : ""),
+        latitude: latitude || undefined,
+        longitude: longitude || undefined,
         category: formData.category,
-        description: formData.description || undefined,
+        description: extraDesc || undefined,
         imageUrl: imageUrl || undefined,
       })
       setSubmitted(true)
@@ -267,7 +294,17 @@ function NewListingContent() {
 
               {/* Location */}
               <div className="space-y-4 pt-4 border-t">
-                <h3 className="font-semibold text-foreground">Location</h3>
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold text-foreground">Location</h3>
+                  <button
+                    type="button"
+                    onClick={() => setShowMap(!showMap)}
+                    className="flex items-center gap-1.5 text-sm text-primary hover:underline"
+                  >
+                    <MapPin className="w-3.5 h-3.5" />
+                    {showMap ? "Hide map" : "Pin on map (optional)"}
+                  </button>
+                </div>
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="province">Province *</Label>
@@ -294,7 +331,77 @@ function NewListingContent() {
                     />
                   </div>
                 </div>
+                {showMap && (
+                  <LocationPicker
+                    latitude={latitude}
+                    longitude={longitude}
+                    locationText={formData.district ? `${formData.district}, ${formData.province}` : ""}
+                    onLocationChange={(lat, lng, addr) => {
+                      setLatitude(lat)
+                      setLongitude(lng)
+                      if (!formData.district && addr) {
+                        const parts = addr.split(", ")
+                        if (parts[0]) setFormData(prev => ({ ...prev, district: parts[0] }))
+                      }
+                    }}
+                  />
+                )}
+                {latitude && longitude && (
+                  <p className="text-xs text-primary flex items-center gap-1">
+                    <MapPin className="w-3 h-3" />
+                    Location pinned: {latitude.toFixed(4)}, {longitude.toFixed(4)}
+                  </p>
+                )}
               </div>
+
+              {/* Livestock-specific fields */}
+              {isLivestockCategory(formData.category) && (
+                <div className="space-y-4 pt-4 border-t">
+                  <h3 className="font-semibold text-foreground flex items-center gap-2">
+                    🐄 Livestock Details
+                  </h3>
+                  <div className="grid md:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <Label>Breed</Label>
+                      <Input
+                        placeholder="e.g., Brahman, Boer"
+                        value={livestockData.breed}
+                        onChange={(e) => setLivestockData({ ...livestockData, breed: e.target.value })}
+                        className="h-12"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Age</Label>
+                      <Input
+                        placeholder="e.g., 2 years, 6 months"
+                        value={livestockData.age}
+                        onChange={(e) => setLivestockData({ ...livestockData, age: e.target.value })}
+                        className="h-12"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Avg Weight</Label>
+                      <Input
+                        placeholder="e.g., 350kg, 2.2kg"
+                        value={livestockData.weight}
+                        onChange={(e) => setLivestockData({ ...livestockData, weight: e.target.value })}
+                        className="h-12"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-xl border border-blue-200">
+                    <Checkbox
+                      id="vaccinated"
+                      checked={livestockData.vaccinated}
+                      onCheckedChange={(checked) => setLivestockData({ ...livestockData, vaccinated: !!checked })}
+                    />
+                    <div>
+                      <Label htmlFor="vaccinated" className="cursor-pointer font-medium text-blue-800">Animals are vaccinated</Label>
+                      <p className="text-xs text-blue-600">Vaccinated animals attract more buyers and command higher prices</p>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Description */}
               <div className="space-y-4 pt-4 border-t">
