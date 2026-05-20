@@ -1,5 +1,5 @@
 import { Router, type IRouter } from "express";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI } from "@google/genai";
 import { db, diseaseScansTable } from "@workspace/db";
 import { requireAuth, type AuthRequest } from "../middlewares/auth";
 import { logger } from "../lib/logger";
@@ -13,13 +13,13 @@ router.post("/disease/scan", requireAuth, async (req: AuthRequest, res): Promise
     return;
   }
 
-  if (!process.env.GEMINI_API_KEY) {
-    res.status(500).json({ error: "Gemini API key not configured" });
-    return;
-  }
-
-  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  const ai = new GoogleGenAI({
+    apiKey: process.env.AI_INTEGRATIONS_GEMINI_API_KEY,
+    httpOptions: {
+      apiVersion: "",
+      baseUrl: process.env.AI_INTEGRATIONS_GEMINI_BASE_URL,
+    },
+  });
 
   const prompt = `You are an expert agricultural plant pathologist specializing in crops grown in Zambia and Southern Africa.
 
@@ -48,17 +48,25 @@ If the image is not a plant/crop, set disease to "Unable to analyze - not a crop
     if (match) mimeType = match[1];
   }
 
-  const result = await model.generateContent([
-    prompt,
-    {
-      inlineData: {
-        data: base64Data,
-        mimeType,
+  const result = await ai.models.generateContent({
+    model: "gemini-2.5-flash",
+    contents: [
+      {
+        role: "user",
+        parts: [
+          { text: prompt },
+          {
+            inlineData: {
+              data: base64Data,
+              mimeType,
+            },
+          },
+        ],
       },
-    },
-  ]);
+    ],
+  });
 
-  const text = result.response.text().trim();
+  const text = (result.text ?? "").trim();
   let diagnosis: any;
   try {
     const jsonMatch = text.match(/\{[\s\S]*\}/);
