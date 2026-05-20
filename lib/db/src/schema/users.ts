@@ -13,6 +13,9 @@ export const usersTable = pgTable("users", {
   location: text("location"),
   userType: userTypeEnum("user_type").notNull().default("farmer"),
   isAdmin: boolean("is_admin").notNull().default(false),
+  isBanned: boolean("is_banned").notNull().default(false),
+  bannedUntil: timestamp("banned_until"),
+  banReason: text("ban_reason"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 

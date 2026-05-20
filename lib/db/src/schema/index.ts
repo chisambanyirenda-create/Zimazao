@@ -6,3 +6,5 @@ export * from "./disease_scans";
 export * from "./subscriptions";
 export * from "./sponsored_products";
 export * from "./payments";
+export * from "./announcements";
+export * from "./app_settings";

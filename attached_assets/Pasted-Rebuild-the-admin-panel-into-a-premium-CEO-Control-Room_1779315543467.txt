@@ -1,0 +1,76 @@
+Rebuild the admin panel into a premium CEO Control Room. It must look completely different from the farmer/buyer dashboard — dark, powerful, and professional. Also fix the dashboard number glitch where values flash and disappear. Here is everything to build:
+
+1. FIX THE GLITCH FIRST
+- Fix all dashboard stats that flash and disappear
+- All number values must load with a skeleton loader (grey placeholder) while fetching
+- Once data loads, animate numbers counting up smoothly
+- Never show undefined, NaN, or empty values — always show 0 as fallback
+
+2. CEO IDENTITY & ACCESS
+- Admin login is completely separate from farmer/buyer login
+- Admin has its own login page at /admin/login
+- Use a hardcoded secure admin password (not stored in database)
+- After login show: "Welcome back, CEO" with current date and time in Zambia timezone
+- Admin session expires after 8 hours for security
+- Nobody can access /admin routes without being logged in as admin
+
+3. CONTROL ROOM DESIGN
+- Dark premium design — black and deep navy background, gold or purple accents
+- Sidebar navigation with icons for each section
+- Top bar showing: CEO name, Zambia time, notifications bell, logout button
+- All pages must feel like a professional command center, not a normal app page
+- Add the Zimazao logo prominently in the sidebar
+
+4. LIVE REVENUE DASHBOARD
+- Total revenue today, this week, this month, all time
+- Commission earned breakdown
+- Number of Pro subscribers active
+- Revenue chart showing daily earnings for the past 30 days
+- Top 5 best selling crops
+- Top 5 highest earning farmers
+- Recent transactions list (last 20) with farmer name, amount, commission taken
+
+5. USER MANAGEMENT (FULL CONTROL)
+- See ALL users (farmers and buyers) in a table
+- Search and filter by name, location, account type, date joined
+- Click any user to see their full profile, listings, orders, and activity
+- Ban a user — they get locked out immediately and see a "Your account has been suspended" message
+- Suspend a user temporarily (set number of days)
+- Unsuspend or unban any user
+- Manually upgrade any farmer to Pro for free
+- Delete a user account permanently
+- Send a warning message to any user
+
+6. LISTINGS MANAGEMENT
+- See ALL crop listings across the entire app
+- Approve or reject new listings before they go live
+- Remove any listing instantly
+- Feature a listing (pins it to top of marketplace)
+- See flagged or reported listings
+
+7. DISEASE SCAN HISTORY
+- See all disease scans done by all users
+- See which diseases are most common
+- See which crops are most affected
+- This data helps you attract agro-dealer sponsors
+
+8. ANNOUNCEMENTS & NOTIFICATIONS
+- Send a notification to ALL users at once
+- Send a notification to only farmers or only buyers
+- Send a notification to a specific user
+- Schedule announcements for a future date and time
+- See history of all announcements sent
+
+9. AGRO-DEALER SPONSOR MANAGEMENT
+- Add new sponsor companies with their logo, products, and target diseases
+- Set which diseases trigger their sponsored product to appear
+- Activate or deactivate sponsors instantly
+- See how many times each sponsor was shown to users
+
+10. APP SETTINGS
+- Change the commission rate (currently 3%) without touching code
+- Change Pro plan price in ZMW without touching code
+- Toggle maintenance mode — shows "App under maintenance" to all users while admin still works
+- Set free plan limits (number of listings and scans) without touching code
+
+The admin panel must be completely inaccessible to regular users. Every admin action must be logged with timestamp. Use a premium dark design that feels powerful and professional. Fix the number glitch as the very first priority.
