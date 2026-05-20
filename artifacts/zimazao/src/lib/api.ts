@@ -91,6 +91,13 @@ export const api = {
         body: JSON.stringify({ imageBase64 }),
       }),
   },
+  livestock: {
+    scan: (imageBase64: string) =>
+      request<ApiLivestockScanResult>("/livestock/scan", {
+        method: "POST",
+        body: JSON.stringify({ imageBase64 }),
+      }),
+  },
   prices: {
     list: () => request<ApiMarketPrice[]>("/prices"),
   },
@@ -176,6 +183,19 @@ export interface ApiMessage {
   receiverId: number;
   content: string;
   createdAt: string;
+}
+
+export interface ApiLivestockScanResult {
+  condition: string;
+  animalType: string;
+  confidence: number;
+  description: string;
+  symptoms: string[];
+  urgency: "routine" | "soon" | "urgent" | "emergency";
+  treatment: string[];
+  medicines: string[];
+  prevention: string[];
+  vetAdvice: string;
 }
 
 export interface ApiDiseaseScanResult {

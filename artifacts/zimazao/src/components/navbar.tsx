@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import {
   Menu, X, Leaf, User, LogOut, ShoppingBag, Home,
-  Camera, BarChart3, MessageCircle, CalendarDays, Package, Beef,
+  Camera, BarChart3, MessageCircle, CalendarDays, Package, Beef, Stethoscope,
 } from "lucide-react"
 import {
   DropdownMenu,
@@ -24,7 +24,8 @@ export function Navbar() {
     { href: "/", label: "Home", icon: Home },
     { href: "/marketplace", label: "Crops", icon: ShoppingBag },
     { href: "/livestock", label: "Livestock", icon: Beef, badge: "New" },
-    { href: "/disease-detector", label: "AI Doctor", icon: Camera },
+    { href: "/disease-detector", label: "Crop Doctor", icon: Camera },
+    { href: "/livestock-doctor", label: "Animal Doctor", icon: Stethoscope },
     { href: "/prices", label: "Prices", icon: BarChart3 },
     { href: "/crop-calendar", label: "Calendar", icon: CalendarDays },
   ]
