@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import { Link } from "wouter"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
+import { MarketplaceMap } from "@/components/marketplace-map"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -9,7 +10,7 @@ import { Badge } from "@/components/ui/badge"
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select"
-import { Search, MapPin, Grid, List, CheckCircle2, Star, ShoppingCart, TrendingUp, TrendingDown, SlidersHorizontal, Flame } from "lucide-react"
+import { Search, MapPin, Grid, List, Map, CheckCircle2, Star, ShoppingCart, TrendingUp, TrendingDown, SlidersHorizontal, Flame } from "lucide-react"
 import { api, type ApiListing } from "@/lib/api"
 
 const CROP_EMOJI: Record<string, string> = {
@@ -185,7 +186,7 @@ export default function MarketplacePage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [category, setCategory] = useState("all")
   const [province, setProvince] = useState("all")
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
+  const [viewMode, setViewMode] = useState<"grid" | "list" | "map">("grid")
   const [apiListings, setApiListings] = useState<ApiListing[] | null>(null)
   const [sortBy, setSortBy] = useState("newest")
   const [loading, setLoading] = useState(true)
@@ -287,12 +288,15 @@ export default function MarketplacePage() {
                 <SelectItem value="rating"><Star className="w-3 h-3 inline mr-1 fill-yellow-400 text-yellow-400" />Top Rated</SelectItem>
               </SelectContent>
             </Select>
-            <div className="flex gap-2">
+            <div className="flex gap-1.5">
               <Button variant={viewMode === "grid" ? "default" : "outline"} size="icon" className="h-11 w-11" onClick={() => setViewMode("grid")}>
                 <Grid className="w-4 h-4" />
               </Button>
               <Button variant={viewMode === "list" ? "default" : "outline"} size="icon" className="h-11 w-11" onClick={() => setViewMode("list")}>
                 <List className="w-4 h-4" />
+              </Button>
+              <Button variant={viewMode === "map" ? "default" : "outline"} size="icon" className="h-11 w-11 relative" onClick={() => setViewMode("map")} title="Map view">
+                <Map className="w-4 h-4" />
               </Button>
             </div>
           </div>
@@ -306,7 +310,9 @@ export default function MarketplacePage() {
           {loading && <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />}
         </div>
 
-        {filtered.length > 0 ? (
+        {viewMode === "map" ? (
+          <MarketplaceMap listings={filtered} />
+        ) : filtered.length > 0 ? (
           <div className={viewMode === "grid" ? "grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5" : "space-y-4"}>
             {filtered.map((crop) => <CropCard key={crop.id} crop={crop} viewMode={viewMode} />)}
           </div>
@@ -321,7 +327,7 @@ export default function MarketplacePage() {
           </div>
         )}
 
-        {filtered.length > 0 && (
+        {viewMode !== "map" && filtered.length > 0 && (
           <div className="text-center mt-10">
             <Button variant="outline" size="lg" className="px-10">Load More Listings</Button>
           </div>
