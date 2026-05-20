@@ -1,6 +1,8 @@
 
 
 import { useAuth } from "@/lib/auth-context"
+import { useEffect, useState } from "react"
+import { api, type ApiDashboardStats } from "@/lib/api"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -102,6 +104,34 @@ const recentOrders = [
 
 function DashboardContent() {
   const { user } = useAuth()
+  const [dashStats, setDashStats] = useState<ApiDashboardStats | null>(null)
+
+  useEffect(() => {
+    if (user) {
+      api.dashboard.get().then(setDashStats).catch(() => {})
+    }
+  }, [user])
+
+  const liveStats = dashStats
+    ? [
+        { title: "Total Sales", value: `K${dashStats.totalSales.toLocaleString()}`, change: "", trend: "up" as const, icon: DollarSign },
+        { title: "Active Listings", value: String(dashStats.activeListings), change: "", trend: "up" as const, icon: Package },
+        { title: "Total Orders", value: String(dashStats.totalOrders), change: "", trend: "up" as const, icon: Eye },
+        { title: "Messages", value: String(dashStats.messages), change: "", trend: "up" as const, icon: MessageSquare },
+      ]
+    : stats
+
+  const liveListings = dashStats?.recentListings
+    ? dashStats.recentListings.map((l) => ({
+        id: l.id,
+        name: l.cropName,
+        price: parseFloat(l.price),
+        unit: l.unit,
+        quantity: l.quantity,
+        status: "active",
+        views: 0,
+      }))
+    : recentListings
 
   if (!user) {
     return (
@@ -150,7 +180,7 @@ function DashboardContent() {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          {stats.map((stat, index) => (
+          {liveStats.map((stat, index) => (
             <Card key={index}>
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-4">
@@ -192,7 +222,7 @@ function DashboardContent() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {recentListings.map((listing) => (
+                {liveListings.map((listing) => (
                   <div
                     key={listing.id}
                     className="flex items-center justify-between p-4 bg-muted/50 rounded-xl"

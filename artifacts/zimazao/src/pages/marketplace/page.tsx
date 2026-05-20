@@ -1,6 +1,6 @@
 
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
@@ -160,8 +160,32 @@ function MarketplaceContent() {
   const [province, setProvince] = useState("all")
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
   const [showFilters, setShowFilters] = useState(false)
+  const [apiListings, setApiListings] = useState<any[] | null>(null)
 
-  const filteredCrops = crops.filter((crop) => {
+  useEffect(() => {
+    import("@/lib/api").then(({ api }) => {
+      api.listings.list().then((data) => setApiListings(data)).catch(() => setApiListings(null))
+    })
+  }, [])
+
+  const sourceCrops = apiListings
+    ? apiListings.map((l) => ({
+        id: l.id,
+        name: l.cropName,
+        farmer: l.farmerName ?? "Farmer",
+        location: l.location,
+        price: parseFloat(l.price),
+        unit: l.unit,
+        rating: 4.5,
+        reviews: 0,
+        quantity: l.quantity,
+        image: "🌿",
+        verified: true,
+        category: l.category,
+      }))
+    : crops
+
+  const filteredCrops = sourceCrops.filter((crop) => {
     const matchesSearch =
       crop.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       crop.farmer.toLowerCase().includes(searchQuery.toLowerCase())

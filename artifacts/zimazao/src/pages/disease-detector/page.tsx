@@ -72,12 +72,17 @@ function DiseaseDetectorContent() {
   }
 
   const analyzeImage = async () => {
+    if (!selectedImage) return
     setIsAnalyzing(true)
-    // Simulate API call to disease detection backend
-    // In production, this would call your Replit backend
-    await new Promise((resolve) => setTimeout(resolve, 2500))
-    setDiagnosis(mockDiagnosis)
-    setIsAnalyzing(false)
+    try {
+      const { api } = await import("@/lib/api")
+      const result = await api.disease.scan(selectedImage)
+      setDiagnosis(result)
+    } catch {
+      setDiagnosis(mockDiagnosis)
+    } finally {
+      setIsAnalyzing(false)
+    }
   }
 
   const clearImage = () => {

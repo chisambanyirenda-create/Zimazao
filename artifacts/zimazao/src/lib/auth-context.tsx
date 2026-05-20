@@ -1,6 +1,5 @@
-
-
 import { createContext, useContext, useState, useEffect, ReactNode } from "react"
+import { api, type ApiUser } from "./api"
 
 interface User {
   id: string
@@ -22,15 +21,30 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
+function apiUserToUser(u: ApiUser): User {
+  return {
+    id: String(u.id),
+    name: u.name,
+    email: u.email,
+    phone: u.phone ?? "",
+    location: u.location ?? "",
+    userType: u.userType,
+  }
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    // Check for existing session (would connect to Replit backend)
     const storedUser = typeof window !== "undefined" ? localStorage.getItem("zimazao_user") : null
     if (storedUser) {
-      setUser(JSON.parse(storedUser))
+      try {
+        setUser(JSON.parse(storedUser))
+      } catch {
+        localStorage.removeItem("zimazao_user")
+        localStorage.removeItem("zimazao_token")
+      }
     }
     setIsLoading(false)
   }, [])
@@ -38,25 +52,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true)
     try {
-      // This would call your Replit backend
-      // const response = await fetch('YOUR_REPLIT_BACKEND/api/auth/login', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ email, password })
-      // })
-      
-      // Demo user for frontend testing
-      const demoUser: User = {
-        id: "1",
-        name: "John Mwansa",
-        email: email,
-        phone: "+260 97 123 4567",
-        location: "Lusaka, Zambia",
-        userType: "farmer",
-      }
-      
-      setUser(demoUser)
-      localStorage.setItem("zimazao_user", JSON.stringify(demoUser))
+      const { token, user: apiUser } = await api.auth.login(email, password)
+      const u = apiUserToUser(apiUser)
+      localStorage.setItem("zimazao_token", token)
+      localStorage.setItem("zimazao_user", JSON.stringify(u))
+      setUser(u)
       return true
     } catch {
       return false
@@ -68,20 +68,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const register = async (userData: Omit<User, "id"> & { password: string }): Promise<boolean> => {
     setIsLoading(true)
     try {
-      // This would call your Replit backend
-      // const response = await fetch('YOUR_REPLIT_BACKEND/api/auth/register', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(userData)
-      // })
-      
-      const newUser: User = {
-        ...userData,
-        id: Date.now().toString(),
-      }
-      
-      setUser(newUser)
-      localStorage.setItem("zimazao_user", JSON.stringify(newUser))
+      const { token, user: apiUser } = await api.auth.register({
+        name: userData.name,
+        email: userData.email,
+        password: userData.password,
+        phone: userData.phone,
+        location: userData.location,
+        userType: userData.userType,
+      })
+      const u = apiUserToUser(apiUser)
+      localStorage.setItem("zimazao_token", token)
+      localStorage.setItem("zimazao_user", JSON.stringify(u))
+      setUser(u)
       return true
     } catch {
       return false
@@ -93,6 +91,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = () => {
     setUser(null)
     localStorage.removeItem("zimazao_user")
+    localStorage.removeItem("zimazao_token")
   }
 
   return (

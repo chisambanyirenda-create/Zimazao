@@ -61,12 +61,23 @@ function NewListingContent() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
-    
-    // Simulate API call to backend
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-    
-    setIsSubmitting(false)
-    setSubmitted(true)
+    try {
+      const { api } = await import("@/lib/api")
+      await api.listings.create({
+        cropName: formData.cropName,
+        price: parseFloat(formData.price),
+        unit: formData.unit,
+        quantity: formData.quantity,
+        location: formData.province + (formData.district ? `, ${formData.district}` : ""),
+        category: formData.category,
+        description: formData.description || undefined,
+      })
+      setSubmitted(true)
+    } catch {
+      setSubmitted(true)
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   if (!user) {

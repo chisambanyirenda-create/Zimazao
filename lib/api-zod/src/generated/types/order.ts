@@ -6,6 +6,12 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export interface HealthStatus {
+export interface Order {
+  id: number;
+  buyerId: number;
+  listingId: number;
+  quantity: string;
+  totalPrice: string;
   status: string;
+  createdAt: string;
 }

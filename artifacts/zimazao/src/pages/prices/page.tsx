@@ -1,6 +1,7 @@
 
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { api } from "@/lib/api"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -103,6 +104,11 @@ const marketPrices = [
 
 function PricesContent() {
   const [selectedMarket, setSelectedMarket] = useState("all")
+  const [apiPrices, setApiPrices] = useState<typeof marketPrices | null>(null)
+
+  useEffect(() => {
+    api.prices.list().then((data) => setApiPrices(data as typeof marketPrices)).catch(() => {})
+  }, [])
 
   const getTrendIcon = (change: number) => {
     if (change > 0) return <TrendingUp className="w-4 h-4 text-primary" />
@@ -166,7 +172,7 @@ function PricesContent() {
 
         {/* Price Cards */}
         <div className="grid gap-6">
-          {marketPrices.map((item) => (
+          {(apiPrices ?? marketPrices).map((item) => (
             <Card key={item.crop} className="overflow-hidden">
               <CardHeader className="bg-muted/30">
                 <div className="flex items-center justify-between">
