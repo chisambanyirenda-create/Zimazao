@@ -97,8 +97,12 @@ _Populate as you build._
 - `AuthProvider` must only appear once at the App level (in `App.tsx`). Pages should NOT wrap themselves in `AuthProvider`.
 - Do not run `pnpm dev` at workspace root — use `restart_workflow` for the `artifacts/zimazao: web` workflow.
 - The app uses Tailwind v4 with `@tailwindcss/vite` plugin — do NOT add `postcss.config.mjs` (it conflicts).
-- `SUPABASE_DATABASE_URL` is a REST/project URL, not a Postgres connection string. Use `DATABASE_URL` for the DB.
-- JWT secret defaults to a dev key — set `JWT_SECRET` env var in production.
+- Database uses Replit's built-in PostgreSQL via `DATABASE_URL` (auto-provided by Replit).
+- JWT secret is set via `JWT_SECRET` env var (already configured in shared env).
+- Frontend runs on port **19683** (artifact-managed webview port), API runs on port **8080**.
+- Vite proxies `/api` requests to `http://localhost:8080` — frontend uses relative `/api` paths.
+- Gemini AI uses Replit AI Integrations (`AI_INTEGRATIONS_GEMINI_API_KEY` / `AI_INTEGRATIONS_GEMINI_BASE_URL`) — no external API key needed.
+- Cloudinary image upload credentials are in Replit Secrets (`CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`).
 
 ## Pointers
 
