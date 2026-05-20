@@ -2,39 +2,41 @@
 /**
  * Auto-push watcher: detects new local commits and pushes to GitHub.
  * Runs as a persistent background workflow.
+ *
+ * Required env vars:
+ *   GITHUB_TOKEN   — personal access token with repo write access
+ *   GITHUB_REPO    — full repo path, e.g. "username/RepoName"
+ *   GITHUB_USER    — GitHub username (used in the authenticated remote URL)
  */
-import { execSync, exec } from "child_process";
-import { readFileSync, statSync } from "fs";
-import { resolve } from "path";
+import { exec } from "child_process";
+import { execSync } from "child_process";
 
 const REPO_ROOT = new URL("../", import.meta.url).pathname;
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
-const REMOTE = `https://chisambanyirenda-create:${GITHUB_TOKEN}@github.com/chisambanyirenda-create/Zimazao.git`;
-const POLL_MS = 10_000; // check every 10 seconds
+const GITHUB_REPO  = process.env.GITHUB_REPO  ?? "chisambanyirenda-create/Zimazao";
+const GITHUB_USER  = process.env.GITHUB_USER  ?? "chisambanyirenda-create";
+const POLL_MS      = 10_000;
 
 if (!GITHUB_TOKEN) {
   console.error("[autopush] GITHUB_TOKEN not set — exiting.");
   process.exit(1);
 }
 
+const REMOTE = `https://${GITHUB_USER}:${GITHUB_TOKEN}@github.com/${GITHUB_REPO}.git`;
+
+function run(cmd, opts = {}) {
+  return execSync(cmd, { cwd: REPO_ROOT, encoding: "utf8", ...opts }).trim();
+}
+
 function getLocalHead() {
-  try {
-    return execSync("git rev-parse HEAD", { cwd: REPO_ROOT, encoding: "utf8" }).trim();
-  } catch {
-    return null;
-  }
+  try { return run("git rev-parse HEAD"); } catch { return null; }
 }
 
 function getRemoteHead() {
   try {
-    const out = execSync(
-      `git ls-remote "${REMOTE}" HEAD`,
-      { cwd: REPO_ROOT, encoding: "utf8", stdio: ["pipe", "pipe", "pipe"] }
-    );
+    const out = run(`git ls-remote "${REMOTE}" HEAD`, { stdio: ["pipe", "pipe", "pipe"] });
     return out.split("\t")[0].trim();
-  } catch {
-    return null;
-  }
+  } catch { return null; }
 }
 
 function push() {
@@ -62,14 +64,13 @@ async function tick() {
   if (!local) return;
 
   if (lastPushedHead === null) {
-    // First run — sync with remote baseline so we don't push on startup
     lastPushedHead = getRemoteHead() ?? local;
     console.log("[autopush] Watching for new commits. Baseline:", lastPushedHead?.slice(0, 8));
     return;
   }
 
   if (local !== lastPushedHead) {
-    console.log(`[autopush] New commit detected: ${local.slice(0, 8)} (was ${lastPushedHead.slice(0, 8)})`);
+    console.log(`[autopush] New commit: ${local.slice(0, 8)} (was ${lastPushedHead.slice(0, 8)})`);
     await push();
     lastPushedHead = local;
   }
