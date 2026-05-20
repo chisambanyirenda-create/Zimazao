@@ -1,36 +1,54 @@
-# [Project name]
+# Zimazao - Agricultural Marketplace
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+A full-stack agricultural marketplace for Zambia connecting farmers directly with buyers. Features crop listings, market prices, disease detection, crop calendar, messaging, and order management.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+- `pnpm --filter @workspace/api-server run dev` — run the API server (port 8080)
+- `pnpm --filter @workspace/zimazao run dev` — run the frontend (port 19683)
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
-- `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
 - `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
 - Required env: `DATABASE_URL` — Postgres connection string
+- Required env: `JWT_SECRET` — JWT signing secret
 
 ## Stack
 
 - pnpm workspaces, Node.js 24, TypeScript 5.9
+- Frontend: React + Vite, Tailwind CSS v4, Wouter (routing), shadcn/ui, Framer Motion
 - API: Express 5
 - DB: PostgreSQL + Drizzle ORM
 - Validation: Zod (`zod/v4`), `drizzle-zod`
-- API codegen: Orval (from OpenAPI spec)
 - Build: esbuild (CJS bundle)
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/zimazao/` — React + Vite frontend
+- `artifacts/zimazao/src/pages/` — page components (home, marketplace, dashboard, etc.)
+- `artifacts/zimazao/src/components/` — shared UI components
+- `artifacts/zimazao/src/lib/api.ts` — API client with all endpoint calls
+- `artifacts/zimazao/src/lib/auth-context.tsx` — authentication context
+- `artifacts/api-server/src/routes/` — Express route handlers
+- `lib/db/src/schema/` — Drizzle ORM schema (users, listings, orders, messages, disease_scans)
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- JWT-based auth stored in localStorage (`zimazao_token`)
+- API routes under `/api/*`, proxied by the shared reverse proxy
+- Frontend uses custom `api` client (not codegen hooks) since the project predates the OpenAPI spec
+- Disease detection uses Google Gemini AI
+- Image upload uses Cloudinary
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+- **Marketplace**: Browse and post crop listings with categories, location, price
+- **Dashboard**: Farmer stats, recent listings, order overview
+- **Disease Detector**: Upload crop photo → AI diagnosis with treatment advice
+- **Market Prices**: Live price ticker for Zambian crops
+- **Crop Calendar**: Seasonal planting/harvesting guide
+- **Orders**: Track buy/sell orders
+- **Messages**: In-app messaging between farmers and buyers
+- **Auth**: Register as farmer or buyer, JWT sessions
 
 ## User preferences
 
@@ -38,7 +56,10 @@ _Populate as you build — explicit user instructions worth remembering across s
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- The frontend uses a custom `api` client in `src/lib/api.ts` rather than codegen hooks
+- JWT_SECRET must be set or the API server will refuse to start
+- Disease route uses Google Gemini — requires `GEMINI_API_KEY` or `GOOGLE_API_KEY` secret
+- Image upload requires `CLOUDINARY_URL` or Cloudinary credentials
 
 ## Pointers
 
