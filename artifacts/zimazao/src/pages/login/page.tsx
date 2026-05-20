@@ -31,11 +31,15 @@ function LoginForm() {
       return
     }
 
-    const success = await login(formData.email, formData.password)
-    if (success) {
-      setLocation("/dashboard")
-    } else {
-      setError("Invalid email or password")
+    try {
+      const success = await login(formData.email, formData.password)
+      if (success) {
+        setLocation("/dashboard")
+      } else {
+        setError("Incorrect email or password. Please try again.")
+      }
+    } catch {
+      setError("Something went wrong. Please try again.")
     }
   }
 
