@@ -3,6 +3,7 @@ import { Link, useLocation } from "wouter"
 import { useAuth } from "@/lib/auth-context"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { NotificationsBell } from "@/components/notifications-bell"
 import {
   Menu, X, Leaf, User, LogOut, ShoppingBag, Home,
   Camera, BarChart3, MessageCircle, CalendarDays, Package, Beef, Stethoscope,
@@ -69,6 +70,7 @@ export function Navbar() {
 
           {/* Auth Buttons / User Menu */}
           <div className="hidden md:flex items-center gap-2">
+            <NotificationsBell />
             {user ? (
               <>
                 {user.userType === "farmer" && (
