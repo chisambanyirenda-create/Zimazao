@@ -40,6 +40,7 @@ function NewListingContent() {
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [imageUrl, setImageUrl] = useState<string | null>(null)
@@ -99,6 +100,7 @@ function NewListingContent() {
     e.preventDefault()
     if (isUploading) return
     setIsSubmitting(true)
+    setSubmitError(null)
     try {
       await api.listings.create({
         cropName: formData.cropName,
@@ -111,8 +113,8 @@ function NewListingContent() {
         imageUrl: imageUrl || undefined,
       })
       setSubmitted(true)
-    } catch {
-      setSubmitted(true)
+    } catch (err: any) {
+      setSubmitError(err.message || "Failed to create listing. Please try again.")
     } finally {
       setIsSubmitting(false)
     }
@@ -380,6 +382,13 @@ function NewListingContent() {
                   </button>
                 )}
               </div>
+
+              {/* Submit error */}
+              {submitError && (
+                <div className="rounded-lg border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+                  {submitError}
+                </div>
+              )}
 
               {/* Submit */}
               <div className="flex gap-4 pt-4">
