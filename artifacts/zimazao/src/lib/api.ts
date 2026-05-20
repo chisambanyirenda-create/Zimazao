@@ -82,6 +82,21 @@ export const api = {
   dashboard: {
     get: () => request<ApiDashboardStats>("/dashboard"),
   },
+  upload: {
+    image: async (file: File): Promise<{ url: string; publicId: string }> => {
+      const token = getToken();
+      const formData = new FormData();
+      formData.append("image", file);
+      const res = await fetch(`${API_BASE}/upload`, {
+        method: "POST",
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        body: formData,
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+      return data;
+    },
+  },
 };
 
 export interface ApiUser {

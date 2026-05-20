@@ -6,6 +6,7 @@ import ordersRouter from "./orders";
 import diseaseRouter from "./disease";
 import pricesRouter from "./prices";
 import dashboardRouter from "./dashboard";
+import uploadRouter from "./upload";
 
 const router: IRouter = Router();
 
@@ -16,5 +17,6 @@ router.use(ordersRouter);
 router.use(diseaseRouter);
 router.use(pricesRouter);
 router.use(dashboardRouter);
+router.use(uploadRouter);
 
 export default router;
