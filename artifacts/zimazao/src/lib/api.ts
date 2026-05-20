@@ -62,11 +62,24 @@ export const api = {
         body: JSON.stringify(data),
       }),
   },
+  farmers: {
+    get: (id: number) => request<ApiFarmerProfile>(`/farmers/${id}`),
+  },
   orders: {
+    list: () => request<ApiOrderDetail[]>("/orders"),
     create: (data: { listingId: number; quantity: string; totalPrice: number }) =>
       request<ApiOrder>("/orders", {
         method: "POST",
         body: JSON.stringify(data),
+      }),
+  },
+  messages: {
+    conversations: () => request<ApiMessage[]>("/messages"),
+    thread: (userId: number) => request<ApiMessage[]>(`/messages/${userId}`),
+    send: (receiverId: number, content: string) =>
+      request<ApiMessage>("/messages", {
+        method: "POST",
+        body: JSON.stringify({ receiverId, content }),
       }),
   },
   disease: {
@@ -125,6 +138,16 @@ export interface ApiListing {
   createdAt: string;
 }
 
+export interface ApiFarmerProfile {
+  id: number;
+  name: string;
+  location: string | null;
+  phone: string | null;
+  createdAt: string;
+  totalListings: number;
+  listings: Omit<ApiListing, "farmerId" | "farmerName" | "isActive">[];
+}
+
 export interface ApiOrder {
   id: number;
   buyerId: number;
@@ -132,6 +155,24 @@ export interface ApiOrder {
   quantity: string;
   totalPrice: string;
   status: string;
+  createdAt: string;
+}
+
+export interface ApiOrderDetail extends ApiOrder {
+  cropName: string | null;
+  unit: string | null;
+  location: string | null;
+  imageUrl: string | null;
+  farmerName: string | null;
+  farmerId: number | null;
+}
+
+export interface ApiMessage {
+  id: number;
+  senderId: number;
+  senderName: string | null;
+  receiverId: number;
+  content: string;
   createdAt: string;
 }
 

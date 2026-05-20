@@ -1,20 +1,10 @@
-
-
 import { useState } from "react"
 import { Link } from "wouter"
 import { useAuth } from "@/lib/auth-context"
 import { Button } from "@/components/ui/button"
 import {
-  Menu,
-  X,
-  Leaf,
-  User,
-  LogOut,
-  ShoppingBag,
-  Home,
-  Search,
-  Camera,
-  BarChart3,
+  Menu, X, Leaf, User, LogOut, ShoppingBag, Home,
+  Search, Camera, BarChart3, MessageCircle, CalendarDays, Package,
 } from "lucide-react"
 import {
   DropdownMenu,
@@ -33,6 +23,7 @@ export function Navbar() {
     { href: "/marketplace", label: "Marketplace", icon: ShoppingBag },
     { href: "/disease-detector", label: "Disease Detector", icon: Camera },
     { href: "/prices", label: "Market Prices", icon: BarChart3 },
+    { href: "/crop-calendar", label: "Crop Calendar", icon: CalendarDays },
   ]
 
   return (
@@ -53,7 +44,7 @@ export function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="flex items-center gap-2 px-4 py-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
+                className="flex items-center gap-2 px-3 py-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors text-sm"
               >
                 <link.icon className="w-4 h-4" />
                 {link.label}
@@ -74,25 +65,34 @@ export function Navbar() {
                 <DropdownMenuContent align="end" className="w-56">
                   <div className="px-3 py-2">
                     <p className="font-medium">{user.name}</p>
-                    <p className="text-sm text-muted-foreground">{user.email}</p>
+                    <p className="text-sm text-muted-foreground capitalize">{user.userType}</p>
                   </div>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
                     <Link href="/dashboard">
-                      <BarChart3 className="w-4 h-4 mr-2" />
-                      Dashboard
+                      <BarChart3 className="w-4 h-4 mr-2" /> Dashboard
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/my-listings">
-                      <ShoppingBag className="w-4 h-4 mr-2" />
-                      My Listings
+                    <Link href="/orders">
+                      <Package className="w-4 h-4 mr-2" /> My Orders
                     </Link>
                   </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/messages">
+                      <MessageCircle className="w-4 h-4 mr-2" /> Messages
+                    </Link>
+                  </DropdownMenuItem>
+                  {user.userType === "farmer" && (
+                    <DropdownMenuItem asChild>
+                      <Link href="/new-listing">
+                        <ShoppingBag className="w-4 h-4 mr-2" /> New Listing
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={logout} className="text-destructive">
-                    <LogOut className="w-4 h-4 mr-2" />
-                    Logout
+                    <LogOut className="w-4 h-4 mr-2" /> Logout
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -120,8 +120,8 @@ export function Navbar() {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden py-4 border-t border-border animate-fade-in">
-            <div className="flex flex-col gap-2">
+          <div className="md:hidden py-4 border-t border-border">
+            <div className="flex flex-col gap-1">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
@@ -133,32 +133,40 @@ export function Navbar() {
                   {link.label}
                 </Link>
               ))}
-              
+
               <div className="border-t border-border my-2" />
-              
+
               {user ? (
                 <>
                   <div className="px-4 py-2">
                     <p className="font-medium">{user.name}</p>
-                    <p className="text-sm text-muted-foreground">{user.email}</p>
+                    <p className="text-sm text-muted-foreground capitalize">{user.userType}</p>
                   </div>
-                  <Link
-                    href="/dashboard"
-                    className="flex items-center gap-3 px-4 py-3 text-foreground hover:bg-muted rounded-lg"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    <BarChart3 className="w-5 h-5" />
-                    Dashboard
-                  </Link>
+                  {[
+                    { href: "/dashboard", label: "Dashboard", icon: BarChart3 },
+                    { href: "/orders", label: "My Orders", icon: Package },
+                    { href: "/messages", label: "Messages", icon: MessageCircle },
+                  ].map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className="flex items-center gap-3 px-4 py-3 text-foreground hover:bg-muted rounded-lg"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <item.icon className="w-5 h-5" />
+                      {item.label}
+                    </Link>
+                  ))}
+                  {user.userType === "farmer" && (
+                    <Link href="/new-listing" className="flex items-center gap-3 px-4 py-3 text-foreground hover:bg-muted rounded-lg" onClick={() => setMobileMenuOpen(false)}>
+                      <ShoppingBag className="w-5 h-5" /> New Listing
+                    </Link>
+                  )}
                   <button
-                    onClick={() => {
-                      logout()
-                      setMobileMenuOpen(false)
-                    }}
+                    onClick={() => { logout(); setMobileMenuOpen(false) }}
                     className="flex items-center gap-3 px-4 py-3 text-destructive hover:bg-muted rounded-lg w-full text-left"
                   >
-                    <LogOut className="w-5 h-5" />
-                    Logout
+                    <LogOut className="w-5 h-5" /> Logout
                   </button>
                 </>
               ) : (

@@ -12,6 +12,11 @@ import MarketplacePage from "@/pages/marketplace/page";
 import NewListingPage from "@/pages/new-listing/page";
 import DiseaseDetectorPage from "@/pages/disease-detector/page";
 import PricesPage from "@/pages/prices/page";
+import ListingDetailPage from "@/pages/listing/page";
+import FarmerProfilePage from "@/pages/farmer/page";
+import OrdersPage from "@/pages/orders/page";
+import MessagesPage from "@/pages/messages/page";
+import CropCalendarPage from "@/pages/crop-calendar/page";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +31,11 @@ function Router() {
       <Route path="/new-listing" component={NewListingPage} />
       <Route path="/disease-detector" component={DiseaseDetectorPage} />
       <Route path="/prices" component={PricesPage} />
+      <Route path="/listing/:id" component={ListingDetailPage} />
+      <Route path="/farmer/:id" component={FarmerProfilePage} />
+      <Route path="/orders" component={OrdersPage} />
+      <Route path="/messages" component={MessagesPage} />
+      <Route path="/crop-calendar" component={CropCalendarPage} />
       <Route component={NotFound} />
     </Switch>
   );
