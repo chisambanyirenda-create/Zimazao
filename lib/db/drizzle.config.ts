@@ -12,6 +12,6 @@ export default defineConfig({
   dialect: "postgresql",
   dbCredentials: {
     url: dbUrl,
-    ssl: { rejectUnauthorized: false },
+    ssl: dbUrl.includes("supabase.co") && !dbUrl.includes("pooler") ? { rejectUnauthorized: false } : undefined,
   },
 });

@@ -12,7 +12,7 @@ if (!dbUrl) {
 
 export const pool = new Pool({
   connectionString: dbUrl,
-  ssl: { rejectUnauthorized: false },
+  ssl: dbUrl.includes("supabase.co") && !dbUrl.includes("pooler") ? { rejectUnauthorized: false } : undefined,
 });
 export const db = drizzle(pool, { schema });
 
