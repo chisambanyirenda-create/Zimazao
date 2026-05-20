@@ -15,7 +15,11 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
 
   const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
   const data = await res.json();
-  if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+  if (!res.ok) {
+    const err: any = new Error(data.error || `HTTP ${res.status}`);
+    err.code = data.code;
+    throw err;
+  }
   return data as T;
 }
 
@@ -119,6 +123,45 @@ export const api = {
       return data;
     },
   },
+  subscription: {
+    status: () => request<ApiSubscriptionStatus>("/subscription"),
+    upgrade: (plan: "pro", paymentReference: string) =>
+      request<ApiSubscription>("/subscription/upgrade", {
+        method: "POST",
+        body: JSON.stringify({ plan, paymentReference }),
+      }),
+  },
+  payments: {
+    initiate: (data: { amount: number; method: string; phone: string; purpose?: string }) =>
+      request<ApiPaymentInitiate>("/payments/initiate", {
+        method: "POST",
+        body: JSON.stringify(data),
+      }),
+    verify: (reference: string) =>
+      request<ApiPaymentVerify>("/payments/verify", {
+        method: "POST",
+        body: JSON.stringify({ reference }),
+      }),
+    history: () => request<ApiPayment[]>("/payments/history"),
+  },
+  admin: {
+    revenue: () => request<any>("/admin/revenue"),
+    sponsors: {
+      list: () => request<ApiSponsoredProduct[]>("/admin/sponsors"),
+      create: (data: Omit<ApiSponsoredProduct, "id" | "createdAt" | "isActive">) =>
+        request<ApiSponsoredProduct>("/admin/sponsors", {
+          method: "POST",
+          body: JSON.stringify(data),
+        }),
+      update: (id: number, data: Partial<ApiSponsoredProduct>) =>
+        request<ApiSponsoredProduct>(`/admin/sponsors/${id}`, {
+          method: "PUT",
+          body: JSON.stringify(data),
+        }),
+      delete: (id: number) =>
+        request<{ success: boolean }>(`/admin/sponsors/${id}`, { method: "DELETE" }),
+    },
+  },
 };
 
 export interface ApiUser {
@@ -128,6 +171,7 @@ export interface ApiUser {
   phone: string | null;
   location: string | null;
   userType: "farmer" | "buyer";
+  isAdmin?: boolean;
   createdAt: string;
 }
 
@@ -163,8 +207,10 @@ export interface ApiOrder {
   listingId: number;
   quantity: string;
   totalPrice: string;
+  commission: string;
   status: string;
   createdAt: string;
+  farmerPayout?: number;
 }
 
 export interface ApiOrderDetail extends ApiOrder {
@@ -198,6 +244,19 @@ export interface ApiLivestockScanResult {
   vetAdvice: string;
 }
 
+export interface ApiSponsoredProduct {
+  id: number;
+  companyName: string;
+  productName: string;
+  productImage: string | null;
+  description: string | null;
+  price: string | null;
+  targetDisease: string;
+  contactNumber: string | null;
+  isActive: boolean;
+  createdAt: string;
+}
+
 export interface ApiDiseaseScanResult {
   disease: string;
   confidence: number;
@@ -207,6 +266,7 @@ export interface ApiDiseaseScanResult {
   prevention: string[];
   severity: "low" | "medium" | "high";
   medicines?: string[];
+  sponsoredProducts?: ApiSponsoredProduct[];
 }
 
 export interface ApiMarketPrice {
@@ -224,4 +284,50 @@ export interface ApiDashboardStats {
   totalOrders: number;
   messages: number;
   recentListings: ApiListing[];
+}
+
+export interface ApiSubscriptionStatus {
+  plan: "free" | "pro";
+  status: string;
+  startDate?: string;
+  endDate?: string;
+  limits: { listings: number | null; diseaseScans: number | null };
+}
+
+export interface ApiSubscription {
+  id: number;
+  userId: number;
+  plan: "free" | "pro";
+  startDate: string;
+  endDate: string | null;
+  status: string;
+}
+
+export interface ApiPaymentInitiate {
+  status: string;
+  reference: string;
+  paymentId: number;
+  message: string;
+  testMode?: boolean;
+  flutterwaveData?: any;
+}
+
+export interface ApiPaymentVerify {
+  status: string;
+  reference: string;
+  amount?: string;
+  currency?: string;
+  testMode?: boolean;
+}
+
+export interface ApiPayment {
+  id: number;
+  userId: number;
+  amount: string;
+  currency: string;
+  method: string;
+  status: string;
+  reference: string;
+  purpose: string;
+  createdAt: string;
 }

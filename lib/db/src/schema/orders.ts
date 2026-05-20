@@ -12,6 +12,7 @@ export const ordersTable = pgTable("orders", {
   listingId: integer("listing_id").notNull().references(() => listingsTable.id),
   quantity: text("quantity").notNull(),
   totalPrice: numeric("total_price", { precision: 10, scale: 2 }).notNull(),
+  commission: numeric("commission", { precision: 10, scale: 2 }).notNull().default("0"),
   status: orderStatusEnum("status").notNull().default("pending"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });

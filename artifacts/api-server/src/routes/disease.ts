@@ -1,8 +1,11 @@
 import { Router, type IRouter } from "express";
 import { GoogleGenAI } from "@google/genai";
-import { db, diseaseScansTable } from "@workspace/db";
+import { db, diseaseScansTable, subscriptionsTable, sponsoredProductsTable } from "@workspace/db";
+import { eq, and, gte, count, ilike, or } from "drizzle-orm";
 import { requireAuth, type AuthRequest } from "../middlewares/auth";
 import { logger } from "../lib/logger";
+
+const FREE_SCAN_LIMIT = 5;
 
 const router: IRouter = Router();
 
@@ -11,6 +14,37 @@ router.post("/disease/scan", requireAuth, async (req: AuthRequest, res): Promise
   if (!imageBase64) {
     res.status(400).json({ error: "imageBase64 is required" });
     return;
+  }
+
+  const userId = req.user!.userId;
+
+  const [sub] = await db
+    .select()
+    .from(subscriptionsTable)
+    .where(and(eq(subscriptionsTable.userId, userId), eq(subscriptionsTable.status, "active")))
+    .limit(1);
+
+  const isPro = sub?.plan === "pro";
+
+  if (!isPro) {
+    const startOfMonth = new Date();
+    startOfMonth.setDate(1);
+    startOfMonth.setHours(0, 0, 0, 0);
+
+    const [{ scanCount }] = await db
+      .select({ scanCount: count() })
+      .from(diseaseScansTable)
+      .where(and(eq(diseaseScansTable.userId, userId), gte(diseaseScansTable.createdAt, startOfMonth)));
+
+    if (scanCount >= FREE_SCAN_LIMIT) {
+      res.status(403).json({
+        error: `Free plan allows ${FREE_SCAN_LIMIT} disease scans per month. Upgrade to Pro for unlimited scans.`,
+        code: "SCAN_LIMIT_REACHED",
+        limit: FREE_SCAN_LIMIT,
+        current: scanCount,
+      });
+      return;
+    }
   }
 
   const ai = new GoogleGenAI({
@@ -86,15 +120,33 @@ If the image is not a plant/crop, set disease to "Unable to analyze - not a crop
   }
 
   await db.insert(diseaseScansTable).values({
-    userId: req.user?.userId ?? null,
+    userId: userId,
     imageUrl: null,
     diseaseFound: diagnosis.disease,
     confidence: String(diagnosis.confidence),
     treatment: Array.isArray(diagnosis.treatment) ? diagnosis.treatment.join("; ") : diagnosis.treatment,
   }).catch(() => {});
 
-  req.log.info({ disease: diagnosis.disease }, "Disease scan completed");
-  res.json(diagnosis);
+  let sponsoredProducts: any[] = [];
+  const diseaseName = diagnosis.disease?.toLowerCase() ?? "";
+  if (diseaseName && diseaseName !== "healthy plant" && diseaseName !== "unable to analyze - not a crop image") {
+    const words = diseaseName.split(/\s+/).filter((w: string) => w.length > 3);
+    const allSponsored = await db
+      .select()
+      .from(sponsoredProductsTable)
+      .where(eq(sponsoredProductsTable.isActive, true));
+
+    sponsoredProducts = allSponsored
+      .filter((p) => words.some((w: string) => p.targetDisease.toLowerCase().includes(w) || diseaseName.includes(p.targetDisease.toLowerCase())))
+      .slice(0, 2);
+
+    if (sponsoredProducts.length === 0 && allSponsored.length > 0) {
+      sponsoredProducts = allSponsored.slice(0, 1);
+    }
+  }
+
+  req.log.info({ disease: diagnosis.disease, isPro, sponsored: sponsoredProducts.length }, "Disease scan completed");
+  res.json({ ...diagnosis, sponsoredProducts });
 });
 
 export default router;

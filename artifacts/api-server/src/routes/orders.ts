@@ -4,6 +4,8 @@ import { eq, desc } from "drizzle-orm";
 import { requireAuth, type AuthRequest } from "../middlewares/auth";
 import type { RequestHandler } from "express";
 
+const COMMISSION_RATE = 0.03;
+
 const router: IRouter = Router();
 
 router.get("/orders", requireAuth as RequestHandler, (async (req: AuthRequest, res) => {
@@ -14,6 +16,7 @@ router.get("/orders", requireAuth as RequestHandler, (async (req: AuthRequest, r
       id: ordersTable.id,
       quantity: ordersTable.quantity,
       totalPrice: ordersTable.totalPrice,
+      commission: ordersTable.commission,
       status: ordersTable.status,
       createdAt: ordersTable.createdAt,
       listingId: ordersTable.listingId,
@@ -44,16 +47,20 @@ router.post("/orders", requireAuth as RequestHandler, (async (req: AuthRequest, 
     res.status(404).json({ error: "Listing not found or inactive" }); return;
   }
 
+  const price = parseFloat(String(totalPrice));
+  const commission = parseFloat((price * COMMISSION_RATE).toFixed(2));
+
   const [order] = await db.insert(ordersTable).values({
     buyerId: req.user!.userId,
     listingId,
     quantity: String(quantity),
-    totalPrice: String(totalPrice),
+    totalPrice: String(price),
+    commission: String(commission),
     status: "pending",
   }).returning();
 
-  req.log.info({ orderId: order.id }, "Order created");
-  res.status(201).json(order);
+  req.log.info({ orderId: order.id, commission }, "Order created");
+  res.status(201).json({ ...order, farmerPayout: price - commission });
 }) as RequestHandler);
 
 export default router;

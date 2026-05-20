@@ -1,0 +1,43 @@
+Add a complete monetization system to Zimazao with 3 income streams. All prices in Zambian Kwacha (ZMW). Here is exactly what to build:
+
+STREAM 1 — COMMISSION SYSTEM
+- Every order placed through the app automatically calculates 3% commission
+- Store the commission amount in the orders table (add a "commission" column)
+- Commission is deducted from the farmer's payout automatically
+- Example: Buyer pays ZMW 500 → Farmer gets ZMW 485 → Zimazao earns ZMW 15
+
+STREAM 2 — SUBSCRIPTION PLANS
+Free Plan (default for all farmers):
+- Maximum 3 active crop listings
+- Maximum 5 disease scans per month
+- No access to price analytics
+
+Pro Plan — ZMW 80/month:
+- Unlimited crop listings
+- Unlimited disease scans
+- Access to price analytics and trends
+- Priority placement in marketplace search results
+- "Pro Farmer" badge on their profile
+
+- Add a subscriptions table: id, userId, plan (free/pro), startDate, endDate, status
+- Enforce limits in the API — return an error if free farmer tries to exceed limits
+- Add a /api/subscription/upgrade endpoint to handle plan upgrades
+
+STREAM 3 — AGRO-DEALER SPONSORED ADS
+- Add a "sponsored_products" table: id, companyName, productName, productImage, description, price, targetDisease, contactNumber, isActive
+- When the disease detector returns a diagnosis, also return 1-2 sponsored products that treat that disease
+- Add a "Sponsored" label on these products in the UI
+- Add an /api/admin/sponsors endpoint to manage sponsors
+
+PAYMENTS — FLUTTERWAVE (ZAMBIA)
+- Integrate Flutterwave API for payments
+- Support MTN Mobile Money and Airtel Money in Zambia
+- Payment flow: user enters phone number → receives mobile money prompt → confirms → payment recorded
+- Add a payments table: id, userId, amount, currency (ZMW), method, status, reference, createdAt
+- Use Flutterwave test mode first so we can test without real money
+
+ADMIN REVENUE DASHBOARD
+- Create a protected /admin route (only accessible with admin account)
+- Show: Total revenue this month, Total commissions earned, Number of Pro subscribers, Revenue chart by week, List of all transactions, Top selling farmers, Top selling crops
+
+Important: Use ZMW (Zambian Kwacha) as currency everywhere. Keep all existing features working. Add the subscription limit checks to the listings and disease scan endpoints.

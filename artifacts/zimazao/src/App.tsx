@@ -17,8 +17,10 @@ import FarmerProfilePage from "@/pages/farmer/page";
 import OrdersPage from "@/pages/orders/page";
 import MessagesPage from "@/pages/messages/page";
 import CropCalendarPage from "@/pages/crop-calendar/page";
-import LivestockPage from "@/pages/livestock/page"
+import LivestockPage from "@/pages/livestock/page";
 import LivestockDoctorPage from "@/pages/livestock-doctor/page";
+import SubscriptionPage from "@/pages/subscription/page";
+import AdminPage from "@/pages/admin/page";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +42,8 @@ function Router() {
       <Route path="/orders" component={OrdersPage} />
       <Route path="/messages" component={MessagesPage} />
       <Route path="/crop-calendar" component={CropCalendarPage} />
+      <Route path="/subscription" component={SubscriptionPage} />
+      <Route path="/admin" component={AdminPage} />
       <Route component={NotFound} />
     </Switch>
   );

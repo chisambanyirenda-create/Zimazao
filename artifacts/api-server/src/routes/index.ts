@@ -10,6 +10,10 @@ import dashboardRouter from "./dashboard";
 import uploadRouter from "./upload";
 import farmersRouter from "./farmers";
 import messagesRouter from "./messages";
+import subscriptionRouter from "./subscription";
+import sponsorsRouter from "./sponsors";
+import paymentsRouter from "./payments";
+import adminRouter from "./admin";
 
 const router: IRouter = Router();
 
@@ -24,5 +28,9 @@ router.use(dashboardRouter);
 router.use(uploadRouter);
 router.use(farmersRouter);
 router.use(messagesRouter);
+router.use(subscriptionRouter);
+router.use(sponsorsRouter);
+router.use(paymentsRouter);
+router.use(adminRouter);
 
 export default router;
