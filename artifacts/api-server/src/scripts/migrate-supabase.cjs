@@ -2,11 +2,17 @@
 const { Pool } = require("/home/runner/workspace/node_modules/.pnpm/pg@8.20.0/node_modules/pg");
 const bcryptjs = require("/home/runner/workspace/node_modules/.pnpm/bcryptjs@3.0.3/node_modules/bcryptjs");
 
-const connectionString = process.env.SUPABASE_DATABASE_URL;
-if (!connectionString) {
+const rawUrl = process.env.SUPABASE_DATABASE_URL?.trim();
+if (!rawUrl) {
   console.error("SUPABASE_DATABASE_URL is not set");
   process.exit(1);
 }
+
+// Strip any encoded newlines from the URL string directly
+const connectionString = rawUrl.replace(/%0[aA]/g, "").replace(/%0[dD]/g, "").trim();
+
+const parsed = new URL(connectionString);
+console.log("Connecting to host:", parsed.hostname, "port:", parsed.port, "user:", parsed.username, "db:", parsed.pathname);
 
 const pool = new Pool({
   connectionString,
