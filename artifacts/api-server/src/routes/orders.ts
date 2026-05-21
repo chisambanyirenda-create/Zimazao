@@ -119,4 +119,62 @@ router.patch("/orders/:id/status", requireAuth as RequestHandler, (async (req: A
   res.json(updated);
 }) as RequestHandler);
 
+// ─── Live Location Store (in-memory, ephemeral) ───────────────────────────
+interface LocationEntry { lat: number; lng: number; updatedAt: number }
+interface OrderLocations { farmer?: LocationEntry; buyer?: LocationEntry }
+const locationStore = new Map<number, OrderLocations>();
+
+router.patch("/orders/:id/location", requireAuth as RequestHandler, (async (req: AuthRequest, res) => {
+  const orderId = parseInt(req.params.id);
+  const { lat, lng } = req.body;
+  if (isNaN(orderId) || lat == null || lng == null) {
+    res.status(400).json({ error: "orderId, lat and lng are required" }); return;
+  }
+
+  const userId = req.user!.userId;
+
+  // verify user is buyer or farmer for this order
+  const [order] = await db
+    .select({ buyerId: ordersTable.buyerId, farmerId: listingsTable.farmerId })
+    .from(ordersTable)
+    .leftJoin(listingsTable, eq(ordersTable.listingId, listingsTable.id))
+    .where(eq(ordersTable.id, orderId));
+
+  if (!order) { res.status(404).json({ error: "Order not found" }); return; }
+
+  const isBuyer = order.buyerId === userId;
+  const isFarmer = order.farmerId === userId;
+  if (!isBuyer && !isFarmer) { res.status(403).json({ error: "Not your order" }); return; }
+
+  const existing = locationStore.get(orderId) ?? {};
+  const role = isBuyer ? "buyer" : "farmer";
+  locationStore.set(orderId, { ...existing, [role]: { lat, lng, updatedAt: Date.now() } });
+
+  res.json({ ok: true, role });
+}) as RequestHandler);
+
+router.get("/orders/:id/locations", requireAuth as RequestHandler, (async (req: AuthRequest, res) => {
+  const orderId = parseInt(req.params.id);
+  if (isNaN(orderId)) { res.status(400).json({ error: "Invalid order id" }); return; }
+
+  const userId = req.user!.userId;
+  const [order] = await db
+    .select({ buyerId: ordersTable.buyerId, farmerId: listingsTable.farmerId })
+    .from(ordersTable)
+    .leftJoin(listingsTable, eq(ordersTable.listingId, listingsTable.id))
+    .where(eq(ordersTable.id, orderId));
+
+  if (!order) { res.status(404).json({ error: "Order not found" }); return; }
+  if (order.buyerId !== userId && order.farmerId !== userId) {
+    res.status(403).json({ error: "Not your order" }); return;
+  }
+
+  const locs = locationStore.get(orderId) ?? {};
+  // expire stale locations (older than 2 min)
+  const now = Date.now();
+  const freshen = (e?: LocationEntry) => e && (now - e.updatedAt < 120_000) ? e : undefined;
+
+  res.json({ farmer: freshen(locs.farmer), buyer: freshen(locs.buyer) });
+}) as RequestHandler);
+
 export default router;

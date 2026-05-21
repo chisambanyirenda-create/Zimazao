@@ -95,6 +95,13 @@ export const api = {
         method: "PATCH",
         body: JSON.stringify({ status }),
       }),
+    updateLocation: (id: number, lat: number, lng: number) =>
+      request<{ ok: boolean; role: string }>(`/orders/${id}/location`, {
+        method: "PATCH",
+        body: JSON.stringify({ lat, lng }),
+      }),
+    getLocations: (id: number) =>
+      request<{ farmer?: { lat: number; lng: number; updatedAt: number }; buyer?: { lat: number; lng: number; updatedAt: number } }>(`/orders/${id}/locations`),
   },
   messages: {
     conversations: () => request<ApiMessage[]>("/messages"),

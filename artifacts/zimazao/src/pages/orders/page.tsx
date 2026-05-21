@@ -7,10 +7,11 @@ import { api, type ApiOrderDetail } from "@/lib/api"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
+import { LiveTrackingModal } from "@/components/live-tracking-modal"
 import {
   ShoppingBag, MapPin, User, Loader2, Package, ArrowLeft,
   CheckCircle2, Clock, Truck, Star, MessageCircle, RotateCcw,
-  TrendingUp, ChevronDown,
+  TrendingUp, ChevronDown, Navigation,
 } from "lucide-react"
 
 const STEPS = [
@@ -180,6 +181,7 @@ export default function OrdersPage() {
   const [reviewOrder, setReviewOrder] = useState<ApiOrderDetail | null>(null)
   const [reviewedOrders, setReviewedOrders] = useState<Set<number>>(new Set())
   const [updatingStatus, setUpdatingStatus] = useState<number | null>(null)
+  const [trackingOrder, setTrackingOrder] = useState<ApiOrderDetail | null>(null)
 
   const isFarmer = user?.userType === "farmer"
 
@@ -237,6 +239,12 @@ export default function OrdersPage() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
+      {trackingOrder && (
+        <LiveTrackingModal
+          order={trackingOrder}
+          onClose={() => setTrackingOrder(null)}
+        />
+      )}
       {reviewOrder && (
         <ReviewModal
           order={reviewOrder}
@@ -379,6 +387,15 @@ export default function OrdersPage() {
                                 <MessageCircle className="w-3.5 h-3.5" /> Message Farmer
                               </Button>
                             </Link>
+                          )}
+                          {["confirmed", "shipped"].includes(order.status) && (
+                            <Button
+                              size="sm"
+                              className="gap-1.5 text-xs bg-gradient-to-r from-blue-500 to-indigo-600 hover:opacity-90 text-white shadow-sm"
+                              onClick={() => setTrackingOrder(order)}
+                            >
+                              <Navigation className="w-3.5 h-3.5" /> Track Live
+                            </Button>
                           )}
                           {view === "buyer" && order.status === "delivered" && !alreadyReviewed && (
                             <Button
