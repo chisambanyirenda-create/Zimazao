@@ -13,11 +13,7 @@ router.post("/livestock/scan", requireAuth, async (req: AuthRequest, res): Promi
   }
 
   const ai = new GoogleGenAI({
-    apiKey: process.env.AI_INTEGRATIONS_GEMINI_API_KEY,
-    httpOptions: {
-      apiVersion: "",
-      baseUrl: process.env.AI_INTEGRATIONS_GEMINI_BASE_URL,
-    },
+    apiKey: process.env.GEMINI_API_KEY,
   });
 
   const prompt = `You are an expert veterinarian and livestock disease specialist with deep knowledge of animal diseases common in Zambia and Southern Africa.
