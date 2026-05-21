@@ -39,7 +39,11 @@ const NOTIF_COLOR: Record<Notif["type"], string> = {
   system: "bg-purple-100 text-purple-600",
 }
 
-export function NotificationsBell() {
+interface NotificationsBellProps {
+  onOpen?: () => void
+}
+
+export function NotificationsBell({ onOpen }: NotificationsBellProps) {
   const [notifs, setNotifs] = useState<Notif[]>(DEMO_NOTIFS)
   const [open, setOpen] = useState(false)
 
@@ -49,10 +53,18 @@ export function NotificationsBell() {
   const dismiss = (id: number) => setNotifs((prev) => prev.filter((n) => n.id !== id))
   const markRead = (id: number) => setNotifs((prev) => prev.map((n) => n.id === id ? { ...n, read: true } : n))
 
+  const handleOpenChange = (next: boolean) => {
+    if (next && onOpen) onOpen()
+    setOpen(next)
+  }
+
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
-        <button className="relative p-2 rounded-lg hover:bg-muted transition-colors focus:outline-none" aria-label="Notifications">
+        <button
+          className="relative p-2 rounded-lg hover:bg-muted transition-colors focus:outline-none"
+          aria-label="Notifications"
+        >
           <Bell className="w-5 h-5 text-muted-foreground" />
           {unread > 0 && (
             <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center leading-none">
@@ -61,25 +73,35 @@ export function NotificationsBell() {
           )}
         </button>
       </PopoverTrigger>
-      <PopoverContent align="end" className="w-96 p-0 shadow-2xl border-0 rounded-2xl overflow-hidden">
+      <PopoverContent
+        align="end"
+        sideOffset={8}
+        className="w-[calc(100vw-24px)] max-w-sm p-0 shadow-2xl border border-border/60 rounded-2xl overflow-hidden"
+        style={{ zIndex: 9999 }}
+      >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 bg-gradient-to-r from-primary to-emerald-700 text-white">
+        <div className="flex items-center justify-between px-4 py-3.5 bg-gradient-to-r from-primary to-emerald-700 text-white">
           <div>
-            <h3 className="font-bold text-base">Notifications</h3>
+            <h3 className="font-bold text-sm">Notifications</h3>
             {unread > 0 && <p className="text-white/75 text-xs">{unread} unread</p>}
           </div>
-          {unread > 0 && (
-            <button onClick={markAllRead} className="text-white/80 hover:text-white text-xs underline underline-offset-2 transition-colors">
-              Mark all read
+          <div className="flex items-center gap-3">
+            {unread > 0 && (
+              <button onClick={markAllRead} className="text-white/80 hover:text-white text-xs underline underline-offset-2 transition-colors">
+                Mark all read
+              </button>
+            )}
+            <button onClick={() => setOpen(false)} className="text-white/70 hover:text-white transition-colors">
+              <X className="w-4 h-4" />
             </button>
-          )}
+          </div>
         </div>
 
         {/* List */}
-        <div className="divide-y divide-border max-h-96 overflow-y-auto">
+        <div className="divide-y divide-border max-h-80 overflow-y-auto">
           {notifs.length === 0 ? (
-            <div className="py-12 text-center">
-              <Bell className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
+            <div className="py-10 text-center">
+              <Bell className="w-9 h-9 text-muted-foreground/30 mx-auto mb-3" />
               <p className="text-muted-foreground text-sm">All caught up!</p>
             </div>
           ) : (
@@ -88,11 +110,11 @@ export function NotificationsBell() {
               return (
                 <div
                   key={notif.id}
-                  className={`flex items-start gap-3 px-4 py-3.5 transition-colors group ${!notif.read ? "bg-primary/5 hover:bg-primary/10" : "hover:bg-muted/50"}`}
+                  className={`flex items-start gap-3 px-4 py-3 transition-colors group cursor-pointer ${!notif.read ? "bg-primary/5 hover:bg-primary/10" : "hover:bg-muted/50"}`}
                   onClick={() => markRead(notif.id)}
                 >
-                  <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${NOTIF_COLOR[notif.type]}`}>
-                    <Icon className="w-4 h-4" />
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${NOTIF_COLOR[notif.type]}`}>
+                    <Icon className="w-3.5 h-3.5" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2">
@@ -101,12 +123,12 @@ export function NotificationsBell() {
                       </p>
                       <button
                         onClick={(e) => { e.stopPropagation(); dismiss(notif.id) }}
-                        className="text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                        className="text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity shrink-0 mt-0.5"
                       >
-                        <X className="w-3.5 h-3.5" />
+                        <X className="w-3 h-3" />
                       </button>
                     </div>
-                    <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2">{notif.body}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5 line-clamp-2 leading-relaxed">{notif.body}</p>
                     <div className="flex items-center justify-between mt-1.5">
                       <span className="text-[11px] text-muted-foreground">{notif.time}</span>
                       {notif.href && (
@@ -128,7 +150,7 @@ export function NotificationsBell() {
         </div>
 
         {/* Footer */}
-        <div className="border-t border-border px-4 py-3 bg-muted/30">
+        <div className="border-t border-border px-4 py-2.5 bg-muted/30">
           <Link href="/orders" onClick={() => setOpen(false)}>
             <Button variant="ghost" size="sm" className="w-full text-xs text-muted-foreground gap-1 h-8">
               View all activity <ArrowRight className="w-3 h-3" />

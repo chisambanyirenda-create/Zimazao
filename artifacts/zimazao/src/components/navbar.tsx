@@ -83,7 +83,7 @@ export function Navbar() {
 
           {/* Desktop Right */}
           <div className="hidden lg:flex items-center gap-2 shrink-0">
-            <NotificationsBell />
+            <NotificationsBell onOpen={() => setMobileMenuOpen(false)} />
             {user ? (
               <>
                 {user.userType === "farmer" && (
@@ -151,7 +151,7 @@ export function Navbar() {
 
           {/* Mobile right: notifications + hamburger */}
           <div className="lg:hidden flex items-center gap-1">
-            <NotificationsBell />
+            <NotificationsBell onOpen={() => setMobileMenuOpen(false)} />
             <button
               className="p-2 rounded-lg hover:bg-muted transition-colors"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
