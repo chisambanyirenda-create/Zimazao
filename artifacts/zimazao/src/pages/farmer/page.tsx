@@ -2,48 +2,17 @@ import { useState, useEffect } from "react"
 import { useParams, Link } from "wouter"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
-import { api, type ApiFarmerProfile, type ApiListing } from "@/lib/api"
-
-type FarmerListing = Omit<ApiListing, "farmerId" | "farmerName" | "isActive">
-
-const DEMO_FARMERS: Record<number, ApiFarmerProfile> = {
-  1: {
-    id: 1, name: "John Mwansa", location: "Choma, Southern Province",
-    phone: "+260977123456", createdAt: "2022-03-15T00:00:00.000Z",
-    totalListings: 3,
-    listings: [
-      { id: 1, cropName: "White Maize", price: "450", unit: "50kg bag", quantity: "500", location: "Choma, Southern", category: "cereals", description: "Premium grade white maize, well dried and clean. Stored in certified grain silos.", imageUrl: null, createdAt: new Date().toISOString() },
-      { id: 7, cropName: "Sorghum", price: "315", unit: "50kg bag", quantity: "600", location: "Choma, Southern", category: "cereals", description: "Traditional red sorghum, drought resistant variety ideal for brewing and food.", imageUrl: null, createdAt: new Date().toISOString() },
-      { id: 9, cropName: "Sunflower Seeds", price: "280", unit: "25kg bag", quantity: "150", location: "Choma, Southern", category: "oilseeds", description: "High oil-content sunflower seeds, freshly harvested.", imageUrl: null, createdAt: new Date().toISOString() },
-    ] as FarmerListing[],
-  },
-  2: {
-    id: 2, name: "Mary Banda", location: "Chipata, Eastern Province",
-    phone: "+260966234567", createdAt: "2021-07-20T00:00:00.000Z",
-    totalListings: 2,
-    listings: [
-      { id: 2, cropName: "Groundnuts (Shelled)", price: "380", unit: "25kg bag", quantity: "200", location: "Chipata, Eastern", category: "legumes", description: "Grade A shelled groundnuts, freshly processed and ready for export.", imageUrl: null, createdAt: new Date().toISOString() },
-      { id: 3, cropName: "Soybeans", price: "520", unit: "50kg bag", quantity: "300", location: "Chipata, Eastern", category: "legumes", description: "High protein soybeans suitable for oil extraction and animal feed.", imageUrl: null, createdAt: new Date().toISOString() },
-    ] as FarmerListing[],
-  },
-  3: {
-    id: 3, name: "Peter Phiri", location: "Mkushi, Central Province",
-    phone: "+260955345678", createdAt: "2023-01-10T00:00:00.000Z",
-    totalListings: 2,
-    listings: [
-      { id: 5, cropName: "Cassava (Fresh)", price: "150", unit: "50kg bag", quantity: "400", location: "Mkushi, Central", category: "tubers", description: "Fresh cassava roots, same-day delivery available in Central Province.", imageUrl: null, createdAt: new Date().toISOString() },
-      { id: 6, cropName: "Sweet Potatoes", price: "120", unit: "25kg bag", quantity: "250", location: "Mkushi, Central", category: "tubers", description: "Orange-fleshed sweet potatoes, high nutrition, great for baby food.", imageUrl: null, createdAt: new Date().toISOString() },
-    ] as FarmerListing[],
-  },
-}
+import { api, type ApiFarmerProfile, type ApiListing, type ApiFarmerReviews } from "@/lib/api"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import {
   MapPin, Phone, User, Package, ArrowLeft, Loader2, AlertCircle,
   CalendarDays, MessageCircle, Star, CheckCircle2, ShoppingCart,
-  TrendingUp, Award, Shield, Leaf, ExternalLink, ChevronRight,
+  TrendingUp, Award, Shield, Leaf, ChevronRight,
 } from "lucide-react"
+
+type FarmerListing = Omit<ApiListing, "farmerId" | "farmerName" | "isActive">
 
 const CROP_EMOJI: Record<string, string> = {
   cereals: "🌽", legumes: "🫘", tubers: "🥔", oilseeds: "🌻",
@@ -84,23 +53,37 @@ function getAvatarColor(id: number) {
   return colors[id % colors.length]
 }
 
+function StarRow({ rating, size = "sm" }: { rating: number; size?: "sm" | "md" }) {
+  const cls = size === "md" ? "w-5 h-5" : "w-3.5 h-3.5"
+  return (
+    <div className="flex gap-0.5">
+      {[1, 2, 3, 4, 5].map((n) => (
+        <Star key={n} className={`${cls} ${n <= rating ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground/30 fill-muted-foreground/10"}`} />
+      ))}
+    </div>
+  )
+}
+
 export default function FarmerProfilePage() {
   const params = useParams<{ id: string }>()
   const farmerId = parseInt(params.id ?? "", 10)
   const [farmer, setFarmer] = useState<ApiFarmerProfile | null>(null)
+  const [reviews, setReviews] = useState<ApiFarmerReviews | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
-  const [activeTab, setActiveTab] = useState<"listings" | "about">("listings")
+  const [activeTab, setActiveTab] = useState<"listings" | "reviews" | "about">("listings")
 
   useEffect(() => {
     if (isNaN(farmerId)) { setError(true); setLoading(false); return }
-    api.farmers.get(farmerId)
-      .then(setFarmer)
-      .catch(() => {
-        const demo = DEMO_FARMERS[farmerId] ?? DEMO_FARMERS[1]
-        if (demo) setFarmer(demo)
-        else setError(true)
+    Promise.all([
+      api.farmers.get(farmerId),
+      api.reviews.forFarmer(farmerId),
+    ])
+      .then(([farmerData, reviewData]) => {
+        setFarmer(farmerData)
+        setReviews(reviewData)
       })
+      .catch(() => setError(true))
       .finally(() => setLoading(false))
   }, [farmerId])
 
@@ -141,6 +124,8 @@ export default function FarmerProfilePage() {
     ? Math.round(farmer.listings.reduce((s, l) => s + parseFloat(l.price), 0) / farmer.listings.length)
     : 0
   const categories = [...new Set(farmer.listings.map((l) => l.category))]
+  const avgRating = reviews?.averageRating ?? 0
+  const totalReviews = reviews?.totalReviews ?? 0
 
   return (
     <div className="min-h-screen bg-background">
@@ -148,25 +133,21 @@ export default function FarmerProfilePage() {
 
       {/* Hero Banner */}
       <div className="relative bg-gradient-to-br from-primary via-emerald-700 to-green-900 overflow-hidden">
-        {/* Decorative pattern */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-0 right-0 w-96 h-96 bg-white rounded-full -translate-y-1/2 translate-x-1/2" />
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-white rounded-full translate-y-1/2 -translate-x-1/2" />
         </div>
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 pb-0">
-          {/* Back link */}
           <Link href="/marketplace" className="inline-flex items-center gap-1.5 text-white/70 hover:text-white text-sm mb-6 transition-colors">
             <ArrowLeft className="w-4 h-4" /> Back to Marketplace
           </Link>
 
           <div className="flex flex-col md:flex-row items-start gap-6 pb-8">
-            {/* Avatar */}
             <div className={`w-24 h-24 md:w-28 md:h-28 bg-gradient-to-br ${avatarGradient} rounded-2xl flex items-center justify-center shrink-0 shadow-xl border-4 border-white/20`}>
               <span className="text-3xl md:text-4xl font-bold text-white">{initials}</span>
             </div>
 
-            {/* Name & Info */}
             <div className="flex-1">
               <div className="flex flex-wrap items-center gap-2 mb-1">
                 <h1 className="text-2xl md:text-3xl font-bold text-white">{farmer.name}</h1>
@@ -175,11 +156,17 @@ export default function FarmerProfilePage() {
                 </Badge>
               </div>
               {farmer.location && (
-                <div className="flex items-center gap-1.5 text-white/75 text-sm mb-3">
+                <div className="flex items-center gap-1.5 text-white/75 text-sm mb-2">
                   <MapPin className="w-4 h-4" />{farmer.location}
                 </div>
               )}
-              {/* Category tags */}
+              {avgRating > 0 && (
+                <div className="flex items-center gap-2 mb-3">
+                  <StarRow rating={Math.round(avgRating)} size="sm" />
+                  <span className="text-white font-bold text-sm">{avgRating.toFixed(1)}</span>
+                  <span className="text-white/60 text-xs">({totalReviews} {totalReviews === 1 ? "review" : "reviews"})</span>
+                </div>
+              )}
               <div className="flex flex-wrap gap-2">
                 {categories.map((cat) => (
                   <Badge key={cat} className="bg-white/15 text-white border-white/25 text-xs capitalize gap-1">
@@ -189,7 +176,6 @@ export default function FarmerProfilePage() {
               </div>
             </div>
 
-            {/* Contact Buttons — desktop */}
             <div className="hidden md:flex flex-col gap-2 shrink-0">
               <Link href={`/messages?farmer=${farmer.id}&name=${encodeURIComponent(farmer.name)}`}>
                 <Button className="bg-white text-primary hover:bg-white/90 font-semibold gap-2 w-full shadow-lg">
@@ -209,9 +195,9 @@ export default function FarmerProfilePage() {
           {/* Stats Row */}
           <div className="flex gap-px bg-white/10 rounded-t-2xl overflow-hidden">
             {[
-              { label: "Active Listings", value: farmer.totalListings, icon: Package },
+              { label: "Listings", value: farmer.totalListings, icon: Package },
               { label: "Avg. Price", value: `K${avgPrice.toLocaleString()}`, icon: TrendingUp },
-              { label: "Member Since", value: new Date(farmer.createdAt).getFullYear(), icon: CalendarDays },
+              { label: avgRating > 0 ? `${avgRating.toFixed(1)} Rating` : "No Rating Yet", value: avgRating > 0 ? `${totalReviews} reviews` : "Be first!", icon: Star },
               { label: "Years Active", value: memberYears > 0 ? `${memberYears}yr` : "<1yr", icon: Award },
             ].map((stat) => (
               <div key={stat.label} className="flex-1 bg-white/5 px-4 py-4 text-center hover:bg-white/10 transition-colors">
@@ -249,12 +235,13 @@ export default function FarmerProfilePage() {
             <div className="flex gap-1 mb-6 border-b border-border">
               {([
                 { key: "listings", label: `Listings (${farmer.totalListings})`, icon: Package },
+                { key: "reviews", label: `Reviews (${totalReviews})`, icon: Star },
                 { key: "about", label: "About", icon: User },
               ] as const).map((tab) => (
                 <button
                   key={tab.key}
                   onClick={() => setActiveTab(tab.key)}
-                  className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-all -mb-px ${
+                  className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-all -mb-px whitespace-nowrap ${
                     activeTab === tab.key
                       ? "border-primary text-primary"
                       : "border-transparent text-muted-foreground hover:text-foreground"
@@ -312,10 +299,6 @@ export default function FarmerProfilePage() {
                                 <p className="text-xl font-bold text-primary">K{parseFloat(listing.price).toLocaleString()}</p>
                                 <p className="text-xs text-muted-foreground">per {listing.unit}</p>
                               </div>
-                              <div className="flex items-center gap-0.5 bg-yellow-50 px-2 py-1 rounded-lg">
-                                <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                                <span className="text-xs font-bold">4.{(listing.id % 5) + 4}</span>
-                              </div>
                             </div>
                             <Link href={`/listing/${listing.id}`} className="mt-auto">
                               <Button className="w-full gap-2 h-9 text-sm bg-gradient-to-r from-primary to-emerald-600 hover:opacity-90">
@@ -329,6 +312,83 @@ export default function FarmerProfilePage() {
                   </div>
                 )}
               </>
+            )}
+
+            {/* Reviews Tab */}
+            {activeTab === "reviews" && (
+              <div className="space-y-5">
+                {/* Rating summary */}
+                {totalReviews > 0 ? (
+                  <>
+                    <Card className="border-0 shadow-sm">
+                      <CardContent className="p-5">
+                        <div className="flex flex-col sm:flex-row items-center gap-6">
+                          <div className="text-center shrink-0">
+                            <p className="text-6xl font-bold text-foreground">{avgRating.toFixed(1)}</p>
+                            <StarRow rating={Math.round(avgRating)} size="md" />
+                            <p className="text-sm text-muted-foreground mt-1">{totalReviews} {totalReviews === 1 ? "review" : "reviews"}</p>
+                          </div>
+                          <div className="flex-1 w-full space-y-2">
+                            {[5, 4, 3, 2, 1].map((star) => {
+                              const count = reviews?.reviews.filter((r) => r.rating === star).length ?? 0
+                              const pct = totalReviews > 0 ? Math.round((count / totalReviews) * 100) : 0
+                              return (
+                                <div key={star} className="flex items-center gap-3">
+                                  <div className="flex items-center gap-1 w-14 shrink-0">
+                                    <span className="text-xs font-medium text-muted-foreground">{star}</span>
+                                    <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                                  </div>
+                                  <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+                                    <div
+                                      className="h-full bg-yellow-400 rounded-full transition-all"
+                                      style={{ width: `${pct}%` }}
+                                    />
+                                  </div>
+                                  <span className="text-xs text-muted-foreground w-8 text-right shrink-0">{count}</span>
+                                </div>
+                              )
+                            })}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    {reviews?.reviews.map((review) => (
+                      <Card key={review.id} className="border-0 shadow-sm hover:shadow-md transition-shadow">
+                        <CardContent className="p-5">
+                          <div className="flex items-start gap-3">
+                            <div className="w-9 h-9 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
+                              <span className="text-xs font-bold text-primary">
+                                {review.buyerName ? getInitials(review.buyerName) : "?"}
+                              </span>
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center justify-between gap-2 flex-wrap">
+                                <p className="font-semibold text-sm">{review.buyerName ?? "Anonymous"}</p>
+                                <p className="text-xs text-muted-foreground">
+                                  {new Date(review.createdAt).toLocaleDateString("en-ZM", { day: "numeric", month: "short", year: "numeric" })}
+                                </p>
+                              </div>
+                              <StarRow rating={review.rating} size="sm" />
+                              {review.comment && (
+                                <p className="text-sm text-muted-foreground mt-2 leading-relaxed">"{review.comment}"</p>
+                              )}
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </>
+                ) : (
+                  <div className="text-center py-20">
+                    <div className="w-20 h-20 bg-yellow-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Star className="w-10 h-10 text-yellow-300" />
+                    </div>
+                    <p className="text-xl font-semibold text-foreground mb-1">No reviews yet</p>
+                    <p className="text-muted-foreground">Be the first to leave a review after ordering from {farmer.name.split(" ")[0]}.</p>
+                  </div>
+                )}
+              </div>
             )}
 
             {/* About Tab */}
@@ -426,8 +486,12 @@ export default function FarmerProfilePage() {
 
                 <div className="border-t border-border pt-3 space-y-2.5 text-sm text-muted-foreground">
                   <div className="flex items-center justify-between">
-                    <span>Response time</span>
-                    <span className="text-foreground font-medium text-green-600">Usually fast</span>
+                    <span>Rating</span>
+                    <span className="flex items-center gap-1 font-medium text-foreground">
+                      {avgRating > 0 ? (
+                        <><Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" /> {avgRating.toFixed(1)} / 5</>
+                      ) : "No reviews yet"}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span>Member since</span>
@@ -477,52 +541,16 @@ export default function FarmerProfilePage() {
                       <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted transition-colors group cursor-pointer">
                         <span className="text-xl">{CROP_EMOJI[listing.category] ?? "🌾"}</span>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-foreground truncate group-hover:text-primary transition-colors">{listing.cropName}</p>
+                          <p className="text-sm font-medium truncate group-hover:text-primary transition-colors">{listing.cropName}</p>
                           <p className="text-xs text-muted-foreground">K{parseFloat(listing.price).toLocaleString()} / {listing.unit}</p>
                         </div>
-                        <ChevronRight className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
+                        <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
                       </div>
                     </Link>
                   ))}
-                  {farmer.listings.length > 4 && (
-                    <p className="text-xs text-center text-muted-foreground pt-1">+{farmer.listings.length - 4} more listings above</p>
-                  )}
                 </CardContent>
               </Card>
             )}
-
-            {/* Safety tip */}
-            <Card className="border-0 shadow-sm bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800">
-              <CardContent className="p-4">
-                <div className="flex items-start gap-2">
-                  <Shield className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
-                  <div>
-                    <p className="text-xs font-semibold text-amber-800 dark:text-amber-300 mb-0.5">Stay Safe</p>
-                    <p className="text-xs text-amber-700 dark:text-amber-400">Always inspect livestock or produce before completing payment. Use Zimazao's in-app messaging for a record of all agreements.</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-
-        {/* Similar Farmers CTA */}
-        <div className="mt-12 rounded-2xl bg-gradient-to-r from-primary to-emerald-700 text-white p-8 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div>
-            <h3 className="text-xl font-bold mb-1">Looking for more sellers?</h3>
-            <p className="text-white/75">Browse hundreds of verified farmers across all 10 provinces of Zambia.</p>
-          </div>
-          <div className="flex gap-3">
-            <Link href="/marketplace">
-              <Button className="bg-white text-primary hover:bg-white/90 font-bold gap-2">
-                <ExternalLink className="w-4 h-4" /> Browse Marketplace
-              </Button>
-            </Link>
-            <Link href="/livestock">
-              <Button className="bg-white/15 hover:bg-white/25 text-white border border-white/30 gap-2">
-                🐄 Livestock
-              </Button>
-            </Link>
           </div>
         </div>
       </main>
