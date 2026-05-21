@@ -15,7 +15,6 @@ import sponsorsRouter from "./sponsors";
 import paymentsRouter from "./payments";
 import adminRouter from "./admin";
 import webhooksRouter from "./webhooks";
-import setupRouter from "./setup";
 
 const router: IRouter = Router();
 
@@ -35,6 +34,5 @@ router.use(sponsorsRouter);
 router.use(paymentsRouter);
 router.use(adminRouter);
 router.use(webhooksRouter);
-router.use(setupRouter);
 
 export default router;
