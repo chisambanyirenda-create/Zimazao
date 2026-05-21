@@ -1,0 +1,74 @@
+I am rebuilding my Next.js farming app called Zimazao from scratch with a proper backend. Here is everything to build:
+
+1. TECH STACK
+- Frontend: Next.js (already built by v0, keep all existing pages)
+- Backend: Node.js + Express in a /backend folder
+- Database: Supabase (PostgreSQL) — use the connection string I will add to Secrets
+- Image uploads: Cloudinary
+- AI Disease Detection: Google Gemini API
+- Payments: Flutterwave (Zambia — MTN Mobile Money + Airtel Money)
+- Currency: Zambian Kwacha (ZMW) everywhere
+
+2. SUPABASE DATABASE TABLES
+Create these tables in Supabase:
+- users: id, name, email, password (bcrypt hashed), phone, location, province, userType (farmer/buyer), plan (free/pro), scanCount, listingCount, isBanned, createdAt
+- listings: id, farmerId, cropName, price, unit, quantity, location, category, description, imageUrl, isActive, isFeatured, isApproved, viewCount, createdAt
+- orders: id, buyerId, listingId, farmerId, quantity, totalPrice, commission, farmerPayout, status, createdAt
+- messages: id, senderId, receiverId, content, isRead, createdAt
+- disease_scans: id, userId, imageUrl, cropName, diseaseFound, confidence, treatment, prevention, createdAt
+- subscriptions: id, userId, plan, startDate, endDate, status, createdAt
+- payments: id, userId, amount, currency, method, purpose, status, flutterwaveRef, createdAt
+- sponsored_products: id, companyName, productName, productImage, description, price, targetDisease, contactNumber, isActive, impressions, createdAt
+- announcements: id, title, message, targetAudience, scheduledAt, sentAt, createdAt
+- app_settings: id, key, value, updatedAt
+
+3. API ENDPOINTS
+Auth:
+- POST /api/auth/register
+- POST /api/auth/login
+- GET /api/auth/me
+
+Listings:
+- GET /api/listings (public, paginated, filterable)
+- POST /api/listings (farmers only, enforce free plan limit of 3)
+- GET /api/listings/:id
+- PUT /api/listings/:id
+- DELETE /api/listings/:id
+
+Disease Scanner:
+- POST /api/disease/scan (upload image → Gemini AI diagnoses → return disease, confidence, treatment, prevention + sponsored products for that disease)
+- Enforce free plan limit of 5 scans per month
+
+Orders:
+- POST /api/orders (auto calculate 3% commission)
+- GET /api/orders/my
+
+Payments:
+- POST /api/payments/initiate (Flutterwave)
+- POST /api/payments/verify
+
+Subscriptions:
+- POST /api/subscription/upgrade
+- GET /api/subscription/status
+
+Prices:
+- GET /api/prices (return current crop market prices)
+
+4. FRONTEND CONNECTIONS
+- Connect all existing pages to real API data
+- Fix dashboard number glitch — use skeleton loaders, fallback to 0, animate count up
+- Enforce plan limits in UI (show upgrade prompt when free limit reached)
+- Show "Pro Farmer" badge on pro accounts
+- Add sponsored products in disease scan results with "Sponsored" label
+
+5. SECRETS TO ADD IN REPLIT
+SUPABASE_DATABASE_URL = (your postgresql:// connection string)
+GEMINI_API_KEY = (your Google AI Studio key)
+CLOUDINARY_CLOUD_NAME = (your cloud name)
+CLOUDINARY_API_KEY = (your key)
+CLOUDINARY_API_SECRET = (your secret)
+FLUTTERWAVE_PUBLIC_KEY = (your test public key)
+FLUTTERWAVE_SECRET_KEY = (your test secret key)
+JWT_SECRET = (any long random string you make up)
+
+Important: Use ZMW currency. Keep all existing v0 frontend pages. Fix the number glitch first. Use test mode for Flutterwave.
