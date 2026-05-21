@@ -9,26 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
-import { Leaf, Eye, EyeOff, Loader2, ShieldCheck, User } from "lucide-react"
-
-const QUICK_LOGINS = [
-  {
-    label: "Admin",
-    icon: ShieldCheck,
-    email: "admin@gmail.com",
-    password: "zimazao1234",
-    color: "bg-amber-50 border-amber-200 text-amber-800 hover:bg-amber-100",
-    badge: "bg-amber-100 text-amber-700",
-  },
-  {
-    label: "Regular User",
-    icon: User,
-    email: "user@zimazao.zm",
-    password: "zimazao1234",
-    color: "bg-green-50 border-green-200 text-green-800 hover:bg-green-100",
-    badge: "bg-green-100 text-green-700",
-  },
-]
+import { Leaf, Eye, EyeOff, Loader2 } from "lucide-react"
 
 function LoginForm() {
   const [, setLocation] = useLocation()
@@ -59,11 +40,6 @@ function LoginForm() {
     } catch {
       setError("Something went wrong. Please try again.")
     }
-  }
-
-  const fillQuickLogin = (email: string, password: string) => {
-    setFormData({ email, password })
-    setError("")
   }
 
   return (
@@ -123,16 +99,6 @@ function LoginForm() {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" className="rounded border-border" />
-                    <span className="text-sm text-muted-foreground">Remember me</span>
-                  </label>
-                  <Link href="/forgot-password" className="text-sm text-primary hover:underline">
-                    Forgot password?
-                  </Link>
-                </div>
-
                 <Button type="submit" className="w-full h-12 text-lg" disabled={isLoading}>
                   {isLoading ? (
                     <>
@@ -151,34 +117,6 @@ function LoginForm() {
                   </Link>
                 </p>
               </form>
-            </CardContent>
-          </Card>
-
-          <Card className="border-dashed">
-            <CardContent className="pt-4 pb-4">
-              <p className="text-xs text-muted-foreground text-center mb-3 font-medium uppercase tracking-wide">
-                Quick Login (Test Accounts)
-              </p>
-              <div className="grid grid-cols-2 gap-3">
-                {QUICK_LOGINS.map(({ label, icon: Icon, email, password, color, badge }) => (
-                  <button
-                    key={label}
-                    type="button"
-                    onClick={() => fillQuickLogin(email, password)}
-                    className={`flex flex-col items-start gap-1.5 p-3 rounded-lg border text-left transition-colors ${color}`}
-                  >
-                    <span className={`flex items-center gap-1.5 text-xs font-semibold px-2 py-0.5 rounded-full ${badge}`}>
-                      <Icon className="w-3 h-3" />
-                      {label}
-                    </span>
-                    <span className="text-xs font-mono break-all">{email}</span>
-                    <span className="text-xs font-mono text-muted-foreground">{password}</span>
-                  </button>
-                ))}
-              </div>
-              <p className="text-xs text-muted-foreground text-center mt-3">
-                Click a card to fill the form, then press Sign In
-              </p>
             </CardContent>
           </Card>
         </div>
