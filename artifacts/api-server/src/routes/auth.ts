@@ -1,9 +1,11 @@
 import { Router, type IRouter } from "express";
+import type { RequestHandler } from "express";
 import bcrypt from "bcryptjs";
 import { db, usersTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
 import { signToken } from "../lib/jwt";
 import { logger } from "../lib/logger";
+import { requireAuth, type AuthRequest } from "../middlewares/auth";
 
 const router: IRouter = Router();
 
@@ -90,5 +92,42 @@ router.post("/auth/login", async (req, res): Promise<void> => {
     },
   });
 });
+
+router.put("/users/profile", requireAuth as RequestHandler, (async (req: AuthRequest, res) => {
+  const userId = req.user!.userId;
+  const { name, phone, location, oldPassword, newPassword } = req.body;
+
+  const [user] = await db.select().from(usersTable).where(eq(usersTable.id, userId));
+  if (!user) { res.status(404).json({ error: "User not found" }); return; }
+
+  const updates: Partial<typeof usersTable.$inferInsert> = {};
+
+  if (name !== undefined) {
+    if (!name.trim()) { res.status(400).json({ error: "Name cannot be empty" }); return; }
+    updates.name = name.trim();
+  }
+  if (phone !== undefined) updates.phone = phone || null;
+  if (location !== undefined) updates.location = location || null;
+
+  if (newPassword) {
+    if (!oldPassword) { res.status(400).json({ error: "Old password is required to change password" }); return; }
+    const valid = await bcrypt.compare(oldPassword, user.password);
+    if (!valid) { res.status(400).json({ error: "Current password is incorrect" }); return; }
+    updates.password = await bcrypt.hash(newPassword, 10);
+  }
+
+  const [updated] = await db.update(usersTable).set(updates).where(eq(usersTable.id, userId)).returning();
+
+  res.json({
+    id: updated.id,
+    name: updated.name,
+    email: updated.email,
+    phone: updated.phone,
+    location: updated.location,
+    userType: updated.userType,
+    isAdmin: updated.isAdmin,
+    createdAt: updated.createdAt,
+  });
+}) as RequestHandler);
 
 export default router;

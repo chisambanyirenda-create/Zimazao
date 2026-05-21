@@ -8,3 +8,4 @@ export * from "./sponsored_products";
 export * from "./payments";
 export * from "./announcements";
 export * from "./app_settings";
+export * from "./reviews";

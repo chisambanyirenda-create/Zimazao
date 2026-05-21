@@ -13,6 +13,7 @@ import messagesRouter from "./messages";
 import subscriptionRouter from "./subscription";
 import sponsorsRouter from "./sponsors";
 import paymentsRouter from "./payments";
+import reviewsRouter from "./reviews";
 import webhooksRouter from "./webhooks";
 
 const router: IRouter = Router();
@@ -31,6 +32,7 @@ router.use(messagesRouter);
 router.use(subscriptionRouter);
 router.use(sponsorsRouter);
 router.use(paymentsRouter);
+router.use(reviewsRouter);
 router.use(webhooksRouter);
 
 export default router;

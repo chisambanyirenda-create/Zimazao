@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { NotificationsBell } from "@/components/notifications-bell"
 import {
   Menu, X, Leaf, User, LogOut, ShoppingBag, Home,
-  Camera, BarChart3, MessageCircle, CalendarDays, Package, Beef, Stethoscope,
+  Camera, BarChart3, MessageCircle, CalendarDays, Package, Beef, Stethoscope, Settings,
 } from "lucide-react"
 import {
   DropdownMenu,
@@ -104,6 +104,9 @@ export function Navbar() {
                     <DropdownMenuItem asChild>
                       <Link href="/messages"><MessageCircle className="w-4 h-4 mr-2 text-primary" /> Messages</Link>
                     </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/profile"><Settings className="w-4 h-4 mr-2 text-primary" /> My Profile</Link>
+                    </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={logout} className="text-destructive focus:text-destructive">
                       <LogOut className="w-4 h-4 mr-2" /> Logout
@@ -167,6 +170,7 @@ export function Navbar() {
                       { href: "/dashboard", label: "Dashboard", icon: BarChart3 },
                       { href: "/orders", label: "My Orders", icon: Package },
                       { href: "/messages", label: "Messages", icon: MessageCircle },
+                      { href: "/profile", label: "My Profile", icon: Settings },
                     ].map((item) => (
                       <Link key={item.href} href={item.href} className="flex items-center gap-3 py-2.5 text-foreground hover:text-primary transition-colors" onClick={() => setMobileMenuOpen(false)}>
                         <item.icon className="w-4 h-4" />{item.label}

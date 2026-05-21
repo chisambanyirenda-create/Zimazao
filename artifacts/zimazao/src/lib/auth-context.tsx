@@ -9,6 +9,7 @@ interface User {
   location: string
   userType: "farmer" | "buyer"
   avatar?: string
+  createdAt?: string
 }
 
 interface AuthContextType {
@@ -17,6 +18,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<boolean>
   register: (userData: Omit<User, "id"> & { password: string }) => Promise<boolean>
   logout: () => void
+  updateProfile: (data: { name?: string; phone?: string; location?: string; oldPassword?: string; newPassword?: string }) => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -29,6 +31,7 @@ function apiUserToUser(u: ApiUser): User {
     phone: u.phone ?? "",
     location: u.location ?? "",
     userType: u.userType,
+    createdAt: u.createdAt,
   }
 }
 
@@ -94,8 +97,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem("zimazao_token")
   }
 
+  const updateProfile = async (data: {
+    name?: string
+    phone?: string
+    location?: string
+    oldPassword?: string
+    newPassword?: string
+  }) => {
+    const updated = await api.auth.updateProfile(data)
+    const u = apiUserToUser(updated)
+    setUser(u)
+    localStorage.setItem("zimazao_user", JSON.stringify(u))
+  }
+
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, isLoading, login, register, logout, updateProfile }}>
       {children}
     </AuthContext.Provider>
   )

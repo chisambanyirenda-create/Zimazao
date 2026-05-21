@@ -42,6 +42,17 @@ export const api = {
         method: "POST",
         body: JSON.stringify(data),
       }),
+    updateProfile: (data: {
+      name?: string;
+      phone?: string;
+      location?: string;
+      oldPassword?: string;
+      newPassword?: string;
+    }) =>
+      request<ApiUser>("/users/profile", {
+        method: "PUT",
+        body: JSON.stringify(data),
+      }),
   },
   listings: {
     list: (params?: { category?: string; location?: string; search?: string }) => {
@@ -73,10 +84,16 @@ export const api = {
   },
   orders: {
     list: () => request<ApiOrderDetail[]>("/orders"),
+    farmerOrders: () => request<ApiOrderDetail[]>("/orders/farmer-orders"),
     create: (data: { listingId: number; quantity: string; totalPrice: number }) =>
       request<ApiOrder>("/orders", {
         method: "POST",
         body: JSON.stringify(data),
+      }),
+    updateStatus: (id: number, status: string) =>
+      request<ApiOrder>(`/orders/${id}/status`, {
+        method: "PATCH",
+        body: JSON.stringify({ status }),
       }),
   },
   messages: {
@@ -144,23 +161,14 @@ export const api = {
       }),
     history: () => request<ApiPayment[]>("/payments/history"),
   },
-  admin: {
-    revenue: () => request<any>("/admin/revenue"),
-    sponsors: {
-      list: () => request<ApiSponsoredProduct[]>("/admin/sponsors"),
-      create: (data: Omit<ApiSponsoredProduct, "id" | "createdAt" | "isActive">) =>
-        request<ApiSponsoredProduct>("/admin/sponsors", {
-          method: "POST",
-          body: JSON.stringify(data),
-        }),
-      update: (id: number, data: Partial<ApiSponsoredProduct>) =>
-        request<ApiSponsoredProduct>(`/admin/sponsors/${id}`, {
-          method: "PUT",
-          body: JSON.stringify(data),
-        }),
-      delete: (id: number) =>
-        request<{ success: boolean }>(`/admin/sponsors/${id}`, { method: "DELETE" }),
-    },
+  reviews: {
+    forFarmer: (farmerId: number) =>
+      request<ApiFarmerReviews>(`/reviews/farmer/${farmerId}`),
+    create: (data: { orderId: number; farmerId: number; rating: number; comment?: string }) =>
+      request<ApiReview>("/reviews", {
+        method: "POST",
+        body: JSON.stringify(data),
+      }),
   },
 };
 
@@ -219,6 +227,7 @@ export interface ApiOrderDetail extends ApiOrder {
   location: string | null;
   imageUrl: string | null;
   farmerName: string | null;
+  buyerName?: string | null;
   farmerId: number | null;
 }
 
@@ -229,6 +238,23 @@ export interface ApiMessage {
   receiverId: number;
   content: string;
   createdAt: string;
+}
+
+export interface ApiReview {
+  id: number;
+  orderId: number;
+  buyerId: number;
+  farmerId: number;
+  rating: number;
+  comment: string | null;
+  createdAt: string;
+  buyerName?: string | null;
+}
+
+export interface ApiFarmerReviews {
+  reviews: ApiReview[];
+  averageRating: number;
+  totalReviews: number;
 }
 
 export interface ApiLivestockScanResult {
