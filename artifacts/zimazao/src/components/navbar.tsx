@@ -179,9 +179,13 @@ export function Navbar() {
 
       {/* ── Mobile slide-in panel (z-1000) ── */}
       <div
-        className={`fixed inset-y-0 right-0 z-[1000] w-[85%] max-w-sm bg-card shadow-2xl flex flex-col overflow-y-auto transition-transform duration-300 ease-in-out ${
+        className={`fixed inset-y-0 right-0 z-[1000] w-[85%] max-w-sm flex flex-col overflow-y-auto transition-transform duration-300 ease-in-out ${
           mobileMenuOpen ? "translate-x-0" : "translate-x-full"
         }`}
+        style={{
+          backgroundColor: "white",
+          boxShadow: "-8px 0 40px rgba(0,0,0,0.2), -2px 0 12px rgba(0,0,0,0.1)",
+        }}
       >
         {/* Panel header */}
         <div className="flex items-center justify-between px-4 py-4 border-b border-border shrink-0">

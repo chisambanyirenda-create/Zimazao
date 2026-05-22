@@ -93,8 +93,12 @@ export function NotificationsBell({ onOpen }: NotificationsBellProps) {
 
           {/* Notification panel — z-1000, slides in from top-right */}
           <div
-            className="fixed top-0 right-0 z-[1000] h-full w-full max-w-sm bg-card shadow-2xl flex flex-col border-l border-border"
-            style={{ animation: "slideInRight 0.2s ease-out" }}
+            className="fixed top-0 right-0 z-[1000] h-full w-full max-w-sm flex flex-col border-l border-border"
+            style={{
+              animation: "slideInRight 0.2s ease-out",
+              backgroundColor: "white",
+              boxShadow: "-8px 0 40px rgba(0,0,0,0.2), -2px 0 12px rgba(0,0,0,0.1)",
+            }}
           >
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-4 bg-gradient-to-r from-primary to-emerald-700 text-white shrink-0">
