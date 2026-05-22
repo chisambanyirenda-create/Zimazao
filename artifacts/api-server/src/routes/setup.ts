@@ -104,6 +104,14 @@ router.post("/setup", async (req, res): Promise<void> => {
     `);
     steps.push("Tables and enums created");
 
+    // Safe column additions (idempotent)
+    await db.execute(sql`
+      ALTER TABLE messages ADD COLUMN IF NOT EXISTS is_read BOOLEAN NOT NULL DEFAULT false;
+      ALTER TABLE messages ADD COLUMN IF NOT EXISTS related_order_id INTEGER;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS wallet_balance NUMERIC(12,2) NOT NULL DEFAULT 0;
+    `);
+    steps.push("Schema columns migrated");
+
     await db.execute(sql`
       INSERT INTO app_settings (key, value) VALUES
         ('commission_rate','3'),('pro_price_zmw','150'),

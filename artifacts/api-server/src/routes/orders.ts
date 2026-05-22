@@ -1,5 +1,5 @@
 import { Router, type IRouter } from "express";
-import { db, ordersTable, listingsTable, usersTable } from "@workspace/db";
+import { db, ordersTable, listingsTable, usersTable, messagesTable } from "@workspace/db";
 import { eq, desc, and } from "drizzle-orm";
 import { requireAuth, type AuthRequest } from "../middlewares/auth";
 import type { RequestHandler } from "express";
@@ -50,15 +50,22 @@ router.post("/orders", requireAuth as RequestHandler, (async (req: AuthRequest, 
   const price = parseFloat(String(totalPrice));
   const commission = parseFloat((price * COMMISSION_RATE).toFixed(2));
 
-  // Check buyer wallet balance
   const buyerId = req.user!.userId;
-  const [buyer] = await db.select({ walletBalance: usersTable.walletBalance }).from(usersTable).where(eq(usersTable.id, buyerId));
+  const [buyer] = await db
+    .select({ walletBalance: usersTable.walletBalance, name: usersTable.name })
+    .from(usersTable)
+    .where(eq(usersTable.id, buyerId));
+
   if (!buyer || buyer.walletBalance < Math.round(price)) {
-    res.status(402).json({ error: `Insufficient wallet balance. You have K${buyer?.walletBalance?.toLocaleString() ?? 0}, need K${Math.round(price).toLocaleString()}.` }); return;
+    res.status(402).json({
+      error: `Insufficient wallet balance. You have K${buyer?.walletBalance?.toLocaleString() ?? 0}, need K${Math.round(price).toLocaleString()}.`,
+    }); return;
   }
 
-  // Deduct from buyer wallet
-  await db.update(usersTable).set({ walletBalance: buyer.walletBalance - Math.round(price) }).where(eq(usersTable.id, buyerId));
+  await db
+    .update(usersTable)
+    .set({ walletBalance: buyer.walletBalance - Math.round(price) })
+    .where(eq(usersTable.id, buyerId));
 
   const [order] = await db.insert(ordersTable).values({
     buyerId,
@@ -69,8 +76,25 @@ router.post("/orders", requireAuth as RequestHandler, (async (req: AuthRequest, 
     status: "pending",
   }).returning();
 
-  req.log.info({ orderId: order.id, commission, buyerId, deducted: price }, "Order created, wallet deducted");
-  res.status(201).json({ ...order, farmerPayout: price - commission });
+  // Auto-send order notification message to the farmer
+  const autoMsg =
+    `📦 New Order #${order.id}\n\n` +
+    `Crop: ${listing.cropName}\n` +
+    `Quantity: ${quantity} ${listing.unit}(s)\n` +
+    `Total: K${Math.round(price).toLocaleString()}\n` +
+    `Your payout: K${Math.round(price - commission).toLocaleString()} (after 3% fee)\n\n` +
+    `Please confirm this order when you are ready.`;
+
+  await db.insert(messagesTable).values({
+    senderId: buyerId,
+    receiverId: listing.farmerId,
+    content: autoMsg,
+    isRead: false,
+    relatedOrderId: order.id,
+  } as any);
+
+  req.log.info({ orderId: order.id, commission, buyerId, deducted: price }, "Order created, auto-message sent to farmer");
+  res.status(201).json({ ...order, farmerPayout: price - commission, farmerId: listing.farmerId });
 }) as RequestHandler);
 
 router.get("/orders/farmer-orders", requireAuth as RequestHandler, (async (req: AuthRequest, res) => {
@@ -112,7 +136,7 @@ router.patch("/orders/:id/status", requireAuth as RequestHandler, (async (req: A
   }
 
   const [order] = await db
-    .select({ id: ordersTable.id, listingFarmerId: listingsTable.farmerId, status: ordersTable.status })
+    .select({ id: ordersTable.id, listingFarmerId: listingsTable.farmerId, status: ordersTable.status, buyerId: ordersTable.buyerId })
     .from(ordersTable)
     .leftJoin(listingsTable, eq(ordersTable.listingId, listingsTable.id))
     .where(eq(ordersTable.id, orderId));
@@ -125,6 +149,30 @@ router.patch("/orders/:id/status", requireAuth as RequestHandler, (async (req: A
     .set({ status })
     .where(eq(ordersTable.id, orderId))
     .returning();
+
+  // Notify buyer of status change
+  const statusEmoji: Record<string, string> = {
+    confirmed: "✅",
+    shipped: "🚚",
+    delivered: "📬",
+    cancelled: "❌",
+  };
+  const statusLabel: Record<string, string> = {
+    confirmed: "Your order has been confirmed by the farmer and will be prepared for shipment.",
+    shipped: "Your order is on the way! The farmer has dispatched your goods.",
+    delivered: "Your order has been marked as delivered. Thank you for using Zimazao!",
+    cancelled: "Your order has been cancelled by the farmer. Please contact them for details.",
+  };
+
+  if (order.buyerId) {
+    await db.insert(messagesTable).values({
+      senderId: farmerId,
+      receiverId: order.buyerId,
+      content: `${statusEmoji[status]} Order #${orderId} Update: ${status.charAt(0).toUpperCase() + status.slice(1)}\n\n${statusLabel[status]}`,
+      isRead: false,
+      relatedOrderId: orderId,
+    } as any).catch(() => {});
+  }
 
   res.json(updated);
 }) as RequestHandler);
@@ -143,7 +191,6 @@ router.patch("/orders/:id/location", requireAuth as RequestHandler, (async (req:
 
   const userId = req.user!.userId;
 
-  // verify user is buyer or farmer for this order
   const [order] = await db
     .select({ buyerId: ordersTable.buyerId, farmerId: listingsTable.farmerId })
     .from(ordersTable)
@@ -180,7 +227,6 @@ router.get("/orders/:id/locations", requireAuth as RequestHandler, (async (req: 
   }
 
   const locs = locationStore.get(orderId) ?? {};
-  // expire stale locations (older than 2 min)
   const now = Date.now();
   const freshen = (e?: LocationEntry) => e && (now - e.updatedAt < 120_000) ? e : undefined;
 

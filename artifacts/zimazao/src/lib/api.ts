@@ -110,12 +110,15 @@ export const api = {
   },
   messages: {
     conversations: () => request<ApiMessage[]>("/messages"),
-    thread: (userId: number) => request<ApiMessage[]>(`/messages/${userId}`),
-    send: (receiverId: number, content: string) =>
+    thread: (userId: number) => request<ApiThreadResponse>(`/messages/${userId}`),
+    send: (receiverId: number, content: string, relatedOrderId?: number) =>
       request<ApiMessage>("/messages", {
         method: "POST",
-        body: JSON.stringify({ receiverId, content }),
+        body: JSON.stringify({ receiverId, content, ...(relatedOrderId ? { relatedOrderId } : {}) }),
       }),
+    unreadCount: () => request<{ count: number; latest: ApiMessage | null }>("/messages/unread-count"),
+    markRead: (senderId: number) =>
+      request<{ ok: boolean }>(`/messages/mark-read/${senderId}`, { method: "POST" }),
   },
   disease: {
     scan: (imageBase64: string) =>
@@ -249,8 +252,34 @@ export interface ApiMessage {
   senderId: number;
   senderName: string | null;
   receiverId: number;
+  receiverName?: string | null;
   content: string;
+  isRead?: boolean;
+  relatedOrderId?: number | null;
+  unreadCount?: number;
+  unread?: boolean;
   createdAt: string;
+}
+
+export interface ApiOrderInThread {
+  id: number;
+  quantity: string;
+  totalPrice: string;
+  commission: string;
+  status: string;
+  cropName: string | null;
+  unit: string | null;
+  imageUrl: string | null;
+  location: string | null;
+  farmerId: number | null;
+  buyerId: number;
+  createdAt: string;
+}
+
+export interface ApiThreadResponse {
+  messages: ApiMessage[];
+  relatedOrderId: number | null;
+  orderDetail: ApiOrderInThread | null;
 }
 
 export interface ApiReview {

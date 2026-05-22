@@ -248,11 +248,14 @@ export default function ListingDetailPage() {
 
   const totalPrice = listing ? parseFloat(listing.price) * parseFloat(qty || "0") : 0
 
+  const [orderFarmerId, setOrderFarmerId] = useState<number | null>(null)
+
   const handleOrder = async () => {
     if (!user) { navigate("/login"); return }
     setOrdering(true); setOrderError(null)
     try {
-      await api.orders.create({ listingId, quantity: qty, totalPrice })
+      const order = await api.orders.create({ listingId, quantity: qty, totalPrice })
+      setOrderFarmerId((order as any).farmerId ?? listing?.farmerId ?? null)
       setOrderDone(true)
     } catch (e: any) {
       setOrderError(e.message || "Order failed")
@@ -458,8 +461,17 @@ export default function ListingDetailPage() {
                       <CheckCircle className="w-8 h-8 text-green-600" />
                     </div>
                     <p className="font-bold text-lg">Order placed!</p>
-                    <p className="text-sm text-muted-foreground mb-4">The farmer will confirm shortly.</p>
-                    <Link href="/orders"><Button variant="outline" className="w-full">View My Orders</Button></Link>
+                    <p className="text-sm text-muted-foreground mb-1">The farmer has been notified.</p>
+                    <p className="text-xs text-muted-foreground mb-4">A message was sent to confirm your order.</p>
+                    <div className="flex flex-col gap-2">
+                      <Button
+                        onClick={() => navigate(`/messages?with=${orderFarmerId ?? listing?.farmerId}`)}
+                        className="w-full gap-2 bg-gradient-to-r from-primary to-emerald-600"
+                      >
+                        <MessageCircle className="w-4 h-4" /> Open Chat with Farmer
+                      </Button>
+                      <Link href="/orders"><Button variant="outline" className="w-full">View My Orders</Button></Link>
+                    </div>
                   </div>
                 ) : (
                   <>
