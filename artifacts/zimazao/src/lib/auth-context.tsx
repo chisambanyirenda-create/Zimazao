@@ -46,7 +46,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const storedUser = typeof window !== "undefined" ? localStorage.getItem("zimazao_user") : null
     if (storedUser) {
       try {
-        setUser(JSON.parse(storedUser))
+        const parsed = JSON.parse(storedUser)
+        // Ensure walletBalance always exists (backfill for old sessions)
+        if (parsed.walletBalance == null) parsed.walletBalance = 0
+        setUser(parsed)
       } catch {
         localStorage.removeItem("zimazao_user")
         localStorage.removeItem("zimazao_token")
