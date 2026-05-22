@@ -53,6 +53,11 @@ export const api = {
         method: "PUT",
         body: JSON.stringify(data),
       }),
+    switchMode: (targetMode: "farmer" | "buyer") =>
+      request<{ token: string; user: ApiUser }>("/auth/switch-mode", {
+        method: "PATCH",
+        body: JSON.stringify({ targetMode }),
+      }),
   },
   listings: {
     list: (params?: { category?: string; location?: string; search?: string }) => {
@@ -186,6 +191,7 @@ export interface ApiUser {
   phone: string | null;
   location: string | null;
   userType: "farmer" | "buyer";
+  walletBalance: number;
   isAdmin?: boolean;
   createdAt: string;
 }

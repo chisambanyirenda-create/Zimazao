@@ -8,6 +8,7 @@ interface User {
   phone: string
   location: string
   userType: "farmer" | "buyer"
+  walletBalance: number
   avatar?: string
   createdAt?: string
 }
@@ -16,9 +17,10 @@ interface AuthContextType {
   user: User | null
   isLoading: boolean
   login: (email: string, password: string) => Promise<boolean>
-  register: (userData: Omit<User, "id"> & { password: string }) => Promise<boolean>
+  register: (userData: Omit<User, "id" | "walletBalance"> & { password: string }) => Promise<boolean>
   logout: () => void
   updateProfile: (data: { name?: string; phone?: string; location?: string; oldPassword?: string; newPassword?: string }) => Promise<void>
+  switchMode: (targetMode: "farmer" | "buyer") => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -31,6 +33,7 @@ function apiUserToUser(u: ApiUser): User {
     phone: u.phone ?? "",
     location: u.location ?? "",
     userType: u.userType,
+    walletBalance: u.walletBalance ?? 0,
     createdAt: u.createdAt,
   }
 }
@@ -68,7 +71,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  const register = async (userData: Omit<User, "id"> & { password: string }): Promise<boolean> => {
+  const register = async (userData: Omit<User, "id" | "walletBalance"> & { password: string }): Promise<boolean> => {
     setIsLoading(true)
     try {
       const { token, user: apiUser } = await api.auth.register({
@@ -110,8 +113,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.setItem("zimazao_user", JSON.stringify(u))
   }
 
+  const switchMode = async (targetMode: "farmer" | "buyer") => {
+    const { token, user: apiUser } = await api.auth.switchMode(targetMode)
+    const u = apiUserToUser(apiUser)
+    localStorage.setItem("zimazao_token", token)
+    localStorage.setItem("zimazao_user", JSON.stringify(u))
+    setUser(u)
+  }
+
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, register, logout, updateProfile }}>
+    <AuthContext.Provider value={{ user, isLoading, login, register, logout, updateProfile, switchMode }}>
       {children}
     </AuthContext.Provider>
   )

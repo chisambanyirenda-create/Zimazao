@@ -1,4 +1,4 @@
-import { pgTable, text, serial, timestamp, pgEnum, boolean } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, timestamp, pgEnum, boolean, integer } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
@@ -12,6 +12,7 @@ export const usersTable = pgTable("users", {
   phone: text("phone"),
   location: text("location"),
   userType: userTypeEnum("user_type").notNull().default("farmer"),
+  walletBalance: integer("wallet_balance").notNull().default(0),
   isAdmin: boolean("is_admin").notNull().default(false),
   isBanned: boolean("is_banned").notNull().default(false),
   bannedUntil: timestamp("banned_until"),

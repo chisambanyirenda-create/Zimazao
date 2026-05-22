@@ -50,8 +50,18 @@ router.post("/orders", requireAuth as RequestHandler, (async (req: AuthRequest, 
   const price = parseFloat(String(totalPrice));
   const commission = parseFloat((price * COMMISSION_RATE).toFixed(2));
 
+  // Check buyer wallet balance
+  const buyerId = req.user!.userId;
+  const [buyer] = await db.select({ walletBalance: usersTable.walletBalance }).from(usersTable).where(eq(usersTable.id, buyerId));
+  if (!buyer || buyer.walletBalance < Math.round(price)) {
+    res.status(402).json({ error: `Insufficient wallet balance. You have K${buyer?.walletBalance?.toLocaleString() ?? 0}, need K${Math.round(price).toLocaleString()}.` }); return;
+  }
+
+  // Deduct from buyer wallet
+  await db.update(usersTable).set({ walletBalance: buyer.walletBalance - Math.round(price) }).where(eq(usersTable.id, buyerId));
+
   const [order] = await db.insert(ordersTable).values({
-    buyerId: req.user!.userId,
+    buyerId,
     listingId,
     quantity: String(quantity),
     totalPrice: String(price),
@@ -59,7 +69,7 @@ router.post("/orders", requireAuth as RequestHandler, (async (req: AuthRequest, 
     status: "pending",
   }).returning();
 
-  req.log.info({ orderId: order.id, commission }, "Order created");
+  req.log.info({ orderId: order.id, commission, buyerId, deducted: price }, "Order created, wallet deducted");
   res.status(201).json({ ...order, farmerPayout: price - commission });
 }) as RequestHandler);
 

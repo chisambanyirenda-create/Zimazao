@@ -4,10 +4,25 @@ import bcrypt from "bcryptjs";
 import { db, usersTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
 import { signToken } from "../lib/jwt";
-import { logger } from "../lib/logger";
 import { requireAuth, type AuthRequest } from "../middlewares/auth";
 
 const router: IRouter = Router();
+
+const WELCOME_BALANCE = 20_000; // K20,000 test wallet for every new account
+
+function formatUser(user: typeof usersTable.$inferSelect) {
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    phone: user.phone,
+    location: user.location,
+    userType: user.userType,
+    walletBalance: user.walletBalance,
+    isAdmin: user.isAdmin,
+    createdAt: user.createdAt,
+  };
+}
 
 router.post("/auth/register", async (req, res): Promise<void> => {
   const { name, email, password, phone, location, userType } = req.body;
@@ -35,25 +50,14 @@ router.post("/auth/register", async (req, res): Promise<void> => {
     phone: phone || null,
     location: location || null,
     userType,
+    walletBalance: WELCOME_BALANCE,
     isAdmin: false,
   }).returning();
 
   const token = signToken({ userId: user.id, email: user.email, userType: user.userType, isAdmin: user.isAdmin });
-  req.log.info({ userId: user.id }, "New user registered");
+  req.log.info({ userId: user.id }, "New user registered with wallet K20,000");
 
-  res.status(201).json({
-    token,
-    user: {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      phone: user.phone,
-      location: user.location,
-      userType: user.userType,
-      isAdmin: user.isAdmin,
-      createdAt: user.createdAt,
-    },
-  });
+  res.status(201).json({ token, user: formatUser(user) });
 });
 
 router.post("/auth/login", async (req, res): Promise<void> => {
@@ -78,19 +82,7 @@ router.post("/auth/login", async (req, res): Promise<void> => {
   const token = signToken({ userId: user.id, email: user.email, userType: user.userType, isAdmin: user.isAdmin });
   req.log.info({ userId: user.id }, "User logged in");
 
-  res.json({
-    token,
-    user: {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      phone: user.phone,
-      location: user.location,
-      userType: user.userType,
-      isAdmin: user.isAdmin,
-      createdAt: user.createdAt,
-    },
-  });
+  res.json({ token, user: formatUser(user) });
 });
 
 router.put("/users/profile", requireAuth as RequestHandler, (async (req: AuthRequest, res) => {
@@ -117,17 +109,28 @@ router.put("/users/profile", requireAuth as RequestHandler, (async (req: AuthReq
   }
 
   const [updated] = await db.update(usersTable).set(updates).where(eq(usersTable.id, userId)).returning();
+  res.json(formatUser(updated));
+}) as RequestHandler);
 
-  res.json({
-    id: updated.id,
-    name: updated.name,
-    email: updated.email,
-    phone: updated.phone,
-    location: updated.location,
-    userType: updated.userType,
-    isAdmin: updated.isAdmin,
-    createdAt: updated.createdAt,
-  });
+// Switch between farmer / buyer mode
+router.patch("/auth/switch-mode", requireAuth as RequestHandler, (async (req: AuthRequest, res) => {
+  const userId = req.user!.userId;
+  const { targetMode } = req.body;
+
+  if (!["farmer", "buyer"].includes(targetMode)) {
+    res.status(400).json({ error: "targetMode must be farmer or buyer" }); return;
+  }
+
+  const [updated] = await db
+    .update(usersTable)
+    .set({ userType: targetMode })
+    .where(eq(usersTable.id, userId))
+    .returning();
+
+  const token = signToken({ userId: updated.id, email: updated.email, userType: updated.userType, isAdmin: updated.isAdmin });
+  req.log.info({ userId, targetMode }, "User switched mode");
+
+  res.json({ token, user: formatUser(updated) });
 }) as RequestHandler);
 
 export default router;
