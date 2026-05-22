@@ -11,10 +11,11 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select"
 import {
-  Search, MapPin, Grid, List, Map, CheckCircle2, Star, ShoppingCart,
+  Search, MapPin, Grid, List, Map, CheckCircle2, Star, ShoppingCart, Eye,
   TrendingUp, TrendingDown, SlidersHorizontal, Flame, Tag, ChevronDown, ChevronUp, X,
 } from "lucide-react"
 import { api, type ApiListing } from "@/lib/api"
+import { useAuth } from "@/lib/auth-context"
 
 const CROP_EMOJI: Record<string, string> = {
   cereals: "🌽", legumes: "🫘", tubers: "🥔", oilseeds: "🌻",
@@ -78,6 +79,8 @@ const provinces = [
 type CropWithExtras = ApiListing & { verified?: boolean; rating?: number; reviews?: number; hot?: boolean; discount?: number; originalPrice?: string }
 
 function CropCard({ crop, viewMode }: { crop: CropWithExtras; viewMode: "grid" | "list" }) {
+  const { user } = useAuth()
+  const isFarmer = user?.userType === "farmer"
   const emoji = CROP_EMOJI[crop.category] ?? "🌾"
   const gradient = CROP_GRADIENT[crop.category] ?? "from-gray-100 to-slate-50"
   const hasDiscount = (crop.discount ?? 0) > 0
@@ -129,7 +132,11 @@ function CropCard({ crop, viewMode }: { crop: CropWithExtras; viewMode: "grid" |
               </div>
               <div className="flex items-center gap-2 mt-3">
                 <Link href={`/listing/${crop.id}`}>
-                  <Button size="sm" className="gap-1"><ShoppingCart className="w-3.5 h-3.5" />View & Order</Button>
+                  {isFarmer ? (
+                    <Button size="sm" variant="outline" className="gap-1"><Eye className="w-3.5 h-3.5" />View Details</Button>
+                  ) : (
+                    <Button size="sm" className="gap-1"><ShoppingCart className="w-3.5 h-3.5" />View & Order</Button>
+                  )}
                 </Link>
                 {crop.farmerId > 0 && (
                   <Link href={`/farmer/${crop.farmerId}`}>
@@ -190,9 +197,15 @@ function CropCard({ crop, viewMode }: { crop: CropWithExtras; viewMode: "grid" |
       </CardContent>
       <CardFooter className="p-3 pt-0">
         <Link href={`/listing/${crop.id}`} className="w-full">
-          <Button className="w-full gap-2 h-9 text-sm bg-gradient-to-r from-primary to-emerald-600 hover:opacity-90">
-            <ShoppingCart className="w-3.5 h-3.5" />View & Order
-          </Button>
+          {isFarmer ? (
+            <Button variant="outline" className="w-full gap-2 h-9 text-sm border-primary text-primary hover:bg-primary/5">
+              <Eye className="w-3.5 h-3.5" />View Details
+            </Button>
+          ) : (
+            <Button className="w-full gap-2 h-9 text-sm bg-gradient-to-r from-primary to-emerald-600 hover:opacity-90">
+              <ShoppingCart className="w-3.5 h-3.5" />View & Order
+            </Button>
+          )}
         </Link>
       </CardFooter>
     </Card>

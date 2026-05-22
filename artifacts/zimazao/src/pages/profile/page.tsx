@@ -12,6 +12,7 @@ import {
   User, Phone, MapPin, Mail, Loader2, CheckCircle2,
   ArrowLeft, Lock, Eye, EyeOff, ShieldCheck,
 } from "lucide-react"
+import { AvatarUpload } from "@/components/avatar-upload"
 
 export default function ProfilePage() {
   const { user, updateProfile } = useAuth()
@@ -81,9 +82,7 @@ export default function ProfilePage() {
             <ArrowLeft className="w-4 h-4" /> Dashboard
           </Link>
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
-              <User className="w-8 h-8 text-white" />
-            </div>
+            <AvatarUpload size="lg" />
             <div>
               <h1 className="text-2xl font-bold">{user.name}</h1>
               <div className="flex items-center gap-2 mt-1">

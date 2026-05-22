@@ -452,70 +452,113 @@ export default function ListingDetailPage() {
 
           {/* Right: Order Panel */}
           <div className="space-y-4">
-            <Card className="sticky top-20 border-0 shadow-md">
-              <CardHeader><CardTitle className="flex items-center gap-2"><ShoppingCart className="w-5 h-5" />Place Order</CardTitle></CardHeader>
-              <CardContent className="space-y-4">
-                {orderDone ? (
-                  <div className="text-center py-4">
-                    <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                      <CheckCircle className="w-8 h-8 text-green-600" />
-                    </div>
-                    <p className="font-bold text-lg">Order placed!</p>
-                    <p className="text-sm text-muted-foreground mb-1">The farmer has been notified.</p>
-                    <p className="text-xs text-muted-foreground mb-4">A message was sent to confirm your order.</p>
-                    <div className="flex flex-col gap-2">
-                      <Button
-                        onClick={() => navigate(`/messages?with=${orderFarmerId ?? listing?.farmerId}`)}
-                        className="w-full gap-2 bg-gradient-to-r from-primary to-emerald-600"
-                      >
-                        <MessageCircle className="w-4 h-4" /> Open Chat with Farmer
-                      </Button>
-                      <Link href="/orders"><Button variant="outline" className="w-full">View My Orders</Button></Link>
-                    </div>
+            {/* Farmer viewing their OWN listing */}
+            {user && user.userType === "farmer" && Number(user.id) === Number(listing.farmerId) ? (
+              <Card className="sticky top-20 border-0 shadow-md">
+                <CardHeader><CardTitle className="flex items-center gap-2"><Package className="w-5 h-5" />Your Listing</CardTitle></CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-center">
+                    <p className="text-emerald-800 font-semibold text-sm mb-1">This is your listing</p>
+                    <p className="text-emerald-700 text-xs">Buyers can see this and place orders. You'll be notified via messages.</p>
                   </div>
-                ) : (
-                  <>
-                    <div className="space-y-2">
-                      <Label>Quantity ({listing.unit}s)</Label>
-                      <Input type="number" min="1" value={qty} onChange={(e) => setQty(e.target.value)} className="h-11" />
-                    </div>
-
-                    <div className="bg-muted/50 rounded-xl p-3 space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Price per {listing.unit}</span>
-                        <span>K{parseFloat(listing.price).toLocaleString()}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Quantity</span>
-                        <span>{qty || 0}</span>
-                      </div>
-                      <div className="border-t border-border pt-2 flex justify-between font-bold">
-                        <span>Total</span>
-                        <span className="text-primary text-lg">K{totalPrice.toLocaleString()}</span>
-                      </div>
-                    </div>
-
-                    {orderError && <p className="text-destructive text-sm">{orderError}</p>}
-
-                    <Button onClick={handleOrder} disabled={ordering || !qty || parseFloat(qty) < 1} className="w-full h-11 gap-2 bg-gradient-to-r from-primary to-emerald-600 hover:opacity-90">
-                      {ordering ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShoppingCart className="w-4 h-4" />}
-                      {user ? "Place Order" : "Sign In to Order"}
+                  <Link href="/dashboard">
+                    <Button variant="outline" className="w-full gap-2">View Dashboard</Button>
+                  </Link>
+                  <Link href="/orders">
+                    <Button className="w-full gap-2 bg-gradient-to-r from-primary to-emerald-600">
+                      <Package className="w-4 h-4" /> View Orders Received
                     </Button>
-
-                    {!user && (
-                      <p className="text-xs text-center text-muted-foreground">
-                        <Link href="/login" className="underline text-primary">Sign in</Link> to place an order
-                      </p>
-                    )}
-
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground pt-1">
-                      <Tag className="w-3.5 h-3.5 shrink-0" />
-                      Secure marketplace transaction. Farmer contacted directly after order.
+                  </Link>
+                </CardContent>
+              </Card>
+            ) : user && user.userType === "farmer" ? (
+              /* Farmer trying to buy someone else's listing */
+              <Card className="sticky top-20 border-0 shadow-md">
+                <CardHeader><CardTitle className="flex items-center gap-2"><ShoppingCart className="w-5 h-5" />Place Order</CardTitle></CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 text-center">
+                    <div className="w-14 h-14 bg-amber-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                      <span className="text-3xl">🛒</span>
                     </div>
-                  </>
-                )}
-              </CardContent>
-            </Card>
+                    <p className="font-bold text-amber-900 mb-1">Switch to Buyer Mode</p>
+                    <p className="text-amber-700 text-sm mb-4">
+                      You are in <strong>Farmer mode</strong>. To buy crops, switch to Buyer mode from your account menu.
+                    </p>
+                    <Link href="/dashboard">
+                      <Button className="w-full gap-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:opacity-90">
+                        Go to Dashboard & Switch Mode
+                      </Button>
+                    </Link>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              /* Normal order panel for buyers / guests */
+              <Card className="sticky top-20 border-0 shadow-md">
+                <CardHeader><CardTitle className="flex items-center gap-2"><ShoppingCart className="w-5 h-5" />Place Order</CardTitle></CardHeader>
+                <CardContent className="space-y-4">
+                  {orderDone ? (
+                    <div className="text-center py-4">
+                      <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <CheckCircle className="w-8 h-8 text-green-600" />
+                      </div>
+                      <p className="font-bold text-lg">Order placed!</p>
+                      <p className="text-sm text-muted-foreground mb-1">The farmer has been notified.</p>
+                      <p className="text-xs text-muted-foreground mb-4">A message was sent to confirm your order.</p>
+                      <div className="flex flex-col gap-2">
+                        <Button
+                          onClick={() => navigate(`/messages?with=${orderFarmerId ?? listing?.farmerId}`)}
+                          className="w-full gap-2 bg-gradient-to-r from-primary to-emerald-600"
+                        >
+                          <MessageCircle className="w-4 h-4" /> Open Chat with Farmer
+                        </Button>
+                        <Link href="/orders"><Button variant="outline" className="w-full">View My Orders</Button></Link>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="space-y-2">
+                        <Label>Quantity ({listing.unit}s)</Label>
+                        <Input type="number" min="1" value={qty} onChange={(e) => setQty(e.target.value)} className="h-11" />
+                      </div>
+
+                      <div className="bg-muted/50 rounded-xl p-3 space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Price per {listing.unit}</span>
+                          <span>K{parseFloat(listing.price).toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Quantity</span>
+                          <span>{qty || 0}</span>
+                        </div>
+                        <div className="border-t border-border pt-2 flex justify-between font-bold">
+                          <span>Total</span>
+                          <span className="text-primary text-lg">K{totalPrice.toLocaleString()}</span>
+                        </div>
+                      </div>
+
+                      {orderError && <p className="text-destructive text-sm">{orderError}</p>}
+
+                      <Button onClick={handleOrder} disabled={ordering || !qty || parseFloat(qty) < 1} className="w-full h-11 gap-2 bg-gradient-to-r from-primary to-emerald-600 hover:opacity-90">
+                        {ordering ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShoppingCart className="w-4 h-4" />}
+                        {user ? "Place Order" : "Sign In to Order"}
+                      </Button>
+
+                      {!user && (
+                        <p className="text-xs text-center text-muted-foreground">
+                          <Link href="/login" className="underline text-primary">Sign in</Link> to place an order
+                        </p>
+                      )}
+
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground pt-1">
+                        <Tag className="w-3.5 h-3.5 shrink-0" />
+                        Secure marketplace transaction. Farmer contacted directly after order.
+                      </div>
+                    </>
+                  )}
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
       </main>

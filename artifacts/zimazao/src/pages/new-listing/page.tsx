@@ -157,11 +157,33 @@ function NewListingContent() {
               <Leaf className="w-8 h-8 text-primary" />
             </div>
             <h2 className="text-xl font-bold mb-2">Please Sign In</h2>
-            <p className="text-muted-foreground mb-6">
-              You need to be signed in to create a listing
+            <p className="text-muted-foreground mb-6">You need to be signed in to create a listing</p>
+            <Link href="/login"><Button className="w-full">Sign In</Button></Link>
+          </Card>
+        </main>
+        <Footer />
+      </div>
+    )
+  }
+
+  if (user.userType === "buyer") {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <Card className="max-w-md mx-auto text-center p-8 border-0 shadow-lg">
+            <div className="w-20 h-20 bg-amber-100 rounded-2xl flex items-center justify-center mx-auto mb-5">
+              <span className="text-4xl">🚜</span>
+            </div>
+            <h2 className="text-xl font-bold mb-2">Farmer Mode Required</h2>
+            <p className="text-muted-foreground mb-2">You are currently in <strong>Buyer mode</strong>.</p>
+            <p className="text-muted-foreground text-sm mb-6">
+              To create listings and sell your crops, switch to Farmer mode from your account menu.
             </p>
-            <Link href="/login">
-              <Button className="w-full">Sign In</Button>
+            <Link href="/dashboard">
+              <Button className="w-full gap-2 bg-gradient-to-r from-primary to-emerald-600">
+                <Leaf className="w-4 h-4" /> Go to Dashboard & Switch Mode
+              </Button>
             </Link>
           </Card>
         </main>
@@ -242,7 +264,7 @@ function NewListingContent() {
                       <SelectTrigger className="h-12">
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent position="popper" className="z-[200]">
                         {cropCategories.map((cat) => (
                           <SelectItem key={cat.value} value={cat.value}>{cat.label}</SelectItem>
                         ))}
@@ -268,7 +290,7 @@ function NewListingContent() {
                     <Label htmlFor="unit">Unit *</Label>
                     <Select value={formData.unit} onValueChange={(value) => setFormData({ ...formData, unit: value })}>
                       <SelectTrigger className="h-12"><SelectValue /></SelectTrigger>
-                      <SelectContent>
+                      <SelectContent position="popper" className="z-[200]">
                         <SelectItem value="50kg bag">50kg Bag</SelectItem>
                         <SelectItem value="25kg bag">25kg Bag</SelectItem>
                         <SelectItem value="90kg bag">90kg Bag</SelectItem>
@@ -312,7 +334,7 @@ function NewListingContent() {
                       <SelectTrigger className="h-12">
                         <SelectValue placeholder="Select province" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent position="popper" className="z-[200]">
                         {provinces.map((prov) => (
                           <SelectItem key={prov} value={prov.toLowerCase()}>{prov}</SelectItem>
                         ))}

@@ -51,6 +51,17 @@ router.post("/orders", requireAuth as RequestHandler, (async (req: AuthRequest, 
   const commission = parseFloat((price * COMMISSION_RATE).toFixed(2));
 
   const buyerId = req.user!.userId;
+
+  // Farmers cannot place orders — they must switch to buyer mode
+  if (req.user!.userType === "farmer") {
+    res.status(403).json({ error: "Farmers cannot place orders. Switch to buyer mode first.", code: "FARMER_CANNOT_BUY" }); return;
+  }
+
+  // Farmers cannot buy their own listings
+  if (listing.farmerId === buyerId) {
+    res.status(403).json({ error: "You cannot order your own listing." }); return;
+  }
+
   const [buyer] = await db
     .select({ walletBalance: usersTable.walletBalance, name: usersTable.name })
     .from(usersTable)
