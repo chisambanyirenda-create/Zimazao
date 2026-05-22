@@ -15,10 +15,12 @@ import sponsorsRouter from "./sponsors";
 import paymentsRouter from "./payments";
 import reviewsRouter from "./reviews";
 import webhooksRouter from "./webhooks";
+import setupRouter from "./setup";
 
 const router: IRouter = Router();
 
 router.use(healthRouter);
+router.use(setupRouter);
 router.use(authRouter);
 router.use(listingsRouter);
 router.use(ordersRouter);

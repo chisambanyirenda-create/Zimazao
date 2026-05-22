@@ -29,6 +29,7 @@ router.post("/setup", async (req, res): Promise<void> => {
         id SERIAL PRIMARY KEY, name TEXT NOT NULL, email TEXT NOT NULL UNIQUE,
         password TEXT NOT NULL, phone TEXT, location TEXT,
         user_type user_type NOT NULL DEFAULT 'farmer',
+        wallet_balance NUMERIC(12,2) NOT NULL DEFAULT 0,
         is_admin BOOLEAN NOT NULL DEFAULT false,
         is_banned BOOLEAN NOT NULL DEFAULT false,
         banned_until TIMESTAMP, ban_reason TEXT,
@@ -105,7 +106,7 @@ router.post("/setup", async (req, res): Promise<void> => {
 
     await db.execute(sql`
       INSERT INTO app_settings (key, value) VALUES
-        ('commission_rate','5'),('pro_price_zmw','150'),
+        ('commission_rate','3'),('pro_price_zmw','150'),
         ('free_listing_limit','3'),('free_scan_limit','5'),
         ('maintenance_mode','false')
       ON CONFLICT (key) DO NOTHING;
