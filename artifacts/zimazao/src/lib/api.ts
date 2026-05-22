@@ -53,6 +53,20 @@ export const api = {
         method: "PUT",
         body: JSON.stringify(data),
       }),
+    uploadAvatar: (file: File): Promise<ApiUser> => {
+      const token = localStorage.getItem("zimazao_token");
+      const form = new FormData();
+      form.append("avatar", file);
+      return fetch(`${API_BASE}/users/avatar`, {
+        method: "POST",
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        body: form,
+      }).then(async (res) => {
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Upload failed");
+        return data as ApiUser;
+      });
+    },
     switchMode: (targetMode: "farmer" | "buyer") =>
       request<{ token: string; user: ApiUser }>("/auth/switch-mode", {
         method: "PATCH",
@@ -193,6 +207,7 @@ export interface ApiUser {
   email: string;
   phone: string | null;
   location: string | null;
+  profilePicture?: string | null;
   userType: "farmer" | "buyer";
   walletBalance: number;
   isAdmin?: boolean;

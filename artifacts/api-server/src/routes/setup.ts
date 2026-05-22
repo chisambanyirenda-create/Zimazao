@@ -109,6 +109,7 @@ router.post("/setup", async (req, res): Promise<void> => {
       ALTER TABLE messages ADD COLUMN IF NOT EXISTS is_read BOOLEAN NOT NULL DEFAULT false;
       ALTER TABLE messages ADD COLUMN IF NOT EXISTS related_order_id INTEGER;
       ALTER TABLE users ADD COLUMN IF NOT EXISTS wallet_balance NUMERIC(12,2) NOT NULL DEFAULT 0;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_picture TEXT;
     `);
     steps.push("Schema columns migrated");
 

@@ -9,7 +9,7 @@ interface User {
   location: string
   userType: "farmer" | "buyer"
   walletBalance: number
-  avatar?: string
+  avatar?: string | null
   createdAt?: string
 }
 
@@ -20,6 +20,7 @@ interface AuthContextType {
   register: (userData: Omit<User, "id" | "walletBalance"> & { password: string }) => Promise<boolean>
   logout: () => void
   updateProfile: (data: { name?: string; phone?: string; location?: string; oldPassword?: string; newPassword?: string }) => Promise<void>
+  updateAvatar: (file: File) => Promise<void>
   switchMode: (targetMode: "farmer" | "buyer") => Promise<void>
 }
 
@@ -34,6 +35,7 @@ function apiUserToUser(u: ApiUser): User {
     location: u.location ?? "",
     userType: u.userType,
     walletBalance: u.walletBalance ?? 0,
+    avatar: u.profilePicture ?? null,
     createdAt: u.createdAt,
   }
 }
@@ -47,7 +49,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (storedUser) {
       try {
         const parsed = JSON.parse(storedUser)
-        // Ensure walletBalance always exists (backfill for old sessions)
         if (parsed.walletBalance == null) parsed.walletBalance = 0
         setUser(parsed)
       } catch {
@@ -116,6 +117,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.setItem("zimazao_user", JSON.stringify(u))
   }
 
+  const updateAvatar = async (file: File) => {
+    const updated = await api.auth.uploadAvatar(file)
+    const u = apiUserToUser(updated)
+    setUser(u)
+    localStorage.setItem("zimazao_user", JSON.stringify(u))
+  }
+
   const switchMode = async (targetMode: "farmer" | "buyer") => {
     const { token, user: apiUser } = await api.auth.switchMode(targetMode)
     const u = apiUserToUser(apiUser)
@@ -125,7 +133,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, register, logout, updateProfile, switchMode }}>
+    <AuthContext.Provider value={{ user, isLoading, login, register, logout, updateProfile, updateAvatar, switchMode }}>
       {children}
     </AuthContext.Provider>
   )

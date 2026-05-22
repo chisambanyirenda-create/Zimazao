@@ -1,8 +1,9 @@
 import { useAuth } from "@/lib/auth-context"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { api, type ApiDashboardStats, type ApiOrderDetail } from "@/lib/api"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
+import { AvatarUpload } from "@/components/avatar-upload"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -14,7 +15,7 @@ import {
   TrendingUp, TrendingDown, ShoppingBag, Eye, Plus, DollarSign,
   Package, MessageSquare, ArrowRight, Leaf, Camera, BarChart3,
   CheckCircle, Clock, Star, Users, Wallet, MapPin, Heart,
-  Truck, ShoppingCart, Gift,
+  Truck, ShoppingCart, Gift, Bell,
 } from "lucide-react"
 
 const salesData = [
@@ -37,6 +38,22 @@ const cropPerformance = [
 // ─── FARMER DASHBOARD ─────────────────────────────────────────────────────────
 function FarmerDashboard({ stats }: { stats: ApiDashboardStats | null }) {
   const { user } = useAuth()
+  const [pendingCount, setPendingCount] = useState(0)
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  useEffect(() => {
+    const fetchPending = async () => {
+      try {
+        const orders = await api.orders.list()
+        const pending = orders.filter((o) => o.status === "pending").length
+        setPendingCount(pending)
+      } catch {}
+    }
+    fetchPending()
+    pollRef.current = setInterval(fetchPending, 15000)
+    return () => { if (pollRef.current) clearInterval(pollRef.current) }
+  }, [])
+
   if (!user) return null
 
   const liveStats = stats
@@ -73,17 +90,42 @@ function FarmerDashboard({ stats }: { stats: ApiDashboardStats | null }) {
 
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+      {/* Live pending orders banner */}
+      {pendingCount > 0 && (
+        <Link href="/orders">
+          <div className="mb-5 flex items-center gap-3 p-4 rounded-2xl bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200 cursor-pointer hover:shadow-md transition-shadow">
+            <div className="relative shrink-0">
+              <div className="w-11 h-11 bg-orange-100 rounded-xl flex items-center justify-center">
+                <Bell className="w-5 h-5 text-orange-600" />
+              </div>
+              <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center animate-bounce">
+                {pendingCount}
+              </span>
+            </div>
+            <div className="flex-1">
+              <p className="font-bold text-orange-800 text-sm">
+                You have {pendingCount} pending order{pendingCount > 1 ? "s" : ""} waiting for your confirmation
+              </p>
+              <p className="text-orange-600/70 text-xs mt-0.5">Tap to review and confirm — updates every 15 seconds</p>
+            </div>
+            <div className="shrink-0">
+              <ArrowRight className="w-4 h-4 text-orange-500" />
+            </div>
+          </div>
+        </Link>
+      )}
+
       {/* Welcome Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
-            <span className="text-2xl">👨‍🌾</span>
-          </div>
+        <div className="flex items-center gap-4">
+          <AvatarUpload size="lg" />
           <div>
             <h1 className="text-2xl md:text-3xl font-bold text-foreground">
               Welcome back, {user.name.split(" ")[0]}!
             </h1>
             <p className="text-muted-foreground text-sm">Your farm business overview</p>
+            <p className="text-[11px] text-muted-foreground/60 mt-0.5">Tap your photo to change it</p>
           </div>
         </div>
         <div className="flex gap-2">

@@ -4,6 +4,7 @@ import { useAuth } from "@/lib/auth-context"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { NotificationsBell } from "@/components/notifications-bell"
+import { AvatarUpload, UserAvatar } from "@/components/avatar-upload"
 import {
   Menu, X, Leaf, User, LogOut, ShoppingBag, Home,
   Camera, BarChart3, MessageCircle, CalendarDays, Package,
@@ -208,9 +209,7 @@ export function Navbar() {
           {user ? (
             <div className="px-4 pt-4 pb-3 space-y-2">
               <div className="flex items-center gap-3 p-3 rounded-xl bg-muted/60">
-                <div className={`w-11 h-11 rounded-xl flex items-center justify-center shadow-sm shrink-0 ${isFarmer ? "bg-gradient-to-br from-primary to-emerald-600" : "bg-gradient-to-br from-blue-500 to-indigo-600"}`}>
-                  <span className="text-sm font-bold text-white">{getInitials(user.name)}</span>
-                </div>
+                <AvatarUpload size="md" />
                 <div className="min-w-0 flex-1">
                   <p className="font-bold text-sm truncate">{user.name}</p>
                   <p className="text-xs text-muted-foreground truncate">{user.email}</p>
@@ -378,9 +377,7 @@ export function Navbar() {
                     <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
                       <DropdownMenuTrigger asChild>
                         <button className="relative z-[1000] flex items-center gap-2 px-3 py-2 rounded-xl border border-border/60 hover:border-primary/40 hover:bg-primary/5 transition-all">
-                          <div className={`w-7 h-7 rounded-lg flex items-center justify-center shadow-sm ${isFarmer ? "bg-gradient-to-br from-primary to-emerald-600" : "bg-gradient-to-br from-blue-500 to-indigo-600"}`}>
-                            <span className="text-[11px] font-bold text-white leading-none">{getInitials(user.name)}</span>
-                          </div>
+                          <UserAvatar name={user.name} avatar={user.avatar} userType={user.userType} size="sm" />
                           <div className="text-left">
                             <p className="text-sm font-semibold text-foreground leading-none">{user.name.split(" ")[0]}</p>
                             <p className="text-[10px] text-muted-foreground capitalize leading-none mt-0.5">{user.userType}</p>
@@ -391,9 +388,7 @@ export function Navbar() {
                       <DropdownMenuContent align="end" className="w-64 z-[1001]">
                         <div className="px-3 py-3 border-b border-border bg-muted/30 rounded-t-lg">
                           <div className="flex items-center gap-3">
-                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-sm shrink-0 ${isFarmer ? "bg-gradient-to-br from-primary to-emerald-600" : "bg-gradient-to-br from-blue-500 to-indigo-600"}`}>
-                              <span className="text-sm font-bold text-white">{getInitials(user.name)}</span>
-                            </div>
+                            <AvatarUpload size="md" />
                             <div className="min-w-0">
                               <p className="font-semibold text-sm truncate">{user.name}</p>
                               <p className="text-xs text-muted-foreground truncate">{user.email}</p>

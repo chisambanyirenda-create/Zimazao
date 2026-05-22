@@ -1,10 +1,20 @@
 import { Router, type IRouter } from "express";
 import type { RequestHandler } from "express";
 import bcrypt from "bcryptjs";
+import multer from "multer";
 import { db, usersTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
 import { signToken } from "../lib/jwt";
 import { requireAuth, type AuthRequest } from "../middlewares/auth";
+
+const avatarUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 2 * 1024 * 1024 }, // 2 MB
+  fileFilter: (_req, file, cb) => {
+    if (file.mimetype.startsWith("image/")) cb(null, true);
+    else cb(new Error("Only image files allowed"));
+  },
+});
 
 const router: IRouter = Router();
 
@@ -17,6 +27,7 @@ function formatUser(user: typeof usersTable.$inferSelect) {
     email: user.email,
     phone: user.phone,
     location: user.location,
+    profilePicture: user.profilePicture ?? null,
     userType: user.userType,
     walletBalance: user.walletBalance,
     isAdmin: user.isAdmin,
@@ -131,6 +142,16 @@ router.patch("/auth/switch-mode", requireAuth as RequestHandler, (async (req: Au
   req.log.info({ userId, targetMode }, "User switched mode");
 
   res.json({ token, user: formatUser(updated) });
+}) as RequestHandler);
+
+// Upload / change profile picture
+router.post("/users/avatar", requireAuth as RequestHandler, avatarUpload.single("avatar") as RequestHandler, (async (req: AuthRequest, res) => {
+  if (!req.file) { res.status(400).json({ error: "No image provided" }); return; }
+  const userId = req.user!.userId;
+  // Store as base64 data URL
+  const dataUrl = `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`;
+  const [updated] = await db.update(usersTable).set({ profilePicture: dataUrl }).where(eq(usersTable.id, userId)).returning();
+  res.json(formatUser(updated));
 }) as RequestHandler);
 
 export default router;

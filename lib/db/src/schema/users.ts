@@ -11,6 +11,7 @@ export const usersTable = pgTable("users", {
   password: text("password").notNull(),
   phone: text("phone"),
   location: text("location"),
+  profilePicture: text("profile_picture"),
   userType: userTypeEnum("user_type").notNull().default("farmer"),
   walletBalance: integer("wallet_balance").notNull().default(0),
   isAdmin: boolean("is_admin").notNull().default(false),
