@@ -104,12 +104,60 @@ router.post("/setup", async (req, res): Promise<void> => {
     `);
     steps.push("Tables and enums created");
 
+    // New tables for payment/escrow/dispute system
+    await db.execute(sql`
+      CREATE TABLE IF NOT EXISTS disputes (
+        id SERIAL PRIMARY KEY,
+        order_id INTEGER NOT NULL REFERENCES orders(id),
+        raised_by INTEGER NOT NULL REFERENCES users(id),
+        reason TEXT NOT NULL,
+        description TEXT NOT NULL,
+        photo_urls TEXT,
+        status TEXT NOT NULL DEFAULT 'open',
+        resolution_action TEXT,
+        resolution_note TEXT,
+        resolved_by INTEGER REFERENCES users(id),
+        resolved_at TIMESTAMP,
+        created_at TIMESTAMP NOT NULL DEFAULT NOW()
+      );
+
+      CREATE TABLE IF NOT EXISTS transaction_events (
+        id SERIAL PRIMARY KEY,
+        order_id INTEGER NOT NULL REFERENCES orders(id),
+        event_type TEXT NOT NULL,
+        metadata TEXT,
+        created_by INTEGER REFERENCES users(id),
+        created_at TIMESTAMP NOT NULL DEFAULT NOW()
+      );
+
+      CREATE TABLE IF NOT EXISTS withdrawal_requests (
+        id SERIAL PRIMARY KEY,
+        farmer_id INTEGER NOT NULL REFERENCES users(id),
+        amount NUMERIC(10,2) NOT NULL,
+        mobile_money_number TEXT NOT NULL,
+        network TEXT NOT NULL DEFAULT 'MTN',
+        status TEXT NOT NULL DEFAULT 'pending',
+        admin_note TEXT,
+        approved_by INTEGER REFERENCES users(id),
+        processed_at TIMESTAMP,
+        created_at TIMESTAMP NOT NULL DEFAULT NOW()
+      );
+    `);
+    steps.push("Disputes, transaction_events, withdrawal_requests tables created");
+
     // Safe column additions (idempotent)
     await db.execute(sql`
       ALTER TABLE messages ADD COLUMN IF NOT EXISTS is_read BOOLEAN NOT NULL DEFAULT false;
       ALTER TABLE messages ADD COLUMN IF NOT EXISTS related_order_id INTEGER;
       ALTER TABLE users ADD COLUMN IF NOT EXISTS wallet_balance NUMERIC(12,2) NOT NULL DEFAULT 0;
       ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_picture TEXT;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS buyer_rating NUMERIC(3,2) NOT NULL DEFAULT 0;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS buyer_rating_count INTEGER NOT NULL DEFAULT 0;
+      ALTER TABLE orders ADD COLUMN IF NOT EXISTS payment_method TEXT NOT NULL DEFAULT 'online';
+      ALTER TABLE orders ADD COLUMN IF NOT EXISTS escrow_status TEXT;
+      ALTER TABLE orders ADD COLUMN IF NOT EXISTS delivery_confirmed_at TIMESTAMP;
+      ALTER TABLE orders ADD COLUMN IF NOT EXISTS auto_release_at TIMESTAMP;
+      ALTER TABLE orders ADD COLUMN IF NOT EXISTS dispute_id INTEGER;
     `);
     steps.push("Schema columns migrated");
 

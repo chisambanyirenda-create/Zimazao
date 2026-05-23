@@ -16,6 +16,9 @@ import paymentsRouter from "./payments";
 import reviewsRouter from "./reviews";
 import webhooksRouter from "./webhooks";
 import setupRouter from "./setup";
+import disputesRouter from "./disputes";
+import withdrawalsRouter from "./withdrawals";
+import transactionsRouter from "./transactions";
 
 const router: IRouter = Router();
 
@@ -36,5 +39,8 @@ router.use(sponsorsRouter);
 router.use(paymentsRouter);
 router.use(reviewsRouter);
 router.use(webhooksRouter);
+router.use(disputesRouter);
+router.use(withdrawalsRouter);
+router.use(transactionsRouter);
 
 export default router;

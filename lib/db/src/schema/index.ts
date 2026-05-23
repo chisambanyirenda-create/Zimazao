@@ -9,3 +9,6 @@ export * from "./payments";
 export * from "./announcements";
 export * from "./app_settings";
 export * from "./reviews";
+export * from "./disputes";
+export * from "./transaction_events";
+export * from "./withdrawals";

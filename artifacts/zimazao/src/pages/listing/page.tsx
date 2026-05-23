@@ -217,6 +217,7 @@ export default function ListingDetailPage() {
   const [error, setError] = useState<string | null>(null)
 
   const [qty, setQty] = useState("1")
+  const [paymentMethod, setPaymentMethod] = useState<"online" | "cod">("online")
   const [ordering, setOrdering] = useState(false)
   const [orderDone, setOrderDone] = useState(false)
   const [orderError, setOrderError] = useState<string | null>(null)
@@ -254,7 +255,7 @@ export default function ListingDetailPage() {
     if (!user) { navigate("/login"); return }
     setOrdering(true); setOrderError(null)
     try {
-      const order = await api.orders.create({ listingId, quantity: qty, totalPrice })
+      const order = await api.orders.create({ listingId, quantity: qty, totalPrice, paymentMethod })
       setOrderFarmerId((order as any).farmerId ?? listing?.farmerId ?? null)
       setOrderDone(true)
     } catch (e: any) {
@@ -537,11 +538,49 @@ export default function ListingDetailPage() {
                         </div>
                       </div>
 
+                      <div className="space-y-2">
+                        <p className="text-sm font-medium">Payment Method</p>
+                        <div className="grid grid-cols-2 gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setPaymentMethod("online")}
+                            className={`p-3 rounded-xl border-2 text-left transition-all ${paymentMethod === "online" ? "border-primary bg-primary/5" : "border-border bg-background"}`}
+                          >
+                            <div className="flex items-center gap-1.5 mb-1">
+                              <span className="text-base">🔒</span>
+                              <span className="text-xs font-bold text-foreground">Online</span>
+                            </div>
+                            <p className="text-[10px] text-muted-foreground leading-tight">Pay now, funds held until delivery</p>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setPaymentMethod("cod")}
+                            className={`p-3 rounded-xl border-2 text-left transition-all ${paymentMethod === "cod" ? "border-amber-500 bg-amber-50" : "border-border bg-background"}`}
+                          >
+                            <div className="flex items-center gap-1.5 mb-1">
+                              <span className="text-base">💵</span>
+                              <span className="text-xs font-bold text-foreground">Cash on Delivery</span>
+                            </div>
+                            <p className="text-[10px] text-muted-foreground leading-tight">Pay when you receive</p>
+                          </button>
+                        </div>
+                        {paymentMethod === "online" && (
+                          <p className="text-[10px] text-muted-foreground flex items-center gap-1">
+                            <span>🛡️</span> K{totalPrice.toLocaleString()} will be held in escrow until you confirm delivery
+                          </p>
+                        )}
+                        {paymentMethod === "cod" && (
+                          <p className="text-[10px] text-amber-600 flex items-center gap-1">
+                            <span>ℹ️</span> No online payment. Pay cash when crops arrive. 3% commission applies.
+                          </p>
+                        )}
+                      </div>
+
                       {orderError && <p className="text-destructive text-sm">{orderError}</p>}
 
-                      <Button onClick={handleOrder} disabled={ordering || !qty || parseFloat(qty) < 1} className="w-full h-11 gap-2 bg-gradient-to-r from-primary to-emerald-600 hover:opacity-90">
+                      <Button onClick={handleOrder} disabled={ordering || !qty || parseFloat(qty) < 1} className={`w-full h-11 gap-2 ${paymentMethod === "cod" ? "bg-gradient-to-r from-amber-500 to-orange-500 hover:opacity-90 text-white" : "bg-gradient-to-r from-primary to-emerald-600 hover:opacity-90"}`}>
                         {ordering ? <Loader2 className="w-4 h-4 animate-spin" /> : <ShoppingCart className="w-4 h-4" />}
-                        {user ? "Place Order" : "Sign In to Order"}
+                        {user ? (paymentMethod === "cod" ? "Place COD Order" : "Place Order & Pay Escrow") : "Sign In to Order"}
                       </Button>
 
                       {!user && (

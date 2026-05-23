@@ -104,7 +104,7 @@ export const api = {
   orders: {
     list: () => request<ApiOrderDetail[]>("/orders"),
     farmerOrders: () => request<ApiOrderDetail[]>("/orders/farmer-orders"),
-    create: (data: { listingId: number; quantity: string; totalPrice: number }) =>
+    create: (data: { listingId: number; quantity: string; totalPrice: number; paymentMethod?: "online" | "cod" }) =>
       request<ApiOrder>("/orders", {
         method: "POST",
         body: JSON.stringify(data),
@@ -114,6 +114,10 @@ export const api = {
         method: "PATCH",
         body: JSON.stringify({ status }),
       }),
+    confirmDelivery: (id: number) =>
+      request<{ ok: boolean; message: string; farmerPayout: number }>(`/orders/${id}/confirm-delivery`, { method: "POST" }),
+    codComplete: (id: number) =>
+      request<{ ok: boolean; message: string }>(`/orders/${id}/cod-complete`, { method: "POST" }),
     updateLocation: (id: number, lat: number, lng: number) =>
       request<{ ok: boolean; role: string }>(`/orders/${id}/location`, {
         method: "PATCH",
@@ -121,6 +125,22 @@ export const api = {
       }),
     getLocations: (id: number) =>
       request<{ farmer?: { lat: number; lng: number; updatedAt: number }; buyer?: { lat: number; lng: number; updatedAt: number } }>(`/orders/${id}/locations`),
+  },
+  disputes: {
+    raise: (data: { orderId: number; reason: string; description: string }) =>
+      request<{ id: number; orderId: number; reason: string; status: string }>("/disputes", {
+        method: "POST",
+        body: JSON.stringify(data),
+      }),
+    my: () => request<Array<{ id: number; orderId: number; reason: string; status: string; createdAt: string }>>("/disputes/my"),
+  },
+  withdrawals: {
+    request: (data: { amount: number; mobileMoneyNumber: string; network?: string }) =>
+      request<{ id: number; amount: string; status: string }>("/withdrawals", {
+        method: "POST",
+        body: JSON.stringify(data),
+      }),
+    list: () => request<Array<{ id: number; amount: string; mobileMoneyNumber: string; network: string; status: string; createdAt: string }>>("/withdrawals"),
   },
   messages: {
     conversations: () => request<ApiMessage[]>("/messages"),
@@ -260,6 +280,9 @@ export interface ApiOrderDetail extends ApiOrder {
   farmerName: string | null;
   buyerName?: string | null;
   farmerId: number | null;
+  paymentMethod?: "online" | "cod";
+  escrowStatus?: "held" | "released" | "refunded" | "frozen" | "cod_complete" | null;
+  listingId?: number | null;
 }
 
 export interface ApiMessage {

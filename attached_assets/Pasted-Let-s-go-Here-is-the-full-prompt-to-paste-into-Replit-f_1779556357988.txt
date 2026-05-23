@@ -1,0 +1,75 @@
+Let’s go! Here is the full prompt to paste into Replit for the Zimazao public app:
+
+Build a complete fully functional transaction and payment system for Zimazao. Here is everything to build:
+
+ESCROW PAYMENT SYSTEM
+
+	•	When a buyer pays online the money is held by Flutterwave and not released to the farmer immediately
+	•	After the buyer confirms they received the crops they click Confirm Delivery button
+	•	Only after confirmation does the money get released to the farmer minus 3 percent commission
+	•	If buyer does not confirm after 48 hours the system automatically releases the money to the farmer
+	•	If there is a dispute buyer clicks Report Problem button and the transaction is frozen until the CEO resolves it from the admin panel
+
+CASH ON DELIVERY OPTION
+
+	•	Buyer can choose Pay Online or Cash on Delivery when placing an order
+	•	For Cash on Delivery no money is collected online
+	•	The system records the order and both farmer and buyer get notified
+	•	When they meet and complete the deal the farmer marks the order as Completed
+	•	Zimazao sends the farmer an invoice for the 3 percent commission to be paid manually or deducted from their next online transaction
+
+ORDER TRACKING SYSTEM
+
+	•	Every order has a status that updates in real time
+	•	Statuses are: Order Placed, Confirmed by Farmer, Ready for Pickup or Delivery, Dispatched, Delivered, Completed, Disputed, Refunded
+	•	Both buyer and farmer see the same status updating live
+	•	Each status change sends a notification to both parties
+	•	Every status change is recorded with timestamp so there is a full audit trail
+
+DISPUTE RESOLUTION SYSTEM
+
+	•	Buyer or farmer can raise a dispute on any order
+	•	They must select a reason: Wrong product, Wrong quantity, Product damaged, Payment issue, Other
+	•	They can upload photos as evidence
+	•	The dispute appears immediately in the CEO admin panel as urgent
+	•	CEO can resolve by approving refund, releasing payment to farmer, or requesting more information
+	•	Both parties are notified of the resolution
+
+TRANSACTION RECORDS
+
+	•	Every single transaction is recorded in the database with full details
+	•	Records include: order id, buyer name, farmer name, crop, quantity, amount paid, commission taken, farmer payout, payment method, status, every status change with timestamp
+	•	Nobody can delete transaction records not even the CEO, they can only be marked
+	•	CEO can export all transactions as CSV or PDF from admin panel
+
+REFUND SYSTEM
+
+	•	CEO can issue full or partial refund from admin panel
+	•	Refund goes back to the original payment method
+	•	Farmer is notified of refund and reason
+	•	Refund is recorded in transaction history
+
+FARMER WALLET
+
+	•	Each farmer has a wallet inside Zimazao showing their earnings
+	•	Wallet shows: total earned, pending clearance, available for withdrawal, commission deducted
+	•	Farmer can request withdrawal from wallet to their mobile money
+	•	Withdrawal requests appear in CEO admin panel for approval
+	•	CEO approves and processes through Flutterwave
+
+TRUST AND SAFETY FEATURES
+
+	•	Every farmer has a rating out of 5 stars from buyers
+	•	Every buyer has a rating out of 5 stars from farmers
+	•	After every completed order both parties rate each other
+	•	Listings from highly rated farmers appear higher in search
+	•	Farmers with below 3 star rating get a warning from CEO
+	•	Farmers with repeated disputes get automatically suspended
+
+TERMS AND CONDITIONS
+
+	•	Add a Terms and Conditions page clearly stating Zimazao is a marketplace only
+	•	Users must accept terms when registering
+	•	Add a How It Works page explaining the escrow and cash on delivery process clearly to farmers and buyers
+
+Paste this into the Zimazao Replit project. Then come back and I will write the matching prompt for the CEO admin panel to handle all disputes, withdrawals and transaction oversight! 🚀😎
