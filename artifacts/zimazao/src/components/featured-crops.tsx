@@ -194,8 +194,8 @@ export function FeaturedCrops() {
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="flex items-baseline gap-1.5">
-                        <p className="text-2xl font-bold text-primary">K{crop.price}</p>
-                        <p className="text-xs text-muted-foreground line-through">K{crop.prevPrice}</p>
+                        <p className="text-2xl font-bold text-primary">ZMW {crop.price}</p>
+                        <p className="text-xs text-muted-foreground line-through">ZMW {crop.prevPrice}</p>
                       </div>
                       <p className="text-xs text-muted-foreground">per {crop.unit}</p>
                     </div>

@@ -19,7 +19,7 @@ const slides = [
     secondaryCtaLink: "/marketplace",
     bg: "from-emerald-950 via-green-900 to-emerald-800",
     image: "🌽",
-    stat: { value: "K5M+", label: "sold this season" },
+    stat: { value: "ZMW5M+", label: "sold this season" },
   },
   {
     id: 2,

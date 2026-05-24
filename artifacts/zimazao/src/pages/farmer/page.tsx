@@ -196,7 +196,7 @@ export default function FarmerProfilePage() {
           <div className="flex gap-px bg-white/10 rounded-t-2xl overflow-hidden">
             {[
               { label: "Listings", value: farmer.totalListings, icon: Package },
-              { label: "Avg. Price", value: `K${avgPrice.toLocaleString()}`, icon: TrendingUp },
+              { label: "Avg. Price", value: `ZMW ${avgPrice.toLocaleString()}`, icon: TrendingUp },
               { label: avgRating > 0 ? `${avgRating.toFixed(1)} Rating` : "No Rating Yet", value: avgRating > 0 ? `${totalReviews} reviews` : "Be first!", icon: Star },
               { label: "Years Active", value: memberYears > 0 ? `${memberYears}yr` : "<1yr", icon: Award },
             ].map((stat) => (
@@ -296,7 +296,7 @@ export default function FarmerProfilePage() {
                             </div>
                             <div className="flex items-center justify-between mb-3">
                               <div>
-                                <p className="text-xl font-bold text-primary">K{parseFloat(listing.price).toLocaleString()}</p>
+                                <p className="text-xl font-bold text-primary">ZMW {parseFloat(listing.price).toLocaleString()}</p>
                                 <p className="text-xs text-muted-foreground">per {listing.unit}</p>
                               </div>
                             </div>
@@ -542,7 +542,7 @@ export default function FarmerProfilePage() {
                         <span className="text-xl">{CROP_EMOJI[listing.category] ?? "🌾"}</span>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium truncate group-hover:text-primary transition-colors">{listing.cropName}</p>
-                          <p className="text-xs text-muted-foreground">K{parseFloat(listing.price).toLocaleString()} / {listing.unit}</p>
+                          <p className="text-xs text-muted-foreground">ZMW {parseFloat(listing.price).toLocaleString()} / {listing.unit}</p>
                         </div>
                         <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors shrink-0" />
                       </div>

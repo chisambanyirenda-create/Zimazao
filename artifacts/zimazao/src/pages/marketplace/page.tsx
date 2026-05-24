@@ -123,9 +123,9 @@ function CropCard({ crop, viewMode }: { crop: CropWithExtras; viewMode: "grid" |
                   )}
                 </div>
                 <div className="text-right shrink-0">
-                  <p className="text-2xl font-bold text-primary">K{parseFloat(crop.price).toLocaleString()}</p>
+                  <p className="text-2xl font-bold text-primary">ZMW {parseFloat(crop.price).toLocaleString()}</p>
                   {hasDiscount && crop.originalPrice && (
-                    <p className="text-sm text-muted-foreground line-through">K{parseFloat(crop.originalPrice).toLocaleString()}</p>
+                    <p className="text-sm text-muted-foreground line-through">ZMW {parseFloat(crop.originalPrice).toLocaleString()}</p>
                   )}
                   <p className="text-xs text-muted-foreground">per {crop.unit}</p>
                 </div>
@@ -180,9 +180,9 @@ function CropCard({ crop, viewMode }: { crop: CropWithExtras; viewMode: "grid" |
         </div>
         <div className="flex items-center justify-between mb-1">
           <div>
-            <p className="text-xl font-bold text-primary">K{parseFloat(crop.price).toLocaleString()}</p>
+            <p className="text-xl font-bold text-primary">ZMW {parseFloat(crop.price).toLocaleString()}</p>
             {hasDiscount && crop.originalPrice && (
-              <p className="text-xs text-muted-foreground line-through">K{parseFloat(crop.originalPrice).toLocaleString()}</p>
+              <p className="text-xs text-muted-foreground line-through">ZMW {parseFloat(crop.originalPrice).toLocaleString()}</p>
             )}
             <p className="text-xs text-muted-foreground">per {crop.unit}</p>
           </div>
@@ -448,11 +448,11 @@ export default function MarketplacePage() {
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">Min Price (K)</label>
+                  <label className="text-xs text-muted-foreground mb-1 block">Min Price (ZMW)</label>
                   <Input type="number" placeholder="0" value={minPrice} onChange={(e) => setMinPrice(e.target.value)} className="h-9 text-sm" />
                 </div>
                 <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">Max Price (K)</label>
+                  <label className="text-xs text-muted-foreground mb-1 block">Max Price (ZMW)</label>
                   <Input type="number" placeholder="Any" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} className="h-9 text-sm" />
                 </div>
                 <div>

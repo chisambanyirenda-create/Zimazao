@@ -58,13 +58,13 @@ function FarmerDashboard({ stats }: { stats: ApiDashboardStats | null }) {
 
   const liveStats = stats
     ? [
-        { title: "Total Sales", value: `K${stats.totalSales.toLocaleString()}`, change: "+12%", trend: "up" as const, icon: DollarSign, color: "text-emerald-600", bg: "bg-emerald-50" },
+        { title: "Total Sales", value: `ZMW ${stats.totalSales.toLocaleString()}`, change: "+12%", trend: "up" as const, icon: DollarSign, color: "text-emerald-600", bg: "bg-emerald-50" },
         { title: "Active Listings", value: String(stats.activeListings), change: "+2 this week", trend: "up" as const, icon: Package, color: "text-blue-600", bg: "bg-blue-50" },
         { title: "Orders Received", value: String(stats.totalOrders), change: "+5 this month", trend: "up" as const, icon: ShoppingBag, color: "text-purple-600", bg: "bg-purple-50" },
         { title: "Messages", value: String(stats.messages), change: "3 unread", trend: "up" as const, icon: MessageSquare, color: "text-amber-600", bg: "bg-amber-50" },
       ]
     : [
-        { title: "Total Sales", value: "K0", change: "No sales yet", trend: "up" as const, icon: DollarSign, color: "text-emerald-600", bg: "bg-emerald-50" },
+        { title: "Total Sales", value: "ZMW 0", change: "No sales yet", trend: "up" as const, icon: DollarSign, color: "text-emerald-600", bg: "bg-emerald-50" },
         { title: "Active Listings", value: "0", change: "Create a listing", trend: "up" as const, icon: Package, color: "text-blue-600", bg: "bg-blue-50" },
         { title: "Orders Received", value: "0", change: "Start selling", trend: "up" as const, icon: ShoppingBag, color: "text-purple-600", bg: "bg-purple-50" },
         { title: "Messages", value: "0", change: "No messages", trend: "up" as const, icon: MessageSquare, color: "text-amber-600", bg: "bg-amber-50" },
@@ -81,6 +81,7 @@ function FarmerDashboard({ stats }: { stats: ApiDashboardStats | null }) {
     { href: "/new-listing", icon: Plus, label: "New Listing", color: "text-primary", bg: "bg-primary/10" },
     { href: "/disease-detector", icon: Camera, label: "Scan Crops", color: "text-blue-600", bg: "bg-blue-50" },
     { href: "/prices", icon: BarChart3, label: "Market Prices", color: "text-amber-600", bg: "bg-amber-50" },
+    { href: "/price-alerts", icon: Bell, label: "Price Alerts", color: "text-orange-600", bg: "bg-orange-50" },
     { href: "/messages", icon: MessageSquare, label: "Messages", color: "text-purple-600", bg: "bg-purple-50" },
     { href: "/crop-calendar", icon: Star, label: "Crop Calendar", color: "text-emerald-600", bg: "bg-emerald-50" },
     { href: "/marketplace", icon: ShoppingBag, label: "Marketplace", color: "text-rose-600", bg: "bg-rose-50" },
@@ -179,8 +180,8 @@ function FarmerDashboard({ stats }: { stats: ApiDashboardStats | null }) {
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.88 0.02 90)" />
                 <XAxis dataKey="month" tick={{ fontSize: 12 }} />
-                <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `K${(v / 1000).toFixed(0)}k`} />
-                <Tooltip formatter={(v) => [`K${Number(v).toLocaleString()}`, "Sales"]} />
+                <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `ZMW${(v / 1000).toFixed(0)}k`} />
+                <Tooltip formatter={(v) => [`ZMW ${Number(v).toLocaleString()}`, "Sales"]} />
                 <Area type="monotone" dataKey="sales" stroke="oklch(0.45 0.12 145)" strokeWidth={2.5} fill="url(#salesGradient)" />
               </AreaChart>
             </ResponsiveContainer>
@@ -233,7 +234,7 @@ function FarmerDashboard({ stats }: { stats: ApiDashboardStats | null }) {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-semibold text-foreground truncate">{listing.name}</p>
-                      <p className="text-sm text-muted-foreground">{listing.quantity} · K{listing.price}/{listing.unit}</p>
+                      <p className="text-sm text-muted-foreground">{listing.quantity} · ZMW {listing.price}/{listing.unit}</p>
                     </div>
                     <Badge className="bg-emerald-100 text-emerald-700 border-0">
                       <CheckCircle className="w-3 h-3 mr-1 inline" />active
@@ -298,6 +299,7 @@ function BuyerDashboard({ orders }: { orders: ApiOrderDetail[] }) {
     { href: "/orders", icon: Package, label: "My Orders", color: "text-blue-600", bg: "bg-blue-50" },
     { href: "/messages", icon: MessageSquare, label: "Messages", color: "text-purple-600", bg: "bg-purple-50" },
     { href: "/prices", icon: BarChart3, label: "Price Trends", color: "text-emerald-600", bg: "bg-emerald-50" },
+    { href: "/price-alerts", icon: Bell, label: "Price Alerts", color: "text-orange-600", bg: "bg-orange-50" },
     { href: "/profile", icon: Star, label: "My Profile", color: "text-rose-600", bg: "bg-rose-50" },
   ]
 
@@ -336,7 +338,7 @@ function BuyerDashboard({ orders }: { orders: ApiOrderDetail[] }) {
         {[
           {
             title: "Wallet Balance",
-            value: `K${user.walletBalance.toLocaleString()}`,
+            value: `ZMW ${user.walletBalance.toLocaleString()}`,
             sub: "Available to spend",
             icon: Wallet,
             color: "text-emerald-600",
@@ -345,7 +347,7 @@ function BuyerDashboard({ orders }: { orders: ApiOrderDetail[] }) {
           },
           {
             title: "Total Spent",
-            value: `K${totalSpent.toLocaleString()}`,
+            value: `ZMW ${totalSpent.toLocaleString()}`,
             sub: `${orders.length} order${orders.length !== 1 ? "s" : ""}`,
             icon: ShoppingBag,
             color: "text-blue-600",
@@ -416,7 +418,7 @@ function BuyerDashboard({ orders }: { orders: ApiOrderDetail[] }) {
                       <p className="text-xs text-muted-foreground">{order.quantity} · {order.farmerName ?? "Farmer"}</p>
                     </div>
                     <div className="text-right shrink-0">
-                      <p className="font-bold text-sm text-primary">K{parseFloat(order.totalPrice ?? "0").toLocaleString()}</p>
+                      <p className="font-bold text-sm text-primary">ZMW {parseFloat(order.totalPrice ?? "0").toLocaleString()}</p>
                       <Badge className={`text-[10px] border-0 mt-0.5 ${statusColor(order.status)}`}>{order.status}</Badge>
                     </div>
                   </div>
@@ -455,7 +457,7 @@ function BuyerDashboard({ orders }: { orders: ApiOrderDetail[] }) {
             <Gift className="w-7 h-7 text-emerald-600" />
           </div>
           <div className="flex-1">
-            <p className="font-bold text-foreground mb-0.5">Your test wallet: K{user.walletBalance.toLocaleString()} available</p>
+            <p className="font-bold text-foreground mb-0.5">Your test wallet: ZMW {user.walletBalance.toLocaleString()} available</p>
             <p className="text-muted-foreground text-sm">
               Use your wallet balance to buy fresh produce from verified farmers. Balance is deducted automatically at checkout.
             </p>

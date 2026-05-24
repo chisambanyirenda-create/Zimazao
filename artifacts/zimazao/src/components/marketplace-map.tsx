@@ -239,7 +239,7 @@ export function MarketplaceMap({ listings }: MarketplaceMapProps) {
           <div className="px-4 pb-4 space-y-2.5">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-2xl font-bold text-primary">K{parseFloat(selectedListing.price).toLocaleString()}</p>
+                <p className="text-2xl font-bold text-primary">ZMW {parseFloat(selectedListing.price).toLocaleString()}</p>
                 <p className="text-xs text-muted-foreground">per {selectedListing.unit}</p>
               </div>
               <div className="flex flex-col items-end gap-1">

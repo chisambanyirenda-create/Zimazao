@@ -218,7 +218,7 @@ export function Navbar() {
                   <Badge className={`capitalize text-xs border-0 block mb-1 ${isFarmer ? "bg-green-100 text-green-700" : "bg-blue-100 text-blue-700"}`}>
                     {isFarmer ? "🚜" : "🛒"} {user.userType}
                   </Badge>
-                  <span className="text-xs font-bold text-emerald-600">K{(user.walletBalance ?? 0).toLocaleString()}</span>
+                  <span className="text-xs font-bold text-emerald-600">ZMW {(user.walletBalance ?? 0).toLocaleString()}</span>
                 </div>
               </div>
 
@@ -359,7 +359,7 @@ export function Navbar() {
                 <>
                   <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700">
                     <Wallet className="w-3.5 h-3.5" />
-                    <span className="text-xs font-bold">K{(user.walletBalance ?? 0).toLocaleString()}</span>
+                    <span className="text-xs font-bold">ZMW {(user.walletBalance ?? 0).toLocaleString()}</span>
                   </div>
                   {isFarmer && (
                     <Link href="/new-listing">
@@ -399,7 +399,7 @@ export function Navbar() {
                                 <Badge className={`text-[10px] h-4 px-1.5 capitalize border-0 ${isFarmer ? "bg-green-100 text-green-700" : "bg-blue-100 text-blue-700"}`}>
                                   {isFarmer ? "🚜" : "🛒"} {user.userType}
                                 </Badge>
-                                <span className="text-[10px] text-emerald-600 font-semibold">K{(user.walletBalance ?? 0).toLocaleString()}</span>
+                                <span className="text-[10px] text-emerald-600 font-semibold">ZMW {(user.walletBalance ?? 0).toLocaleString()}</span>
                               </div>
                             </div>
                           </div>

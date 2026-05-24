@@ -500,7 +500,7 @@ export default function OrdersPage() {
                             <p className="text-xs text-muted-foreground mt-0.5">Order #{order.id}</p>
                           </div>
                           <div className="text-right shrink-0">
-                            <p className="text-xl font-bold text-primary">K{parseFloat(order.totalPrice).toLocaleString()}</p>
+                            <p className="text-xl font-bold text-primary">ZMW {parseFloat(order.totalPrice).toLocaleString()}</p>
                             <p className="text-xs text-muted-foreground">{order.quantity} × {order.unit}</p>
                           </div>
                         </div>
@@ -644,7 +644,7 @@ export default function OrdersPage() {
               </div>
               <div>
                 <p className="font-semibold text-foreground">Total spent</p>
-                <p className="text-muted-foreground text-sm">K{orders.reduce((s, o) => s + parseFloat(o.totalPrice), 0).toLocaleString()} across {orders.length} orders</p>
+                <p className="text-muted-foreground text-sm">ZMW {orders.reduce((s, o) => s + parseFloat(o.totalPrice), 0).toLocaleString()} across {orders.length} orders</p>
               </div>
             </div>
             <Link href="/marketplace">

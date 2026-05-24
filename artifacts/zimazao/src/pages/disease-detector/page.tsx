@@ -266,7 +266,7 @@ function DiseaseDetectorContent() {
                             <div className="flex-1">
                               <div className="flex items-center justify-between gap-2">
                                 <p className="font-semibold text-sm">{p.productName}</p>
-                                {p.price && <p className="text-sm font-bold text-amber-700">K{Number(p.price).toLocaleString()}</p>}
+                                {p.price && <p className="text-sm font-bold text-amber-700">ZMW {Number(p.price).toLocaleString()}</p>}
                               </div>
                               <p className="text-xs text-muted-foreground mb-1">{p.companyName}</p>
                               {p.description && <p className="text-xs text-muted-foreground">{p.description}</p>}

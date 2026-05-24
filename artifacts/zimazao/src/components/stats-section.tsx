@@ -25,7 +25,7 @@ const stats = [
   {
     icon: TrendingUp,
     value: 5,
-    prefix: "K",
+    prefix: "ZMW",
     suffix: "M+",
     label: "Total Sales Value",
     sublabel: "Processed securely",

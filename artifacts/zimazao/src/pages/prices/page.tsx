@@ -197,6 +197,11 @@ function PricesContent() {
                 <RefreshCw className="w-3.5 h-3.5" />
                 Updated today, 10:30 AM
               </Badge>
+              <a href="/price-alerts">
+                <button className="flex items-center gap-1.5 px-4 py-2 bg-white text-emerald-700 font-semibold text-sm rounded-xl hover:bg-white/90 transition-colors shadow-sm">
+                  <Bell className="w-4 h-4" /> Set Alerts
+                </button>
+              </a>
             </div>
           </div>
         </div>
@@ -217,7 +222,7 @@ function PricesContent() {
                 <div>
                   <p className="font-bold text-foreground text-lg">Sunflower Seeds</p>
                   <p className="text-emerald-600 font-bold text-xl">+4.1%</p>
-                  <p className="text-muted-foreground text-xs">K278 avg · 25kg bag</p>
+                  <p className="text-muted-foreground text-xs">ZMW 278 avg · 25kg bag</p>
                 </div>
               </div>
             </CardContent>
@@ -233,7 +238,7 @@ function PricesContent() {
                 <div>
                   <p className="font-bold text-foreground text-lg">Soybeans</p>
                   <p className="text-red-500 font-bold text-xl">-0.9%</p>
-                  <p className="text-muted-foreground text-xs">K515 avg · 50kg bag</p>
+                  <p className="text-muted-foreground text-xs">ZMW 515 avg · 50kg bag</p>
                 </div>
               </div>
             </CardContent>
@@ -249,7 +254,7 @@ function PricesContent() {
                 <div>
                   <p className="font-bold text-foreground text-lg">White Maize</p>
                   <p className="text-blue-600 font-bold text-xl">+3.1%</p>
-                  <p className="text-muted-foreground text-xs">K445 avg · Highest volume</p>
+                  <p className="text-muted-foreground text-xs">ZMW 445 avg · Highest volume</p>
                 </div>
               </div>
             </CardContent>
@@ -284,8 +289,8 @@ function PricesContent() {
               <LineChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.88 0.02 90)" />
                 <XAxis dataKey="week" tick={{ fontSize: 11 }} />
-                <YAxis tick={{ fontSize: 11 }} tickFormatter={(v) => `K${v}`} domain={["auto", "auto"]} />
-                <Tooltip formatter={(v: number, name: string) => [`K${v}`, name]} />
+                <YAxis tick={{ fontSize: 11 }} tickFormatter={(v) => `ZMW${v}`} domain={["auto", "auto"]} />
+                <Tooltip formatter={(v: number, name: string) => [`ZMW ${v}`, name]} />
                 <Legend />
                 {selectedCrops.map((crop) => {
                   const idx = marketPrices.findIndex((p) => p.crop === crop)
@@ -346,7 +351,7 @@ function PricesContent() {
                   <div className="text-right">
                     <p className="text-xs text-muted-foreground mb-1">National Average</p>
                     <div className="flex items-center gap-2">
-                      <p className="text-3xl font-bold text-foreground">K{item.average}</p>
+                      <p className="text-3xl font-bold text-foreground">ZMW {item.average}</p>
                       <Badge className={`gap-1 border-0 ${item.weeklyChange >= 0 ? "bg-primary/10 text-primary" : "bg-destructive/10 text-destructive"}`}>
                         {getTrendIcon(item.weeklyChange)}
                         {item.weeklyChange > 0 ? "+" : ""}{item.weeklyChange}%
@@ -370,7 +375,7 @@ function PricesContent() {
                         }`}
                       >
                         <p className="text-sm text-muted-foreground font-medium mb-1">{market.name}</p>
-                        <p className="text-xl font-bold text-foreground">K{market.price}</p>
+                        <p className="text-xl font-bold text-foreground">ZMW {market.price}</p>
                         <div className={`flex items-center justify-center gap-1 text-xs mt-1 ${getTrendColor(market.change)}`}>
                           {getTrendIcon(market.change)}
                           <span>{market.change > 0 ? "+" : ""}{market.change}%</span>

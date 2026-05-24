@@ -29,9 +29,9 @@ const testimonials = [
     location: "Mkushi, Central Province",
     avatar: "👨🏿‍🌾",
     rating: 5,
-    text: "Checking market prices before harvesting helps me know when to sell. Last season I waited two weeks and got K520 per bag instead of K480. That is a big difference across 300 bags!",
+    text: "Checking market prices before harvesting helps me know when to sell. Last season I waited two weeks and got ZMW 520 per bag instead of ZMW 480. That is a big difference across 300 bags!",
     crop: "Soybeans",
-    income: "K12,000 extra",
+    income: "ZMW 12,000 extra",
   },
   {
     name: "Mary Banda",

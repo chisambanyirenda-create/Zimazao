@@ -28,7 +28,8 @@ import TermsPage from "@/pages/terms";
 import PrivacyPage from "@/pages/privacy";
 import RefundPage from "@/pages/refund";
 import CookiesPage from "@/pages/cookies";
-import AnimalDoctorPage from "@/pages/animal-doctor/page";
+import AnimalDoctorPage from "@/pages/animal-doctor/page"
+import PriceAlertsPage from "@/pages/price-alerts/page";
 import TrackingPage from "@/pages/tracking/page";
 
 const queryClient = new QueryClient();
@@ -59,6 +60,7 @@ function Router() {
       <Route path="/refund" component={RefundPage} />
       <Route path="/cookies" component={CookiesPage} />
       <Route path="/animal-doctor" component={AnimalDoctorPage} />
+      <Route path="/price-alerts" component={PriceAlertsPage} />
       <Route path="/track/:token" component={TrackingPage} />
       <Route component={NotFound} />
     </Switch>

@@ -14,7 +14,7 @@ const benefits = [
 
 const miniStats = [
   { icon: Users, value: "10,000+", label: "Farmers" },
-  { icon: TrendingUp, value: "K5M+", label: "Sales" },
+  { icon: TrendingUp, value: "ZMW5M+", label: "Sales" },
   { icon: Star, value: "4.9★", label: "Rating" },
 ]
 
@@ -77,7 +77,7 @@ export function CTASection() {
               {/* Floating badges */}
               <div className="absolute -top-4 -right-4 bg-white rounded-2xl px-4 py-3 shadow-xl">
                 <p className="text-xs text-muted-foreground">Today's Top Sale</p>
-                <p className="font-bold text-primary text-sm">🌽 K450/bag</p>
+                <p className="font-bold text-primary text-sm">🌽 ZMW 450/bag</p>
               </div>
               <div className="absolute -bottom-4 -left-4 bg-white rounded-2xl px-4 py-3 shadow-xl">
                 <p className="text-xs text-muted-foreground">New Farmer Today</p>

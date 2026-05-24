@@ -34,7 +34,7 @@ function QuickPriceBar() {
             <Link key={p.name} href="/prices" className="flex items-center gap-2 shrink-0 hover:opacity-80 transition-opacity">
               <span>{p.emoji}</span>
               <span className="font-medium text-sm">{p.name}</span>
-              <span className="font-bold text-sm">K{p.price}</span>
+              <span className="font-bold text-sm">ZMW {p.price}</span>
               <span className={`flex items-center text-xs ${p.change > 0 ? "text-green-300" : p.change < 0 ? "text-red-300" : "text-white/60"}`}>
                 {p.change > 0 ? <TrendingUp className="w-3 h-3" /> : p.change < 0 ? <TrendingDown className="w-3 h-3" /> : <Minus className="w-3 h-3" />}
                 {p.change > 0 ? "+" : ""}{p.change}%
@@ -144,10 +144,10 @@ export default function HomePage() {
                 </div>
                 <div className="hidden md:grid grid-cols-2 gap-4">
                   {[
-                    { image: "/livestock-cow.png", label: "Brahman Bull", price: "K9,500", tag: "per head" },
-                    { image: "/livestock-goats.png", label: "Boer Goats", price: "K850", tag: "per head" },
-                    { image: "/livestock-poultry.png", label: "Broilers", price: "K88", tag: "per bird" },
-                    { image: "/livestock-hero.png", label: "Heifer Cattle", price: "K5,400", tag: "per head" },
+                    { image: "/livestock-cow.png", label: "Brahman Bull", price: "ZMW 9,500", tag: "per head" },
+                    { image: "/livestock-goats.png", label: "Boer Goats", price: "ZMW 850", tag: "per head" },
+                    { image: "/livestock-poultry.png", label: "Broilers", price: "ZMW 88", tag: "per bird" },
+                    { image: "/livestock-hero.png", label: "Heifer Cattle", price: "ZMW 5,400", tag: "per head" },
                   ].map((item) => (
                     <div key={item.label} className="relative rounded-xl overflow-hidden group cursor-pointer">
                       <img src={item.image} alt={item.label} className="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-500" />

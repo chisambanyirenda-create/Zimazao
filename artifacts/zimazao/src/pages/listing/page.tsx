@@ -344,7 +344,7 @@ export default function ListingDetailPage() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-3xl font-bold text-primary">K{parseFloat(listing.price).toLocaleString()}</p>
+                    <p className="text-3xl font-bold text-primary">ZMW {parseFloat(listing.price).toLocaleString()}</p>
                     <p className="text-sm text-muted-foreground">per {listing.unit}</p>
                   </div>
                 </div>
@@ -526,7 +526,7 @@ export default function ListingDetailPage() {
                       <div className="bg-muted/50 rounded-xl p-3 space-y-2 text-sm">
                         <div className="flex justify-between">
                           <span className="text-muted-foreground">Price per {listing.unit}</span>
-                          <span>K{parseFloat(listing.price).toLocaleString()}</span>
+                          <span>ZMW {parseFloat(listing.price).toLocaleString()}</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-muted-foreground">Quantity</span>
@@ -534,7 +534,7 @@ export default function ListingDetailPage() {
                         </div>
                         <div className="border-t border-border pt-2 flex justify-between font-bold">
                           <span>Total</span>
-                          <span className="text-primary text-lg">K{totalPrice.toLocaleString()}</span>
+                          <span className="text-primary text-lg">ZMW {totalPrice.toLocaleString()}</span>
                         </div>
                       </div>
 
@@ -566,7 +566,7 @@ export default function ListingDetailPage() {
                         </div>
                         {paymentMethod === "online" && (
                           <p className="text-[10px] text-muted-foreground flex items-center gap-1">
-                            <span>🛡️</span> K{totalPrice.toLocaleString()} will be held in escrow until you confirm delivery
+                            <span>🛡️</span> ZMW {totalPrice.toLocaleString()} will be held in escrow until you confirm delivery
                           </p>
                         )}
                         {paymentMethod === "cod" && (
