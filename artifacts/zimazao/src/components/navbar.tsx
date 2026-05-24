@@ -325,7 +325,7 @@ export function Navbar() {
 
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2 shrink-0">
-              <div className="w-9 h-9 bg-primary rounded-xl flex items-center justify-center shadow-sm">
+              <div className="neon-logo w-9 h-9 bg-primary rounded-xl flex items-center justify-center shadow-sm">
                 <Leaf className="w-5 h-5 text-primary-foreground" />
               </div>
               <span className="text-xl font-bold text-foreground">Zimazao</span>

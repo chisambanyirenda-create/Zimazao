@@ -259,7 +259,7 @@ export default function SubscriptionPage() {
                 <CardTitle className="text-xl flex items-center gap-2">
                   <Crown className="w-5 h-5 text-amber-500" /> Pro
                 </CardTitle>
-                {isPro && <Badge className="bg-amber-100 text-amber-700 border-0">Active</Badge>}
+                {isPro && <Badge className="neon-pro-badge bg-amber-100 text-amber-700 border-0">Active</Badge>}
               </div>
               <p className="text-3xl font-bold">ZMW {PLAN_PRICE}<span className="text-base font-normal text-muted-foreground">/month</span></p>
               <p className="text-sm text-muted-foreground">For serious farmers</p>

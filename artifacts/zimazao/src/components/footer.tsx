@@ -50,8 +50,8 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/about" className="text-background/70 hover:text-background transition-colors">
-                  About Us
+                <Link href="/how-it-works" className="text-background/70 hover:text-background transition-colors">
+                  How It Works
                 </Link>
               </li>
             </ul>
@@ -72,13 +72,13 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/farming-tips" className="text-background/70 hover:text-background transition-colors">
-                  Farming Tips
+                <Link href="/animal-doctor" className="text-background/70 hover:text-background transition-colors">
+                  Animal Doctor
                 </Link>
               </li>
               <li>
-                <Link href="/support" className="text-background/70 hover:text-background transition-colors">
-                  Support
+                <Link href="/crop-calendar" className="text-background/70 hover:text-background transition-colors">
+                  Crop Calendar
                 </Link>
               </li>
             </ul>
@@ -106,14 +106,20 @@ export function Footer() {
 
         <div className="border-t border-background/10 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-background/60 text-sm">
-            © 2024 Zimazao. All rights reserved.
+            © 2026 Zimazao. All rights reserved.
           </p>
-          <div className="flex gap-6 text-sm">
+          <div className="flex flex-wrap justify-center gap-5 text-sm">
+            <Link href="/terms" className="text-background/60 hover:text-background transition-colors">
+              Terms & Conditions
+            </Link>
             <Link href="/privacy" className="text-background/60 hover:text-background transition-colors">
               Privacy Policy
             </Link>
-            <Link href="/terms" className="text-background/60 hover:text-background transition-colors">
-              Terms of Service
+            <Link href="/refund" className="text-background/60 hover:text-background transition-colors">
+              Refund Policy
+            </Link>
+            <Link href="/cookies" className="text-background/60 hover:text-background transition-colors">
+              Cookie Policy
             </Link>
           </div>
         </div>

@@ -25,6 +25,9 @@ import SubscriptionPage from "@/pages/subscription/page";
 import ProfilePage from "@/pages/profile/page";
 import HowItWorksPage from "@/pages/how-it-works";
 import TermsPage from "@/pages/terms";
+import PrivacyPage from "@/pages/privacy";
+import RefundPage from "@/pages/refund";
+import CookiesPage from "@/pages/cookies";
 import AnimalDoctorPage from "@/pages/animal-doctor/page";
 import TrackingPage from "@/pages/tracking/page";
 
@@ -52,6 +55,9 @@ function Router() {
       <Route path="/profile" component={ProfilePage} />
       <Route path="/how-it-works" component={HowItWorksPage} />
       <Route path="/terms" component={TermsPage} />
+      <Route path="/privacy" component={PrivacyPage} />
+      <Route path="/refund" component={RefundPage} />
+      <Route path="/cookies" component={CookiesPage} />
       <Route path="/animal-doctor" component={AnimalDoctorPage} />
       <Route path="/track/:token" component={TrackingPage} />
       <Route component={NotFound} />

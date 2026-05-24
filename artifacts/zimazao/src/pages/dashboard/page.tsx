@@ -130,10 +130,10 @@ function FarmerDashboard({ stats }: { stats: ApiDashboardStats | null }) {
         </div>
         <div className="flex gap-2">
           <Link href="/new-listing">
-            <Button className="gap-2 shadow-sm"><Plus className="w-4 h-4" />Add Listing</Button>
+            <Button className="neon-cta gap-2 shadow-sm"><Plus className="w-4 h-4" />Add Listing</Button>
           </Link>
           <Link href="/disease-detector">
-            <Button variant="outline" className="gap-2"><Camera className="w-4 h-4" />Scan Crop</Button>
+            <Button variant="outline" className="neon-scan-pulse gap-2"><Camera className="w-4 h-4" />Scan Crop</Button>
           </Link>
         </div>
       </div>

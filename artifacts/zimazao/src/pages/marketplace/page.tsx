@@ -152,7 +152,7 @@ function CropCard({ crop, viewMode }: { crop: CropWithExtras; viewMode: "grid" |
   }
 
   return (
-    <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col border-0 shadow-md">
+    <Card className="neon-listing overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col border-0 shadow-md">
       <Link href={`/listing/${crop.id}`}>
         {crop.imageUrl ? (
           <img src={crop.imageUrl} alt={crop.cropName} className="w-full h-44 object-cover" />
@@ -202,7 +202,7 @@ function CropCard({ crop, viewMode }: { crop: CropWithExtras; viewMode: "grid" |
               <Eye className="w-3.5 h-3.5" />View Details
             </Button>
           ) : (
-            <Button className="w-full gap-2 h-9 text-sm bg-gradient-to-r from-primary to-emerald-600 hover:opacity-90">
+            <Button className="neon-cta w-full gap-2 h-9 text-sm bg-gradient-to-r from-primary to-emerald-600 hover:opacity-90">
               <ShoppingCart className="w-3.5 h-3.5" />View & Order
             </Button>
           )}

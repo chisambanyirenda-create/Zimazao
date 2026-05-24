@@ -209,9 +209,9 @@ function RegisterForm() {
                 </div>
                 <span className="text-sm text-muted-foreground leading-snug">
                   I agree to the{" "}
-                  <span className="text-primary font-medium">Terms of Service</span>
+                  <a href="/terms" target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="text-primary font-medium hover:underline">Terms & Conditions</a>
                   {" "}and{" "}
-                  <span className="text-primary font-medium">Privacy Policy</span>
+                  <a href="/privacy" target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="text-primary font-medium hover:underline">Privacy Policy</a>
                 </span>
               </button>
 

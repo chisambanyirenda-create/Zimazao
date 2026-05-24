@@ -1,0 +1,41 @@
+Paste this into Zimazao Replit:
+
+Add legal pages and selective neon design styling to the app. Here is everything to build:
+
+LEGAL PAGES
+Create 4 legal pages for Zimazao Zambia:
+
+Terms and Conditions page at /terms covering: user eligibility, farmer and buyer responsibilities, Zimazao commission of 3 percent, escrow payment rules, dispute resolution process, account suspension and banning rules, prohibited items and activities, limitation of liability
+
+Privacy Policy page at /privacy covering: what data we collect from users, how we use their data, how we store it securely in Supabase, that we never sell user data to third parties, user rights to delete their account and data, contact information for privacy concerns
+
+Refund Policy page at /refund covering: how refunds work through escrow, timeframes for refunds, what qualifies for a refund, what does not qualify, how disputes lead to refunds, Flutterwave refund processing time
+
+Cookie Policy page at /cookies covering: what cookies Zimazao uses, why we use them, how users can manage cookies
+
+All 4 pages must:
+
+	•	Have Zimazao logo and branding at the top
+	•	Be written in simple clear English that Zambian farmers and buyers understand
+	•	Have a last updated date
+	•	Be linked in the app footer
+	•	Users must accept Terms and Conditions and Privacy Policy checkbox when registering
+
+SELECTIVE NEON DESIGN
+Add neon glow effects only in these specific places, not everywhere:
+
+Featured listings in marketplace get a subtle green neon border glow color 00ff88 with low opacity so it looks premium not cheap
+
+Pro Farmer badge gets a gold neon glow effect color F59E0B
+
+Disease scan results container gets a subtle green neon border glow when results appear to make it feel high tech
+
+The Scan Crop button on dashboard gets a subtle green neon pulse animation to draw attention to it
+
+Call to action buttons like Add Listing, Place Order, Upgrade to Pro get a very subtle neon glow on hover
+
+The app logo in the navbar gets a very subtle green glow
+
+All neon effects must be subtle and tasteful, not overdone. Use low opacity and soft blur so it looks premium. Never apply neon to regular text, input fields, or normal content boxes.
+
+Come back with a screenshot when done! 😎🚀

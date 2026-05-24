@@ -189,7 +189,7 @@ function DiseaseDetectorContent() {
             )}
 
             {diagnosis && (
-              <div className="space-y-6">
+              <div className="space-y-6 neon-scan-result rounded-2xl p-1 -m-1">
                 <Card className="border-primary/20 bg-primary/5">
                   <CardContent className="p-6">
                     <div className="flex items-start justify-between gap-4 mb-4">

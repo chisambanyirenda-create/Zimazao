@@ -558,6 +558,16 @@ export default function OrdersPage() {
                               <Navigation className="w-3.5 h-3.5" /> Track Live
                             </Button>
                           )}
+                          {view === "buyer" && order.status === "delivered" && order.listingId && (
+                            <Link href={`/listing/${order.listingId}`}>
+                              <Button
+                                size="sm"
+                                className="gap-1.5 text-xs bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm"
+                              >
+                                <RotateCcw className="w-3.5 h-3.5" /> Buy Again
+                              </Button>
+                            </Link>
+                          )}
                           {view === "buyer" && order.status === "delivered" && !alreadyReviewed && (
                             <Button
                               size="sm"
