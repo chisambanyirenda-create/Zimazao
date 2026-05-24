@@ -1,11 +1,12 @@
 import { Router, type IRouter } from "express";
 import { db, ordersTable, listingsTable, usersTable, messagesTable } from "@workspace/db";
-import { eq, desc, and } from "drizzle-orm";
+import { eq, desc, and, sql } from "drizzle-orm";
 import { requireAuth, type AuthRequest } from "../middlewares/auth";
 import type { RequestHandler } from "express";
+import { createNotification } from "./notifications";
+import crypto from "crypto";
 
 const COMMISSION_RATE = 0.03;
-
 const router: IRouter = Router();
 
 function mapOrderRow(r: any) {
@@ -27,13 +28,43 @@ function mapOrderRow(r: any) {
     buyerName: r.buyer_name,
     farmerId: r.farmer_id,
     buyerId: r.buyer_id,
+    estimatedDelivery: r.estimated_delivery ?? null,
+    trackingToken: r.tracking_token ?? null,
   };
+}
+
+const ALLOWED_FARMER_STATUSES = ["confirmed", "packed", "shipped", "out_for_delivery", "delivered", "cancelled"];
+
+const STATUS_EMOJI: Record<string, string> = {
+  confirmed: "✅",
+  packed: "📦",
+  shipped: "🚚",
+  out_for_delivery: "🛵",
+  delivered: "📬",
+  cancelled: "❌",
+};
+
+const STATUS_MSG: Record<string, string> = {
+  confirmed: "Your order has been confirmed by the farmer and is being prepared.",
+  packed: "Your order has been packed and is ready for dispatch.",
+  shipped: "Your order is on the way! The farmer has dispatched your goods.",
+  out_for_delivery: "Your order is out for delivery and will arrive soon.",
+  delivered: "Your order has been marked as delivered. Thank you for using Zimazao!",
+  cancelled: "Your order has been cancelled by the farmer. Please contact them for details.",
+};
+
+async function recordTxEvent(orderId: number, eventType: string, metadata: object, createdBy?: number) {
+  try {
+    await db.execute(sql`
+      INSERT INTO transaction_events (order_id, event_type, metadata, created_by)
+      VALUES (${orderId}, ${eventType}, ${JSON.stringify(metadata)}, ${createdBy ?? null})
+    `);
+  } catch {}
 }
 
 router.get("/orders", requireAuth as RequestHandler, (async (req: AuthRequest, res) => {
   const buyerId = req.user!.userId;
 
-  // Auto-release any escrow held orders past their auto_release_at
   await db.execute(sql`
     UPDATE orders SET escrow_status = 'released'
     WHERE buyer_id = ${buyerId} AND escrow_status = 'held'
@@ -43,6 +74,7 @@ router.get("/orders", requireAuth as RequestHandler, (async (req: AuthRequest, r
   const result = await db.execute(sql`
     SELECT o.id, o.quantity, o.total_price, o.commission, o.status, o.created_at,
       o.listing_id, o.buyer_id, o.payment_method, o.escrow_status,
+      o.estimated_delivery, o.tracking_token,
       l.crop_name, l.unit, l.location, l.image_url, l.farmer_id,
       u.name AS farmer_name
     FROM orders o
@@ -54,15 +86,6 @@ router.get("/orders", requireAuth as RequestHandler, (async (req: AuthRequest, r
 
   res.json(((result as any).rows ?? []).map(mapOrderRow));
 }) as RequestHandler);
-
-async function recordTxEvent(orderId: number, eventType: string, metadata: object, createdBy?: number) {
-  try {
-    await db.execute(sql`
-      INSERT INTO transaction_events (order_id, event_type, metadata, created_by)
-      VALUES (${orderId}, ${eventType}, ${JSON.stringify(metadata)}, ${createdBy ?? null})
-    `);
-  } catch {}
-}
 
 router.post("/orders", requireAuth as RequestHandler, (async (req: AuthRequest, res) => {
   const { listingId, quantity, totalPrice, paymentMethod = "online" } = req.body;
@@ -93,7 +116,6 @@ router.post("/orders", requireAuth as RequestHandler, (async (req: AuthRequest, 
     .select({ walletBalance: usersTable.walletBalance, name: usersTable.name })
     .from(usersTable).where(eq(usersTable.id, buyerId));
 
-  // For online payments: check wallet and deduct (held in escrow)
   if (paymentMethod === "online") {
     if (!buyer || buyer.walletBalance < Math.round(price)) {
       res.status(402).json({
@@ -105,8 +127,8 @@ router.post("/orders", requireAuth as RequestHandler, (async (req: AuthRequest, 
       .where(eq(usersTable.id, buyerId));
   }
 
-  // Set auto_release_at 48h from now for online orders
   const autoReleaseAt = paymentMethod === "online" ? new Date(Date.now() + 48 * 60 * 60 * 1000) : null;
+  const trackingToken = crypto.randomBytes(16).toString("hex");
 
   const [order] = await db.insert(ordersTable).values({
     buyerId,
@@ -117,12 +139,12 @@ router.post("/orders", requireAuth as RequestHandler, (async (req: AuthRequest, 
     status: "pending",
   }).returning();
 
-  // Set payment_method and escrow columns via raw SQL (new columns)
   await db.execute(sql`
     UPDATE orders SET
       payment_method = ${paymentMethod},
       escrow_status = ${paymentMethod === "online" ? "held" : null},
-      auto_release_at = ${autoReleaseAt}
+      auto_release_at = ${autoReleaseAt},
+      tracking_token = ${trackingToken}
     WHERE id = ${order.id}
   `).catch(() => {});
 
@@ -145,12 +167,19 @@ router.post("/orders", requireAuth as RequestHandler, (async (req: AuthRequest, 
     relatedOrderId: order.id,
   } as any);
 
+  // Notify farmer
+  await createNotification(
+    listing.farmerId,
+    "new_order",
+    `New Order #${order.id}`,
+    `${buyer?.name ?? "A buyer"} placed an order for ${listing.cropName} — K${Math.round(price).toLocaleString()}`,
+    "/orders",
+  );
+
   await recordTxEvent(order.id, "order_placed", { paymentMethod, price, commission, buyerId }, buyerId);
-  req.log.info({ orderId: order.id, commission, buyerId, paymentMethod }, "Order created");
-  res.status(201).json({ ...order, paymentMethod, farmerPayout: price - commission, farmerId: listing.farmerId });
+  res.status(201).json({ ...order, paymentMethod, farmerPayout: price - commission, farmerId: listing.farmerId, trackingToken });
 }) as RequestHandler);
 
-// Buyer confirms delivery → release escrow to farmer
 router.post("/orders/:id/confirm-delivery", requireAuth as RequestHandler, (async (req: AuthRequest, res) => {
   const orderId = parseInt(req.params.id);
   const buyerId = req.user!.userId;
@@ -173,7 +202,6 @@ router.post("/orders/:id/confirm-delivery", requireAuth as RequestHandler, (asyn
   const commission = parseFloat(String(order.commission));
   const farmerPayout = price - commission;
 
-  // Credit farmer wallet
   if (order.farmerId) {
     const [farmer] = await db.select({ walletBalance: usersTable.walletBalance }).from(usersTable).where(eq(usersTable.id, order.farmerId));
     if (farmer) {
@@ -185,6 +213,8 @@ router.post("/orders/:id/confirm-delivery", requireAuth as RequestHandler, (asyn
       content: `✅ Delivery Confirmed — Order #${orderId}\n\nThe buyer has confirmed receipt of the goods. K${farmerPayout.toFixed(2)} has been credited to your Zimazao wallet (after 3% commission).\n\nThank you for trading on Zimazao!`,
       isRead: false, relatedOrderId: orderId,
     } as any).catch(() => {});
+
+    await createNotification(order.farmerId, "order_delivered", `Order #${orderId} — Payment Released`, `K${farmerPayout.toFixed(2)} has been credited to your wallet.`, "/dashboard");
   }
 
   await db.execute(sql`UPDATE orders SET escrow_status = 'released', status = 'delivered', delivery_confirmed_at = NOW() WHERE id = ${orderId}`).catch(() => {});
@@ -193,7 +223,6 @@ router.post("/orders/:id/confirm-delivery", requireAuth as RequestHandler, (asyn
   res.json({ ok: true, message: "Delivery confirmed. Farmer has been paid.", farmerPayout });
 }) as RequestHandler);
 
-// Farmer marks a COD order as complete
 router.post("/orders/:id/cod-complete", requireAuth as RequestHandler, (async (req: AuthRequest, res) => {
   const orderId = parseInt(req.params.id);
   const farmerId = req.user!.userId;
@@ -218,7 +247,6 @@ router.post("/orders/:id/cod-complete", requireAuth as RequestHandler, (async (r
   await db.execute(sql`UPDATE orders SET status = 'delivered', escrow_status = 'cod_complete' WHERE id = ${orderId}`).catch(() => {});
   await recordTxEvent(orderId, "cod_completed", { commission, total, farmerId }, farmerId);
 
-  // Send commission invoice message to farmer
   await db.insert(messagesTable).values({
     senderId: farmerId,
     receiverId: farmerId,
@@ -232,6 +260,7 @@ router.post("/orders/:id/cod-complete", requireAuth as RequestHandler, (async (r
       content: `✅ Order #${orderId} Complete (Cash on Delivery)\n\nThe farmer has marked your order as completed. Thank you for your purchase on Zimazao!`,
       isRead: false, relatedOrderId: orderId,
     } as any).catch(() => {});
+    await createNotification(order.buyerId, "order_delivered", `Order #${orderId} Completed`, `Your order for ${order.cropName} has been completed.`, "/orders");
   }
 
   res.json({ ok: true, message: "Order marked as complete. Commission invoice sent." });
@@ -243,6 +272,7 @@ router.get("/orders/farmer-orders", requireAuth as RequestHandler, (async (req: 
   const result = await db.execute(sql`
     SELECT o.id, o.quantity, o.total_price, o.commission, o.status, o.created_at,
       o.listing_id, o.buyer_id, o.payment_method, o.escrow_status,
+      o.estimated_delivery, o.tracking_token,
       l.crop_name, l.unit, l.location, l.image_url, l.farmer_id,
       u.name AS buyer_name
     FROM orders o
@@ -260,12 +290,11 @@ router.get("/orders/farmer-orders", requireAuth as RequestHandler, (async (req: 
 
 router.patch("/orders/:id/status", requireAuth as RequestHandler, (async (req: AuthRequest, res) => {
   const orderId = parseInt(req.params.id);
-  const { status } = req.body;
+  const { status, estimatedDelivery } = req.body;
   const farmerId = req.user!.userId;
 
-  const allowed = ["confirmed", "shipped", "delivered", "cancelled"];
-  if (!allowed.includes(status)) {
-    res.status(400).json({ error: `Status must be one of: ${allowed.join(", ")}` }); return;
+  if (!ALLOWED_FARMER_STATUSES.includes(status)) {
+    res.status(400).json({ error: `Status must be one of: ${ALLOWED_FARMER_STATUSES.join(", ")}` }); return;
   }
 
   const [order] = await db
@@ -283,34 +312,69 @@ router.patch("/orders/:id/status", requireAuth as RequestHandler, (async (req: A
     .where(eq(ordersTable.id, orderId))
     .returning();
 
-  // Notify buyer of status change
-  const statusEmoji: Record<string, string> = {
-    confirmed: "✅",
-    shipped: "🚚",
-    delivered: "📬",
-    cancelled: "❌",
-  };
-  const statusLabel: Record<string, string> = {
-    confirmed: "Your order has been confirmed by the farmer and will be prepared for shipment.",
-    shipped: "Your order is on the way! The farmer has dispatched your goods.",
-    delivered: "Your order has been marked as delivered. Thank you for using Zimazao!",
-    cancelled: "Your order has been cancelled by the farmer. Please contact them for details.",
-  };
+  if (estimatedDelivery) {
+    await db.execute(sql`UPDATE orders SET estimated_delivery = ${estimatedDelivery} WHERE id = ${orderId}`).catch(() => {});
+  }
 
   if (order.buyerId) {
+    const emoji = STATUS_EMOJI[status] ?? "📋";
+    const msgBody = STATUS_MSG[status] ?? `Order status updated to ${status}.`;
     await db.insert(messagesTable).values({
       senderId: farmerId,
       receiverId: order.buyerId,
-      content: `${statusEmoji[status]} Order #${orderId} Update: ${status.charAt(0).toUpperCase() + status.slice(1)}\n\n${statusLabel[status]}`,
+      content: `${emoji} Order #${orderId} Update: ${status.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase())}\n\n${msgBody}`,
       isRead: false,
       relatedOrderId: orderId,
     } as any).catch(() => {});
+
+    await createNotification(
+      order.buyerId,
+      `order_${status}`,
+      `Order #${orderId} — ${status.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase())}`,
+      msgBody,
+      `/orders`,
+    );
   }
 
   res.json(updated);
 }) as RequestHandler);
 
-// ─── Live Location Store (in-memory, ephemeral) ───────────────────────────
+// Public tracking by token (no auth required)
+router.get("/orders/track/:token", (async (req, res) => {
+  const { token } = req.params;
+  if (!token) { res.status(400).json({ error: "Token required" }); return; }
+
+  const result = await db.execute(sql`
+    SELECT o.id, o.status, o.quantity, o.total_price, o.created_at,
+      o.estimated_delivery, o.tracking_token,
+      l.crop_name, l.unit, l.location, l.farmer_id,
+      u.name AS farmer_name
+    FROM orders o
+    LEFT JOIN listings l ON o.listing_id = l.id
+    LEFT JOIN users u ON l.farmer_id = u.id
+    WHERE o.tracking_token = ${token}
+    LIMIT 1
+  `).catch(() => ({ rows: [] }));
+
+  const rows = (result as any).rows ?? [];
+  if (!rows[0]) { res.status(404).json({ error: "Order not found" }); return; }
+
+  const r = rows[0];
+  res.json({
+    id: r.id,
+    status: r.status,
+    quantity: r.quantity,
+    totalPrice: r.total_price,
+    createdAt: r.created_at,
+    estimatedDelivery: r.estimated_delivery,
+    cropName: r.crop_name,
+    unit: r.unit,
+    location: r.location,
+    farmerName: r.farmer_name,
+  });
+}) as RequestHandler);
+
+// ─── Live Location Store ───────────────────────────
 interface LocationEntry { lat: number; lng: number; updatedAt: number }
 interface OrderLocations { farmer?: LocationEntry; buyer?: LocationEntry }
 const locationStore = new Map<number, OrderLocations>();
@@ -323,7 +387,6 @@ router.patch("/orders/:id/location", requireAuth as RequestHandler, (async (req:
   }
 
   const userId = req.user!.userId;
-
   const [order] = await db
     .select({ buyerId: ordersTable.buyerId, farmerId: listingsTable.farmerId })
     .from(ordersTable)

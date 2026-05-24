@@ -19,6 +19,7 @@ import setupRouter from "./setup";
 import disputesRouter from "./disputes";
 import withdrawalsRouter from "./withdrawals";
 import transactionsRouter from "./transactions";
+import notificationsRouter from "./notifications";
 
 const router: IRouter = Router();
 
@@ -42,5 +43,6 @@ router.use(webhooksRouter);
 router.use(disputesRouter);
 router.use(withdrawalsRouter);
 router.use(transactionsRouter);
+router.use(notificationsRouter);
 
 export default router;

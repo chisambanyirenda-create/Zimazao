@@ -212,6 +212,28 @@ function CropCard({ crop, viewMode }: { crop: CropWithExtras; viewMode: "grid" |
   )
 }
 
+const RECENT_KEY = "zimazao_recent_searches"
+const MAX_RECENT = 8
+
+function saveRecentSearch(query: string) {
+  if (!query.trim() || query.trim().length < 2) return
+  try {
+    const prev: string[] = JSON.parse(localStorage.getItem(RECENT_KEY) ?? "[]")
+    const updated = [query.trim(), ...prev.filter((q) => q.toLowerCase() !== query.trim().toLowerCase())].slice(0, MAX_RECENT)
+    localStorage.setItem(RECENT_KEY, JSON.stringify(updated))
+  } catch {}
+}
+
+function getRecentSearches(): string[] {
+  try { return JSON.parse(localStorage.getItem(RECENT_KEY) ?? "[]") }
+  catch { return [] }
+}
+
+function clearRecentSearches() {
+  try { localStorage.removeItem(RECENT_KEY) }
+  catch {}
+}
+
 export default function MarketplacePage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [category, setCategory] = useState("all")
@@ -226,6 +248,12 @@ export default function MarketplacePage() {
   const [minQty, setMinQty] = useState("")
   const [dealsOnly, setDealsOnly] = useState(false)
   const [verifiedOnly, setVerifiedOnly] = useState(false)
+  const [recentSearches, setRecentSearches] = useState<string[]>([])
+  const [showRecent, setShowRecent] = useState(false)
+
+  useEffect(() => {
+    setRecentSearches(getRecentSearches())
+  }, [])
 
   useEffect(() => {
     api.listings.list()
@@ -338,9 +366,41 @@ export default function MarketplacePage() {
               <Input
                 placeholder="Search crops, farmers, locations..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => { setSearchQuery(e.target.value); setShowRecent(e.target.value === "") }}
+                onFocus={() => setShowRecent(searchQuery === "" && recentSearches.length > 0)}
+                onBlur={() => setTimeout(() => setShowRecent(false), 200)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && searchQuery.trim()) {
+                    saveRecentSearch(searchQuery)
+                    setRecentSearches(getRecentSearches())
+                    setShowRecent(false)
+                  }
+                }}
                 className="pl-10 h-11 bg-muted/40"
               />
+              {showRecent && recentSearches.length > 0 && (
+                <div className="absolute left-0 right-0 top-full mt-1 z-50 bg-card border border-border rounded-xl shadow-lg py-2 overflow-hidden">
+                  <div className="flex items-center justify-between px-3 pb-1 mb-1 border-b border-border">
+                    <span className="text-xs font-medium text-muted-foreground">Recent Searches</span>
+                    <button
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => { clearRecentSearches(); setRecentSearches([]); setShowRecent(false) }}
+                      className="text-xs text-muted-foreground hover:text-destructive transition-colors"
+                    >Clear all</button>
+                  </div>
+                  {recentSearches.map((q) => (
+                    <button
+                      key={q}
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => { setSearchQuery(q); setShowRecent(false) }}
+                      className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-muted transition-colors text-left"
+                    >
+                      <Search className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                      {q}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
             <Select value={province} onValueChange={setProvince}>
               <SelectTrigger className="w-full md:w-44 h-11"><SelectValue placeholder="Province" /></SelectTrigger>

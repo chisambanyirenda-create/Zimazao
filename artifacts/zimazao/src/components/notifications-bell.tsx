@@ -1,21 +1,10 @@
 import { useState, useEffect } from "react"
-import { Bell, Package, MessageCircle, Tag, CheckCircle2, X, ArrowRight, Loader2 } from "lucide-react"
+import { Bell, Package, MessageCircle, X, ArrowRight, Loader2, Truck, ShieldAlert, Star, AlertTriangle } from "lucide-react"
 import { Link, useLocation } from "wouter"
 import { Button } from "@/components/ui/button"
 import { useNotifications } from "@/lib/notification-context"
-import { api } from "@/lib/api"
+import { api, type ApiNotification } from "@/lib/api"
 import { useAuth } from "@/lib/auth-context"
-
-type Notif = {
-  id: number
-  type: "order" | "message"
-  title: string
-  body: string
-  time: string
-  read: boolean
-  href: string
-  senderId?: number
-}
 
 function timeAgo(iso: string) {
   const diff = Date.now() - new Date(iso).getTime()
@@ -27,9 +16,23 @@ function timeAgo(iso: string) {
   return `${Math.floor(h / 24)}d ago`
 }
 
-const NOTIF_COLOR: Record<"order" | "message", string> = {
-  order: "bg-blue-100 text-blue-600",
-  message: "bg-emerald-100 text-emerald-600",
+function getTypeIcon(type: string) {
+  if (type.includes("message")) return MessageCircle
+  if (type.includes("dispatch") || type.includes("shipped") || type.includes("out_for")) return Truck
+  if (type.includes("verification")) return ShieldAlert
+  if (type.includes("review") || type.includes("rating")) return Star
+  if (type.includes("dispute")) return AlertTriangle
+  if (type.includes("order") || type.includes("delivered") || type.includes("packed")) return Package
+  return Bell
+}
+
+function getTypeColor(type: string) {
+  if (type.includes("message")) return "bg-emerald-100 text-emerald-600"
+  if (type.includes("dispatch") || type.includes("shipped") || type.includes("out_for")) return "bg-purple-100 text-purple-600"
+  if (type.includes("delivered") || type.includes("confirmed")) return "bg-green-100 text-green-600"
+  if (type.includes("cancelled") || type.includes("dispute")) return "bg-red-100 text-red-600"
+  if (type.includes("order")) return "bg-blue-100 text-blue-600"
+  return "bg-gray-100 text-gray-600"
 }
 
 interface NotificationsBellProps {
@@ -39,42 +42,47 @@ interface NotificationsBellProps {
 export function NotificationsBell({ onOpen }: NotificationsBellProps) {
   const { user } = useAuth()
   const { unreadCount, refreshCount } = useNotifications()
-  const [notifs, setNotifs] = useState<Notif[]>([])
+  const [notifs, setNotifs] = useState<ApiNotification[]>([])
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [, navigate] = useLocation()
 
-  const localUnread = notifs.filter((n) => !n.read).length
+  const localUnread = notifs.filter((n) => !n.is_read).length
   const displayCount = open ? localUnread : unreadCount
 
-  // Load real unread messages when bell is opened
   const loadNotifs = async () => {
     if (!user) return
     setLoading(true)
     try {
-      const convos = await api.messages.conversations()
-      const msgs: Notif[] = convos
-        .filter((c) => (c.unreadCount ?? 0) > 0)
-        .slice(0, 15)
-        .map((c) => {
-          const isMe = Number(c.senderId) === Number(user.id)
-          const otherName = isMe ? (c.receiverName ?? "Someone") : (c.senderName ?? "Someone")
-          const otherId = isMe ? c.receiverId : c.senderId
-          const isOrder = c.content?.startsWith("📦") || !!c.relatedOrderId
-          return {
-            id: c.id,
-            type: isOrder ? "order" : "message",
-            title: isOrder ? `Order Message from ${otherName}` : `Message from ${otherName}`,
-            body: c.content?.slice(0, 100) ?? "",
-            time: timeAgo(c.createdAt),
-            read: !c.unread,
-            href: `/messages?with=${otherId}`,
-            senderId: otherId,
-          }
-        })
-      setNotifs(msgs)
-    } catch {}
-    finally { setLoading(false) }
+      const data = await api.notifications.list()
+      setNotifs(data)
+    } catch {
+      // Fallback to message notifications
+      try {
+        const convos = await api.messages.conversations()
+        const msgs: ApiNotification[] = convos
+          .filter((c) => (c.unreadCount ?? 0) > 0)
+          .slice(0, 15)
+          .map((c) => {
+            const isMe = Number(c.senderId) === Number(user.id)
+            const otherName = isMe ? (c.receiverName ?? "Someone") : (c.senderName ?? "Someone")
+            const otherId = isMe ? c.receiverId : c.senderId
+            return {
+              id: c.id,
+              userId: Number(user.id),
+              type: c.content?.startsWith("📦") || !!c.relatedOrderId ? "new_order" : "new_message",
+              title: c.content?.startsWith("📦") ? `Order Message from ${otherName}` : `Message from ${otherName}`,
+              body: c.content?.slice(0, 100) ?? "",
+              href: `/messages?with=${otherId}`,
+              is_read: !c.unread,
+              created_at: c.createdAt,
+            }
+          })
+        setNotifs(msgs)
+      } catch {}
+    } finally {
+      setLoading(false)
+    }
   }
 
   useEffect(() => {
@@ -82,29 +90,23 @@ export function NotificationsBell({ onOpen }: NotificationsBellProps) {
   }, [open, user])
 
   useEffect(() => {
-    if (open) {
-      document.body.style.overflow = "hidden"
-    } else {
-      document.body.style.overflow = ""
-    }
+    if (open) document.body.style.overflow = "hidden"
+    else document.body.style.overflow = ""
     return () => { document.body.style.overflow = "" }
   }, [open])
 
   const openPanel = () => { onOpen?.(); setOpen(true) }
   const closePanel = () => setOpen(false)
 
-  const dismiss = (id: number) => setNotifs((prev) => prev.filter((n) => n.id !== id))
-  const markRead = (id: number) => setNotifs((prev) => prev.map((n) => n.id === id ? { ...n, read: true } : n))
-  const markAllRead = () => {
-    setNotifs((prev) => prev.map((n) => ({ ...n, read: true })))
+  const markAllRead = async () => {
+    try { await api.notifications.markAllRead() } catch {}
+    setNotifs((prev) => prev.map((n) => ({ ...n, is_read: true })))
     refreshCount()
   }
 
-  const handleClick = async (notif: Notif) => {
-    markRead(notif.id)
-    if (notif.senderId) {
-      try { await api.messages.markRead(notif.senderId) } catch {}
-    }
+  const handleClick = async (notif: ApiNotification) => {
+    try { await api.notifications.markRead(notif.id) } catch {}
+    setNotifs((prev) => prev.map((n) => n.id === notif.id ? { ...n, is_read: true } : n))
     refreshCount()
     closePanel()
     navigate(notif.href)
@@ -137,7 +139,6 @@ export function NotificationsBell({ onOpen }: NotificationsBellProps) {
               boxShadow: "-8px 0 40px rgba(0,0,0,0.2), -2px 0 12px rgba(0,0,0,0.1)",
             }}
           >
-            {/* Header */}
             <div className="flex items-center justify-between px-4 py-4 bg-gradient-to-r from-primary to-emerald-700 text-white shrink-0">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 bg-white/20 rounded-xl flex items-center justify-center">
@@ -163,7 +164,6 @@ export function NotificationsBell({ onOpen }: NotificationsBellProps) {
               </div>
             </div>
 
-            {/* List */}
             <div className="flex-1 overflow-y-auto divide-y divide-border">
               {loading ? (
                 <div className="py-16 flex flex-col items-center gap-3">
@@ -176,44 +176,36 @@ export function NotificationsBell({ onOpen }: NotificationsBellProps) {
                     <Bell className="w-7 h-7 text-muted-foreground/30" />
                   </div>
                   <p className="text-foreground font-medium mb-1">All caught up!</p>
-                  <p className="text-muted-foreground text-sm">No unread messages right now.</p>
-                  <p className="text-muted-foreground text-xs mt-2">New order and message alerts will appear here.</p>
+                  <p className="text-muted-foreground text-sm">New order, message and delivery alerts will appear here.</p>
                 </div>
               ) : (
                 notifs.map((notif) => {
-                  const Icon = notif.type === "order" ? Package : MessageCircle
+                  const Icon = getTypeIcon(notif.type)
+                  const colorClass = getTypeColor(notif.type)
                   return (
                     <div
                       key={notif.id}
                       className={`flex items-start gap-3 px-4 py-4 transition-colors group cursor-pointer ${
-                        !notif.read ? "bg-primary/5 hover:bg-primary/8" : "hover:bg-muted/50"
+                        !notif.is_read ? "bg-primary/5 hover:bg-primary/8" : "hover:bg-muted/50"
                       }`}
                       onClick={() => handleClick(notif)}
                     >
-                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 mt-0.5 ${NOTIF_COLOR[notif.type]}`}>
+                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 mt-0.5 ${colorClass}`}>
                         <Icon className="w-4 h-4" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-2">
-                          <p className={`text-sm leading-tight ${!notif.read ? "font-semibold text-foreground" : "font-medium text-foreground"}`}>
-                            {notif.title}
-                          </p>
-                          <button
-                            onClick={(e) => { e.stopPropagation(); dismiss(notif.id) }}
-                            className="text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity shrink-0 mt-0.5 w-5 h-5 rounded flex items-center justify-center hover:bg-muted"
-                          >
-                            <X className="w-3 h-3" />
-                          </button>
-                        </div>
+                        <p className={`text-sm leading-tight ${!notif.is_read ? "font-semibold text-foreground" : "font-medium text-foreground"}`}>
+                          {notif.title}
+                        </p>
                         <p className="text-xs text-muted-foreground mt-1 line-clamp-2 leading-relaxed">{notif.body}</p>
                         <div className="flex items-center justify-between mt-2">
-                          <span className="text-[11px] text-muted-foreground">{notif.time}</span>
+                          <span className="text-[11px] text-muted-foreground">{timeAgo(notif.created_at)}</span>
                           <span className="text-[11px] text-primary font-medium flex items-center gap-0.5">
-                            Open Chat <ArrowRight className="w-3 h-3" />
+                            View <ArrowRight className="w-3 h-3" />
                           </span>
                         </div>
                       </div>
-                      {!notif.read && (
+                      {!notif.is_read && (
                         <div className="w-2 h-2 bg-primary rounded-full shrink-0 mt-2" />
                       )}
                     </div>
@@ -222,11 +214,10 @@ export function NotificationsBell({ onOpen }: NotificationsBellProps) {
               )}
             </div>
 
-            {/* Footer */}
             <div className="border-t border-border px-4 py-3 bg-muted/30 shrink-0">
-              <Link href="/messages" onClick={closePanel}>
+              <Link href="/orders" onClick={closePanel}>
                 <Button variant="ghost" size="sm" className="w-full text-xs text-muted-foreground gap-1 h-9">
-                  View all messages <ArrowRight className="w-3 h-3" />
+                  View all orders <ArrowRight className="w-3 h-3" />
                 </Button>
               </Link>
             </div>

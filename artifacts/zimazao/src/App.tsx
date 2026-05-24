@@ -25,6 +25,8 @@ import SubscriptionPage from "@/pages/subscription/page";
 import ProfilePage from "@/pages/profile/page";
 import HowItWorksPage from "@/pages/how-it-works";
 import TermsPage from "@/pages/terms";
+import AnimalDoctorPage from "@/pages/animal-doctor/page";
+import TrackingPage from "@/pages/tracking/page";
 
 const queryClient = new QueryClient();
 
@@ -50,6 +52,8 @@ function Router() {
       <Route path="/profile" component={ProfilePage} />
       <Route path="/how-it-works" component={HowItWorksPage} />
       <Route path="/terms" component={TermsPage} />
+      <Route path="/animal-doctor" component={AnimalDoctorPage} />
+      <Route path="/track/:token" component={TrackingPage} />
       <Route component={NotFound} />
     </Switch>
   );

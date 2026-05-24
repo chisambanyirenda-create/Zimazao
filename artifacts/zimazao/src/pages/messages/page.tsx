@@ -245,7 +245,9 @@ export default function MessagesPage() {
       const arr = Array.from(map.values())
       setThreads(arr)
       return arr
-    } catch {}
+    } catch {
+      return undefined
+    }
   }, [user])
 
   // Initial load

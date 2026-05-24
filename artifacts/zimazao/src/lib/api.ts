@@ -74,7 +74,7 @@ export const api = {
       }),
   },
   listings: {
-    list: (params?: { category?: string; location?: string; search?: string }) => {
+    list: (params?: { category?: string; location?: string; search?: string; minPrice?: string; maxPrice?: string; minQty?: string; verifiedOnly?: string; sort?: string }) => {
       const qs = params
         ? "?" + new URLSearchParams(Object.fromEntries(Object.entries(params).filter(([, v]) => v))).toString()
         : "";
@@ -109,10 +109,10 @@ export const api = {
         method: "POST",
         body: JSON.stringify(data),
       }),
-    updateStatus: (id: number, status: string) =>
+    updateStatus: (id: number, status: string, estimatedDelivery?: string) =>
       request<ApiOrder>(`/orders/${id}/status`, {
         method: "PATCH",
-        body: JSON.stringify({ status }),
+        body: JSON.stringify({ status, ...(estimatedDelivery ? { estimatedDelivery } : {}) }),
       }),
     confirmDelivery: (id: number) =>
       request<{ ok: boolean; message: string; farmerPayout: number }>(`/orders/${id}/confirm-delivery`, { method: "POST" }),
@@ -125,6 +125,7 @@ export const api = {
       }),
     getLocations: (id: number) =>
       request<{ farmer?: { lat: number; lng: number; updatedAt: number }; buyer?: { lat: number; lng: number; updatedAt: number } }>(`/orders/${id}/locations`),
+    track: (token: string) => request<ApiTrackingInfo>(`/orders/track/${token}`),
   },
   disputes: {
     raise: (data: { orderId: number; reason: string; description: string }) =>
@@ -219,6 +220,12 @@ export const api = {
         body: JSON.stringify(data),
       }),
   },
+  notifications: {
+    list: () => request<ApiNotification[]>("/notifications"),
+    unreadCount: () => request<{ count: number }>("/notifications/unread-count"),
+    markAllRead: () => request<{ ok: boolean }>("/notifications/mark-all-read", { method: "PATCH" }),
+    markRead: (id: number) => request<{ ok: boolean }>(`/notifications/${id}/read`, { method: "PATCH" }),
+  },
 };
 
 export interface ApiUser {
@@ -263,7 +270,7 @@ export interface ApiFarmerProfile {
 export interface ApiOrder {
   id: number;
   buyerId: number;
-  listingId: number;
+  listingId: number | null;
   quantity: string;
   totalPrice: string;
   commission: string;
@@ -282,7 +289,7 @@ export interface ApiOrderDetail extends ApiOrder {
   farmerId: number | null;
   paymentMethod?: "online" | "cod";
   escrowStatus?: "held" | "released" | "refunded" | "frozen" | "cod_complete" | null;
-  listingId?: number | null;
+  listingId: number | null;
 }
 
 export interface ApiMessage {
@@ -436,4 +443,28 @@ export interface ApiPayment {
   reference: string;
   purpose: string;
   createdAt: string;
+}
+
+export interface ApiNotification {
+  id: number;
+  userId: number;
+  type: string;
+  title: string;
+  body: string;
+  href: string;
+  is_read: boolean;
+  created_at: string;
+}
+
+export interface ApiTrackingInfo {
+  id: number;
+  status: string;
+  quantity: string;
+  totalPrice: string;
+  createdAt: string;
+  estimatedDelivery: string | null;
+  cropName: string | null;
+  unit: string | null;
+  location: string | null;
+  farmerName: string | null;
 }

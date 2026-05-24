@@ -12,3 +12,4 @@ export * from "./reviews";
 export * from "./disputes";
 export * from "./transaction_events";
 export * from "./withdrawals";
+export * from "./notifications";

@@ -40,30 +40,38 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
   const poll = useCallback(async () => {
     if (!user) return
     try {
-      const data = await api.messages.unreadCount()
-      setUnreadCount(data.count)
+      const [msgResult, notifResult] = await Promise.allSettled([
+        api.messages.unreadCount(),
+        api.notifications.unreadCount(),
+      ])
 
-      const isOnMessages = location.startsWith("/messages")
-      if (
-        !isOnMessages &&
-        data.latest &&
-        data.latest.id !== prevLatestIdRef.current &&
-        data.count > prevCountRef.current
-      ) {
-        setToast({
-          id: data.latest.id,
-          senderId: data.latest.senderId,
-          senderName: data.latest.senderName ?? "Someone",
-          content: data.latest.content,
-          relatedOrderId: data.latest.relatedOrderId,
-          createdAt: data.latest.createdAt,
-        })
-        prevLatestIdRef.current = data.latest.id
-        // Auto-dismiss after 6 seconds
-        if (timerRef.current) clearTimeout(timerRef.current)
-        timerRef.current = setTimeout(() => setToast(null), 6000)
+      const msgCount = msgResult.status === "fulfilled" ? msgResult.value.count : 0
+      const notifCount = notifResult.status === "fulfilled" ? notifResult.value.count : 0
+      setUnreadCount(msgCount + notifCount)
+
+      if (msgResult.status === "fulfilled") {
+        const data = msgResult.value
+        const isOnMessages = location.startsWith("/messages")
+        if (
+          !isOnMessages &&
+          data.latest &&
+          data.latest.id !== prevLatestIdRef.current &&
+          data.count > prevCountRef.current
+        ) {
+          setToast({
+            id: data.latest.id,
+            senderId: data.latest.senderId,
+            senderName: data.latest.senderName ?? "Someone",
+            content: data.latest.content,
+            relatedOrderId: data.latest.relatedOrderId,
+            createdAt: data.latest.createdAt,
+          })
+          prevLatestIdRef.current = data.latest.id
+          if (timerRef.current) clearTimeout(timerRef.current)
+          timerRef.current = setTimeout(() => setToast(null), 6000)
+        }
+        prevCountRef.current = data.count
       }
-      prevCountRef.current = data.count
     } catch {}
   }, [user, location])
 

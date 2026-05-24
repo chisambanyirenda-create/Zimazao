@@ -13,27 +13,31 @@ import {
   ShoppingBag, MapPin, User, Loader2, Package, ArrowLeft,
   CheckCircle2, Clock, Truck, Star, MessageCircle, RotateCcw,
   TrendingUp, ChevronDown, Navigation, AlertTriangle, Lock,
-  Banknote, X, ShieldCheck,
+  Banknote, X, ShieldCheck, Share2, Copy,
 } from "lucide-react"
 
 const STEPS = [
-  { key: "pending",   label: "Placed",     icon: Clock },
-  { key: "confirmed", label: "Confirmed",  icon: CheckCircle2 },
-  { key: "shipped",   label: "Dispatched", icon: Truck },
-  { key: "delivered", label: "Delivered",  icon: Star },
+  { key: "pending",          label: "Placed",          icon: Clock },
+  { key: "confirmed",        label: "Confirmed",        icon: CheckCircle2 },
+  { key: "packed",           label: "Packed",           icon: Package },
+  { key: "shipped",          label: "Dispatched",       icon: Truck },
+  { key: "out_for_delivery", label: "Out for Delivery", icon: Navigation },
+  { key: "delivered",        label: "Delivered",        icon: Star },
 ]
 
 const STEP_INDEX: Record<string, number> = {
-  pending: 0, confirmed: 1, shipped: 2, delivered: 3, cancelled: -1,
+  pending: 0, confirmed: 1, packed: 2, shipped: 3, out_for_delivery: 4, delivered: 5, cancelled: -1,
 }
 
 const STATUS_COLOR: Record<string, string> = {
-  pending:   "bg-yellow-100 text-yellow-800 border-yellow-200",
-  confirmed: "bg-blue-100 text-blue-800 border-blue-200",
-  shipped:   "bg-purple-100 text-purple-800 border-purple-200",
-  delivered: "bg-green-100 text-green-800 border-green-200",
-  cancelled: "bg-red-100 text-red-800 border-red-200",
-  disputed:  "bg-orange-100 text-orange-800 border-orange-200",
+  pending:          "bg-yellow-100 text-yellow-800 border-yellow-200",
+  confirmed:        "bg-blue-100 text-blue-800 border-blue-200",
+  packed:           "bg-indigo-100 text-indigo-800 border-indigo-200",
+  shipped:          "bg-purple-100 text-purple-800 border-purple-200",
+  out_for_delivery: "bg-orange-100 text-orange-800 border-orange-200",
+  delivered:        "bg-green-100 text-green-800 border-green-200",
+  cancelled:        "bg-red-100 text-red-800 border-red-200",
+  disputed:         "bg-orange-100 text-orange-800 border-orange-200",
 }
 
 const CROP_EMOJI: Record<string, string> = {
@@ -337,9 +341,11 @@ export default function OrdersPage() {
   }
 
   const nextStatuses: Record<string, { label: string; value: string; color: string }[]> = {
-    pending:   [{ label: "Confirm", value: "confirmed", color: "bg-blue-500 hover:bg-blue-600 text-white" }, { label: "Cancel", value: "cancelled", color: "bg-red-100 hover:bg-red-200 text-red-700" }],
-    confirmed: [{ label: "Mark Dispatched", value: "shipped", color: "bg-purple-500 hover:bg-purple-600 text-white" }],
-    shipped:   [{ label: "Mark Delivered", value: "delivered", color: "bg-green-500 hover:bg-green-600 text-white" }],
+    pending:          [{ label: "Confirm Order", value: "confirmed", color: "bg-blue-500 hover:bg-blue-600 text-white" }, { label: "Cancel", value: "cancelled", color: "bg-red-100 hover:bg-red-200 text-red-700" }],
+    confirmed:        [{ label: "Mark as Packed", value: "packed", color: "bg-indigo-500 hover:bg-indigo-600 text-white" }],
+    packed:           [{ label: "Mark Dispatched", value: "shipped", color: "bg-purple-500 hover:bg-purple-600 text-white" }],
+    shipped:          [{ label: "Out for Delivery", value: "out_for_delivery", color: "bg-orange-500 hover:bg-orange-600 text-white" }],
+    out_for_delivery: [{ label: "Mark Delivered", value: "delivered", color: "bg-green-500 hover:bg-green-600 text-white" }],
     delivered: [],
     cancelled: [],
   }
@@ -405,17 +411,26 @@ export default function OrdersPage() {
           </div>
         )}
 
-        <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
-          {["all", "pending", "confirmed", "shipped", "delivered"].map((f) => (
+        <div className="flex gap-2 mb-6 overflow-x-auto pb-1 scrollbar-hide">
+          {[
+            { key: "all", label: "All Orders" },
+            { key: "pending", label: "Pending" },
+            { key: "confirmed", label: "Confirmed" },
+            { key: "packed", label: "Packed" },
+            { key: "shipped", label: "In Transit" },
+            { key: "out_for_delivery", label: "Out for Delivery" },
+            { key: "delivered", label: "Delivered" },
+            { key: "cancelled", label: "Cancelled" },
+          ].map((f) => (
             <button
-              key={f}
-              onClick={() => setFilterStatus(f)}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${filterStatus === f ? "bg-primary text-white shadow-md" : "bg-muted hover:bg-muted/80 text-foreground"}`}
+              key={f.key}
+              onClick={() => setFilterStatus(f.key)}
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${filterStatus === f.key ? "bg-primary text-white shadow-md" : "bg-muted hover:bg-muted/80 text-foreground"}`}
             >
-              {f === "all" ? "All Orders" : f === "shipped" ? "In Transit" : f.charAt(0).toUpperCase() + f.slice(1)}
-              {f !== "all" && (
-                <span className={`text-xs rounded-full px-1.5 ${filterStatus === f ? "bg-white/20" : "bg-muted-foreground/20"}`}>
-                  {orders.filter((o) => o.status === f).length}
+              {f.label}
+              {f.key !== "all" && (
+                <span className={`text-xs rounded-full px-1.5 ${filterStatus === f.key ? "bg-white/20" : "bg-muted-foreground/20"}`}>
+                  {orders.filter((o) => o.status === f.key).length}
                 </span>
               )}
             </button>
@@ -520,7 +535,21 @@ export default function OrdersPage() {
                               </Button>
                             </Link>
                           )}
-                          {["confirmed", "shipped"].includes(order.status) && (
+                          {(order as any).trackingToken && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="gap-1.5 text-xs"
+                              onClick={async () => {
+                                const url = `${window.location.origin}${import.meta.env.BASE_URL}track/${(order as any).trackingToken}`
+                                await navigator.clipboard.writeText(url).catch(() => {})
+                                alert("Tracking link copied!")
+                              }}
+                            >
+                              <Copy className="w-3.5 h-3.5" /> Copy Tracking Link
+                            </Button>
+                          )}
+                          {["confirmed", "packed", "shipped", "out_for_delivery"].includes(order.status) && (
                             <Button
                               size="sm"
                               className="gap-1.5 text-xs bg-gradient-to-r from-blue-500 to-indigo-600 hover:opacity-90 text-white shadow-sm"

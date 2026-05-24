@@ -1,0 +1,70 @@
+Paste this into the Zimazao public app Replit:
+
+Build all the core features that users need to fully use Zimazao. Here is everything to build:
+
+CROP SEARCH AND FILTERS
+
+	•	Search bar on marketplace that searches by crop name, location, farmer name
+	•	Filter by category, province, price range, quantity available, verified farmers only
+	•	Sort by newest, lowest price, highest rated, most popular
+	•	Search results update instantly as user types
+	•	Recent searches saved for each user
+	•	No results state shows a clean message with suggestions
+
+FARMER AND BUYER PROFILES
+
+	•	Every user has a public profile page
+	•	Farmer profile shows: name, province, verified badge if approved, star rating, total crops sold, member since date, all active listings, reviews from buyers
+	•	Buyer profile shows: name, province, star rating, total orders, member since date, reviews from farmers
+	•	Users can edit their own profile, upload profile photo, add bio, add phone number
+	•	Profile photo uploaded to Cloudinary
+
+MESSAGING SYSTEM
+
+	•	Farmers and buyers can send messages to each other about a listing
+	•	Message button on every listing
+	•	Full chat interface with conversation history
+	•	Unread message count badge on the messages icon
+	•	Push notification when new message received
+	•	Users cannot send offensive messages — banned words are filtered automatically
+	•	Messages are stored in Supabase and visible to CEO in admin panel
+
+NOTIFICATIONS SYSTEM
+
+	•	Real time notifications for: new order, order confirmed, order dispatched, order delivered, new message, dispute update, verification approved or rejected, account warning
+	•	Notification bell icon with unread count badge
+	•	Notifications panel showing all recent notifications
+	•	Mark all as read button
+	•	Clicking a notification takes user to the relevant page
+	•	Notifications stored in database so they persist after app is closed
+
+DISEASE SCANNER FULLY WORKING
+
+	•	Farmer opens Crop Doctor page and uploads a photo of their sick crop
+	•	Photo is sent to Google Gemini AI for analysis
+	•	Gemini returns: crop name detected, disease name, confidence percentage, full description of disease, treatment steps, prevention tips, recommended medicines
+	•	Results are displayed in a clean easy to read format
+	•	Sponsored agro dealer products that treat that disease appear below results with Sponsored label
+	•	Scan is saved to farmer history so they can refer back to it
+	•	Free plan farmers limited to 5 scans per month, show upgrade prompt when limit reached
+	•	Add Animal Doctor page that works the same way but for livestock diseases
+
+RATINGS AND REVIEWS
+
+	•	After every completed order both buyer and farmer can rate each other out of 5 stars
+	•	They can leave a written review
+	•	Reviews appear on public profiles
+	•	Average rating shown on all listings
+	•	Users cannot rate the same person twice for the same order
+	•	CEO can remove unfair reviews from admin panel
+
+DELIVERY TRACKING
+
+	•	Every order has a tracking page showing current status
+	•	Statuses: Order Placed, Confirmed by Farmer, Packed and Ready, Dispatched, Out for Delivery, Delivered, Completed
+	•	Farmer updates the status from their dashboard
+	•	Every status update sends a notification to the buyer
+	•	Estimated delivery time set by farmer when confirming order
+	•	Buyer can share tracking link with someone else
+
+Come back with a screenshot when Replit is done and we move to the medium priority features! 🚀😎
