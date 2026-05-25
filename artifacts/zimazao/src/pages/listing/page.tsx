@@ -12,8 +12,9 @@ import { Label } from "@/components/ui/label"
 import {
   MapPin, Phone, MessageCircle, ShoppingCart, ArrowLeft,
   Loader2, User, Package, CalendarDays, CheckCircle, AlertCircle,
-  Star, ThumbsUp, Award, Tag, Flame,
+  Star, ThumbsUp, Award, Tag, Flame, Flag,
 } from "lucide-react"
+import { ReportModal } from "@/components/report-modal"
 
 const CROP_EMOJI: Record<string, string> = {
   cereals: "🌽", legumes: "🫘", tubers: "🥔", oilseeds: "🌻",
@@ -226,6 +227,7 @@ export default function ListingDetailPage() {
   const [sending, setSending] = useState(false)
   const [msgSent, setMsgSent] = useState(false)
   const [msgError, setMsgError] = useState<string | null>(null)
+  const [showReport, setShowReport] = useState(false)
 
   const DEMO_LISTINGS: Record<number, ApiListing> = {
     1: { id: 1, farmerId: 1, farmerName: "John Mwansa", cropName: "White Maize", price: "450", unit: "50kg bag", quantity: "500", location: "Choma, Southern", category: "cereals", description: "Premium grade white maize, well dried and stored in certified grain silos. Suitable for both human consumption and animal feed. Available in bulk.", imageUrl: null, isActive: true, createdAt: new Date().toISOString() },
@@ -374,6 +376,16 @@ export default function ListingDetailPage() {
                     <p className="text-muted-foreground">{listing.description}</p>
                   </div>
                 )}
+
+                {/* Report listing */}
+                <div className="border-t border-border pt-3 mt-3">
+                  <button
+                    onClick={() => setShowReport(true)}
+                    className="flex items-center gap-1.5 text-xs text-muted-foreground/60 hover:text-red-500 transition-colors"
+                  >
+                    <Flag className="w-3 h-3" /> Report this listing
+                  </button>
+                </div>
               </CardContent>
             </Card>
 
@@ -602,6 +614,15 @@ export default function ListingDetailPage() {
         </div>
       </main>
       <Footer />
+
+      {showReport && listing && (
+        <ReportModal
+          targetType="listing"
+          targetId={listing.id}
+          targetName={listing.cropName}
+          onClose={() => setShowReport(false)}
+        />
+      )}
     </div>
   )
 }

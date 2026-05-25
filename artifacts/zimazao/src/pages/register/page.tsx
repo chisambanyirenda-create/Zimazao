@@ -7,7 +7,29 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
-import { Leaf, Eye, EyeOff, Loader2, User, Store, CheckCircle2 } from "lucide-react"
+import { Leaf, Eye, EyeOff, Loader2, User, Store, CheckCircle2, XCircle } from "lucide-react"
+
+function PasswordStrengthHint({ password }: { password: string }) {
+  const checks = [
+    { label: "At least 8 characters", ok: password.length >= 8 },
+    { label: "One uppercase letter (A–Z)", ok: /[A-Z]/.test(password) },
+    { label: "One number (0–9)", ok: /[0-9]/.test(password) },
+  ]
+  if (!password) return null
+  return (
+    <ul className="mt-2 space-y-1">
+      {checks.map((c) => (
+        <li key={c.label} className={`flex items-center gap-1.5 text-xs ${c.ok ? "text-emerald-600" : "text-muted-foreground"}`}>
+          {c.ok
+            ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+            : <XCircle className="w-3.5 h-3.5 text-muted-foreground/50 shrink-0" />
+          }
+          {c.label}
+        </li>
+      ))}
+    </ul>
+  )
+}
 
 function RegisterForm() {
   const [, setLocation] = useLocation()
@@ -26,15 +48,26 @@ function RegisterForm() {
     confirmPassword: "",
   })
 
+  const validatePassword = (pw: string): string | null => {
+    if (pw.length < 8) return "Password must be at least 8 characters"
+    if (!/[A-Z]/.test(pw)) return "Password must contain at least one uppercase letter (A–Z)"
+    if (!/[0-9]/.test(pw)) return "Password must contain at least one number (0–9)"
+    return null
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
 
     if (!formData.name.trim()) { setError("Please enter your full name"); return }
     if (!formData.email.trim()) { setError("Please enter your email address"); return }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) { setError("Please enter a valid email address"); return }
     if (!formData.phone.trim()) { setError("Please enter your phone number"); return }
     if (!formData.password) { setError("Please create a password"); return }
-    if (formData.password.length < 6) { setError("Password must be at least 6 characters"); return }
+
+    const pwError = validatePassword(formData.password)
+    if (pwError) { setError(pwError); return }
+
     if (formData.password !== formData.confirmPassword) { setError("Passwords do not match"); return }
     if (!agreedToTerms) { setError("Please agree to the Terms of Service to continue"); return }
 
@@ -121,6 +154,7 @@ function RegisterForm() {
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     className="h-11"
+                    maxLength={100}
                   />
                 </div>
 
@@ -133,6 +167,7 @@ function RegisterForm() {
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     className="h-11"
+                    maxLength={200}
                   />
                 </div>
 
@@ -145,6 +180,7 @@ function RegisterForm() {
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     className="h-11"
+                    maxLength={20}
                   />
                 </div>
 
@@ -157,6 +193,7 @@ function RegisterForm() {
                     value={formData.location}
                     onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                     className="h-11"
+                    maxLength={100}
                   />
                 </div>
 
@@ -166,10 +203,11 @@ function RegisterForm() {
                     <Input
                       id="password"
                       type={showPassword ? "text" : "password"}
-                      placeholder="Minimum 6 characters"
+                      placeholder="Min 8 chars, 1 uppercase, 1 number"
                       value={formData.password}
                       onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                       className="h-11 pr-11"
+                      maxLength={100}
                     />
                     <button
                       type="button"
@@ -179,6 +217,7 @@ function RegisterForm() {
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
                   </div>
+                  <PasswordStrengthHint password={formData.password} />
                 </div>
 
                 <div className="space-y-1.5 col-span-2">
@@ -190,11 +229,12 @@ function RegisterForm() {
                     value={formData.confirmPassword}
                     onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                     className="h-11"
+                    maxLength={100}
                   />
                 </div>
               </div>
 
-              {/* Terms — custom styled checkbox with clear error */}
+              {/* Terms */}
               <button
                 type="button"
                 onClick={() => setAgreedToTerms(!agreedToTerms)}

@@ -9,8 +9,9 @@ import { Badge } from "@/components/ui/badge"
 import {
   MapPin, Phone, User, Package, ArrowLeft, Loader2, AlertCircle,
   CalendarDays, MessageCircle, Star, CheckCircle2, ShoppingCart,
-  TrendingUp, Award, Shield, Leaf, ChevronRight,
+  TrendingUp, Award, Shield, Leaf, ChevronRight, Flag,
 } from "lucide-react"
+import { ReportModal } from "@/components/report-modal"
 
 type FarmerListing = Omit<ApiListing, "farmerId" | "farmerName" | "isActive">
 
@@ -72,6 +73,7 @@ export default function FarmerProfilePage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
   const [activeTab, setActiveTab] = useState<"listings" | "reviews" | "about">("listings")
+  const [showReport, setShowReport] = useState(false)
 
   useEffect(() => {
     if (isNaN(farmerId)) { setError(true); setLoading(false); return }
@@ -189,6 +191,12 @@ export default function FarmerProfilePage() {
                   </Button>
                 </a>
               )}
+              <button
+                onClick={() => setShowReport(true)}
+                className="flex items-center justify-center gap-1.5 text-xs text-white/40 hover:text-red-300 transition-colors mt-1"
+              >
+                <Flag className="w-3 h-3" /> Report this farmer
+              </button>
             </div>
           </div>
 
@@ -555,6 +563,15 @@ export default function FarmerProfilePage() {
         </div>
       </main>
       <Footer />
+
+      {showReport && farmer && (
+        <ReportModal
+          targetType="user"
+          targetId={farmer.id}
+          targetName={farmer.name}
+          onClose={() => setShowReport(false)}
+        />
+      )}
     </div>
   )
 }

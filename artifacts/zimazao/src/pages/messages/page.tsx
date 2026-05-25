@@ -126,6 +126,7 @@ export default function MessagesPage() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const audioChunksRef = useRef<Blob[]>([])
   const recordTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const recordStartRef = useRef<number>(0)
 
   const bottomRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -246,7 +247,10 @@ export default function MessagesPage() {
       mr.start()
       setRecording(true)
       setRecordingTime(0)
-      recordTimerRef.current = setInterval(() => setRecordingTime((t) => t + 1), 1000)
+      recordStartRef.current = Date.now()
+      recordTimerRef.current = setInterval(() => {
+        setRecordingTime(Math.floor((Date.now() - recordStartRef.current) / 1000))
+      }, 100)
     } catch {
       alert("Microphone access is needed to record voice notes.")
     }

@@ -1,4 +1,3 @@
-
 import { useState } from "react"
 import { Link } from "wouter"
 import { useLocation } from "wouter"
@@ -9,38 +8,79 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
-import { Leaf, Eye, EyeOff, Loader2 } from "lucide-react"
+import { Leaf, Eye, EyeOff, Loader2, AlertTriangle } from "lucide-react"
+
+const RATE_LIMIT_KEY = "zimazao_login_attempts"
+const MAX_ATTEMPTS = 5
+const LOCKOUT_MS = 15 * 60 * 1000
+
+interface LoginRecord { count: number; lockedUntil: number }
+
+function getRecord(): LoginRecord {
+  try { return JSON.parse(localStorage.getItem(RATE_LIMIT_KEY) ?? "{}") as LoginRecord }
+  catch { return { count: 0, lockedUntil: 0 } }
+}
+function saveRecord(r: LoginRecord) { localStorage.setItem(RATE_LIMIT_KEY, JSON.stringify(r)) }
 
 function LoginForm() {
   const [, setLocation] = useLocation()
   const { login, isLoading } = useAuth()
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState("")
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  })
+  const [attemptsLeft, setAttemptsLeft] = useState<number | null>(null)
+  const [formData, setFormData] = useState({ email: "", password: "" })
+
+  function isLocked(): { locked: boolean; remaining: number } {
+    const r = getRecord()
+    const now = Date.now()
+    if (r.lockedUntil && r.lockedUntil > now) {
+      return { locked: true, remaining: Math.ceil((r.lockedUntil - now) / 60000) }
+    }
+    if (r.lockedUntil && r.lockedUntil <= now) {
+      saveRecord({ count: 0, lockedUntil: 0 })
+    }
+    return { locked: false, remaining: 0 }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
 
     if (!formData.email || !formData.password) {
-      setError("Please fill in all fields")
-      return
+      setError("Please fill in all fields"); return
+    }
+
+    const { locked, remaining } = isLocked()
+    if (locked) {
+      setError(`Too many failed attempts. Try again in ${remaining} minute${remaining !== 1 ? "s" : ""}.`); return
     }
 
     try {
       const success = await login(formData.email, formData.password)
       if (success) {
+        saveRecord({ count: 0, lockedUntil: 0 })
         setLocation("/dashboard")
       } else {
-        setError("Incorrect email or password. Please try again.")
+        const r = getRecord()
+        r.count = (r.count || 0) + 1
+        if (r.count >= MAX_ATTEMPTS) {
+          r.lockedUntil = Date.now() + LOCKOUT_MS
+          saveRecord(r)
+          setError("Too many failed attempts. Your account is locked for 15 minutes.")
+          setAttemptsLeft(0)
+        } else {
+          saveRecord(r)
+          const left = MAX_ATTEMPTS - r.count
+          setAttemptsLeft(left)
+          setError(`Incorrect email or password. ${left} attempt${left !== 1 ? "s" : ""} remaining.`)
+        }
       }
     } catch {
       setError("Something went wrong. Please try again.")
     }
   }
+
+  const { locked, remaining } = isLocked()
 
   return (
     <div className="min-h-screen bg-background">
@@ -53,17 +93,26 @@ function LoginForm() {
                 <Leaf className="w-8 h-8 text-primary-foreground" />
               </div>
               <CardTitle className="text-2xl">Welcome Back</CardTitle>
-              <CardDescription>
-                Sign in to your Zimazao account
-              </CardDescription>
+              <CardDescription>Sign in to your Zimazao account</CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
-                {error && (
-                  <div className="bg-destructive/10 text-destructive text-sm p-3 rounded-lg">
-                    {error}
+                {locked ? (
+                  <div className="flex items-start gap-3 bg-destructive/10 border border-destructive/20 text-destructive text-sm p-4 rounded-xl">
+                    <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-semibold">Account temporarily locked</p>
+                      <p className="text-xs mt-0.5">Too many failed attempts. Try again in {remaining} minute{remaining !== 1 ? "s" : ""}.</p>
+                    </div>
                   </div>
-                )}
+                ) : error ? (
+                  <div className="bg-destructive/10 border border-destructive/20 text-destructive text-sm p-3 rounded-xl">
+                    {error}
+                    {attemptsLeft !== null && attemptsLeft <= 2 && attemptsLeft > 0 && (
+                      <p className="text-xs mt-1 font-medium">⚠️ {attemptsLeft} attempt{attemptsLeft !== 1 ? "s" : ""} left before lockout</p>
+                    )}
+                  </div>
+                ) : null}
 
                 <div className="space-y-2">
                   <Label htmlFor="email">Email Address</Label>
@@ -74,6 +123,9 @@ function LoginForm() {
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     className="h-12"
+                    disabled={locked}
+                    maxLength={200}
+                    autoComplete="email"
                   />
                 </div>
 
@@ -87,6 +139,9 @@ function LoginForm() {
                       value={formData.password}
                       onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                       className="h-12 pr-12"
+                      disabled={locked}
+                      maxLength={200}
+                      autoComplete="current-password"
                     />
                     <button
                       type="button"
@@ -99,12 +154,9 @@ function LoginForm() {
                   </div>
                 </div>
 
-                <Button type="submit" className="w-full h-12 text-lg" disabled={isLoading}>
+                <Button type="submit" className="w-full h-12 text-lg" disabled={isLoading || locked}>
                   {isLoading ? (
-                    <>
-                      <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                      Signing in...
-                    </>
+                    <><Loader2 className="w-5 h-5 mr-2 animate-spin" />Signing in...</>
                   ) : (
                     "Sign In"
                   )}
@@ -127,7 +179,5 @@ function LoginForm() {
 }
 
 export default function LoginPage() {
-  return (
-    <LoginForm />
-  )
+  return <LoginForm />
 }
