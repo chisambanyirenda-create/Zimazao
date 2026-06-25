@@ -1,0 +1,1 @@
+- [DB architecture](db-architecture.md) — dev uses Replit native DB, prod uses Supabase; NEVER swap priority or dev breaks.

@@ -1,6 +1,6 @@
 /**
  * Idempotent startup migrations.
- * Runs every time the server starts — all statements use IF NOT EXISTS / IF NOT EXISTS guards.
+ * Runs every time the server starts — all statements use IF NOT EXISTS / ADD COLUMN IF NOT EXISTS guards.
  */
 import { db } from "@workspace/db";
 import { sql } from "drizzle-orm";
@@ -8,36 +8,66 @@ import { logger } from "./logger";
 
 export async function runMigrations(): Promise<void> {
   try {
-    // ── Listings: add optional geo columns ───────────────────────────────────
+    // ── Enums (safe to re-run) ────────────────────────────────────────────────
     await db.execute(sql`
-      ALTER TABLE listings ADD COLUMN IF NOT EXISTS latitude  NUMERIC(10,6);
-      ALTER TABLE listings ADD COLUMN IF NOT EXISTS longitude NUMERIC(10,6);
+      DO $$ BEGIN CREATE TYPE user_type AS ENUM ('farmer','buyer'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+      DO $$ BEGIN CREATE TYPE category AS ENUM ('cereals','legumes','tubers','oilseeds','vegetables','fruits','livestock','poultry','other'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+      DO $$ BEGIN CREATE TYPE order_status AS ENUM ('pending','confirmed','shipped','delivered','cancelled'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+      DO $$ BEGIN CREATE TYPE subscription_plan AS ENUM ('free','pro'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+      DO $$ BEGIN CREATE TYPE subscription_status AS ENUM ('active','expired','cancelled'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+      DO $$ BEGIN CREATE TYPE payment_status AS ENUM ('pending','successful','failed'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+      DO $$ BEGIN CREATE TYPE payment_method AS ENUM ('mtn_mobile_money','airtel_money','card'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
     `);
 
-    // ── Users: optional profile columns ─────────────────────────────────────
+    // ── Users: add missing columns ────────────────────────────────────────────
     await db.execute(sql`
-      ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_picture  TEXT;
-      ALTER TABLE users ADD COLUMN IF NOT EXISTS buyer_rating      NUMERIC(3,2) NOT NULL DEFAULT 0;
-      ALTER TABLE users ADD COLUMN IF NOT EXISTS buyer_rating_count INTEGER NOT NULL DEFAULT 0;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_picture    TEXT;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS wallet_balance     NUMERIC(12,2) NOT NULL DEFAULT 0;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS buyer_rating       NUMERIC(3,2)  NOT NULL DEFAULT 0;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS buyer_rating_count INTEGER       NOT NULL DEFAULT 0;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS is_admin           BOOLEAN       NOT NULL DEFAULT false;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS is_banned          BOOLEAN       NOT NULL DEFAULT false;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS banned_until       TIMESTAMP;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS ban_reason         TEXT;
     `);
 
-    // ── Orders: extra columns ────────────────────────────────────────────────
+    // ── Listings: add missing columns ─────────────────────────────────────────
     await db.execute(sql`
-      ALTER TABLE orders ADD COLUMN IF NOT EXISTS payment_method        TEXT NOT NULL DEFAULT 'online';
-      ALTER TABLE orders ADD COLUMN IF NOT EXISTS escrow_status         TEXT;
+      ALTER TABLE listings ADD COLUMN IF NOT EXISTS latitude    NUMERIC(10,6);
+      ALTER TABLE listings ADD COLUMN IF NOT EXISTS longitude   NUMERIC(10,6);
+      ALTER TABLE listings ADD COLUMN IF NOT EXISTS description TEXT;
+      ALTER TABLE listings ADD COLUMN IF NOT EXISTS image_url   TEXT;
+      ALTER TABLE listings ADD COLUMN IF NOT EXISTS is_active   BOOLEAN NOT NULL DEFAULT true;
+    `);
+
+    // category column — TEXT fallback if enum type doesn't exist yet
+    await db.execute(sql`
+      ALTER TABLE listings ADD COLUMN IF NOT EXISTS category TEXT NOT NULL DEFAULT 'other';
+    `);
+
+    // ── Orders: add missing columns ───────────────────────────────────────────
+    await db.execute(sql`
+      ALTER TABLE orders ADD COLUMN IF NOT EXISTS commission           NUMERIC(10,2) NOT NULL DEFAULT 0;
+      ALTER TABLE orders ADD COLUMN IF NOT EXISTS payment_method       TEXT NOT NULL DEFAULT 'online';
+      ALTER TABLE orders ADD COLUMN IF NOT EXISTS escrow_status        TEXT;
       ALTER TABLE orders ADD COLUMN IF NOT EXISTS delivery_confirmed_at TIMESTAMP;
-      ALTER TABLE orders ADD COLUMN IF NOT EXISTS auto_release_at       TIMESTAMP;
-      ALTER TABLE orders ADD COLUMN IF NOT EXISTS dispute_id            INTEGER;
-      ALTER TABLE orders ADD COLUMN IF NOT EXISTS tracking_token        TEXT;
+      ALTER TABLE orders ADD COLUMN IF NOT EXISTS auto_release_at      TIMESTAMP;
+      ALTER TABLE orders ADD COLUMN IF NOT EXISTS dispute_id           INTEGER;
+      ALTER TABLE orders ADD COLUMN IF NOT EXISTS tracking_token       TEXT;
     `);
 
-    // ── Messages: extra columns ──────────────────────────────────────────────
+    // ── Messages: add missing columns ─────────────────────────────────────────
     await db.execute(sql`
-      ALTER TABLE messages ADD COLUMN IF NOT EXISTS is_read         BOOLEAN NOT NULL DEFAULT false;
+      ALTER TABLE messages ADD COLUMN IF NOT EXISTS is_read          BOOLEAN NOT NULL DEFAULT false;
       ALTER TABLE messages ADD COLUMN IF NOT EXISTS related_order_id INTEGER;
     `);
 
-    // ── Reviews table ────────────────────────────────────────────────────────
+    // ── Subscriptions: ensure plan column exists ──────────────────────────────
+    await db.execute(sql`
+      ALTER TABLE subscriptions ADD COLUMN IF NOT EXISTS plan_id TEXT;
+    `);
+
+    // ── Reviews table ─────────────────────────────────────────────────────────
     await db.execute(sql`
       CREATE TABLE IF NOT EXISTS reviews (
         id          SERIAL PRIMARY KEY,
@@ -50,7 +80,7 @@ export async function runMigrations(): Promise<void> {
       );
     `);
 
-    // ── Notifications table ──────────────────────────────────────────────────
+    // ── Notifications table ───────────────────────────────────────────────────
     await db.execute(sql`
       CREATE TABLE IF NOT EXISTS notifications (
         id         SERIAL PRIMARY KEY,
@@ -64,7 +94,7 @@ export async function runMigrations(): Promise<void> {
       );
     `);
 
-    // ── Disputes table ───────────────────────────────────────────────────────
+    // ── Disputes table ────────────────────────────────────────────────────────
     await db.execute(sql`
       CREATE TABLE IF NOT EXISTS disputes (
         id                SERIAL PRIMARY KEY,
@@ -82,7 +112,7 @@ export async function runMigrations(): Promise<void> {
       );
     `);
 
-    // ── Transaction events table ─────────────────────────────────────────────
+    // ── Transaction events ────────────────────────────────────────────────────
     await db.execute(sql`
       CREATE TABLE IF NOT EXISTS transaction_events (
         id          SERIAL PRIMARY KEY,
@@ -94,7 +124,7 @@ export async function runMigrations(): Promise<void> {
       );
     `);
 
-    // ── Withdrawal requests table ─────────────────────────────────────────────
+    // ── Withdrawal requests ───────────────────────────────────────────────────
     await db.execute(sql`
       CREATE TABLE IF NOT EXISTS withdrawal_requests (
         id                   SERIAL PRIMARY KEY,
@@ -110,7 +140,7 @@ export async function runMigrations(): Promise<void> {
       );
     `);
 
-    // ── Reports table ────────────────────────────────────────────────────────
+    // ── Reports table ─────────────────────────────────────────────────────────
     await db.execute(sql`
       CREATE TABLE IF NOT EXISTS reports (
         id            SERIAL PRIMARY KEY,
@@ -126,7 +156,7 @@ export async function runMigrations(): Promise<void> {
       );
     `);
 
-    // ── Sponsored products table ─────────────────────────────────────────────
+    // ── Sponsored products ────────────────────────────────────────────────────
     await db.execute(sql`
       CREATE TABLE IF NOT EXISTS sponsored_products (
         id             SERIAL PRIMARY KEY,
@@ -142,7 +172,7 @@ export async function runMigrations(): Promise<void> {
       );
     `);
 
-    // ── App settings defaults ─────────────────────────────────────────────────
+    // ── App settings ──────────────────────────────────────────────────────────
     await db.execute(sql`
       CREATE TABLE IF NOT EXISTS app_settings (
         key        TEXT PRIMARY KEY,
@@ -150,16 +180,17 @@ export async function runMigrations(): Promise<void> {
         updated_at TIMESTAMP NOT NULL DEFAULT NOW()
       );
       INSERT INTO app_settings (key, value) VALUES
-        ('commission_rate',   '3'),
-        ('pro_price_zmw',     '150'),
-        ('free_listing_limit','3'),
-        ('free_scan_limit',   '5'),
-        ('maintenance_mode',  'false')
+        ('commission_rate',    '3'),
+        ('pro_price_zmw',      '150'),
+        ('free_listing_limit', '3'),
+        ('free_scan_limit',    '5'),
+        ('maintenance_mode',   'false')
       ON CONFLICT (key) DO NOTHING;
     `);
 
     logger.info("Database migrations completed");
   } catch (err: any) {
     logger.error({ err }, "Migration error (non-fatal)");
+    throw err;
   }
 }

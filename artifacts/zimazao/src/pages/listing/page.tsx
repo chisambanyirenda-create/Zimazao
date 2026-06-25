@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label"
 import {
   MapPin, Phone, MessageCircle, ShoppingCart, ArrowLeft,
   Loader2, User, Package, CalendarDays, CheckCircle, AlertCircle,
-  Star, ThumbsUp, Award, Tag, Flame, Flag,
+  Star, Award, Tag, Flame, Flag,
 } from "lucide-react"
 import { ReportModal } from "@/components/report-modal"
 
@@ -21,30 +21,13 @@ const CROP_EMOJI: Record<string, string> = {
   vegetables: "🥬", fruits: "🍎", other: "🌿", livestock: "🐄", poultry: "🐔",
 }
 
-type Review = {
+type RealReview = {
   id: number
-  reviewer: string
+  buyerId: number
+  buyerName: string | null
   rating: number
-  comment: string
-  date: string
-  helpful: number
-  verified: boolean
-}
-
-const DEMO_REVIEWS: Record<number, Review[]> = {
-  1: [
-    { id: 1, reviewer: "Chanda M.", rating: 5, comment: "Excellent quality maize! Well dried and clean. John delivered on time and communication was great. Will buy again.", date: "2 days ago", helpful: 14, verified: true },
-    { id: 2, reviewer: "Bwalya T.", rating: 5, comment: "Best maize I've ordered on Zimazao. Arrived clean and well-bagged. Highly recommend.", date: "1 week ago", helpful: 9, verified: true },
-    { id: 3, reviewer: "Mwale P.", rating: 4, comment: "Good quality, fair price. Minor issue with one bag but farmer resolved it quickly.", date: "2 weeks ago", helpful: 5, verified: false },
-  ],
-  2: [
-    { id: 4, reviewer: "Zulu J.", rating: 5, comment: "Grade A groundnuts, perfectly shelled and clean. Ready for oil pressing. Great value!", date: "3 days ago", helpful: 11, verified: true },
-    { id: 5, reviewer: "Phiri R.", rating: 4, comment: "Good quality groundnuts. Mary is very responsive and professional.", date: "2 weeks ago", helpful: 7, verified: true },
-  ],
-  3: [
-    { id: 6, reviewer: "Mutale K.", rating: 5, comment: "High protein soybeans as described. Perfect for my poultry feed operation.", date: "5 days ago", helpful: 8, verified: true },
-    { id: 7, reviewer: "Namukolo B.", rating: 4, comment: "Good soybeans. Slightly less quantity than listed but Peter made it right.", date: "3 weeks ago", helpful: 3, verified: false },
-  ],
+  comment: string | null
+  createdAt: string
 }
 
 function StarRating({ value, size = "sm" }: { value: number; size?: "sm" | "lg" }) {
@@ -58,28 +41,55 @@ function StarRating({ value, size = "sm" }: { value: number; size?: "sm" | "lg" 
   )
 }
 
-function ReviewSection({ listingId }: { listingId: number }) {
+function timeAgo(iso: string) {
+  const diff = Date.now() - new Date(iso).getTime()
+  const d = Math.floor(diff / 86400000)
+  if (d === 0) return "Today"
+  if (d === 1) return "Yesterday"
+  if (d < 7) return `${d} days ago`
+  if (d < 30) return `${Math.floor(d / 7)} week${Math.floor(d / 7) > 1 ? "s" : ""} ago`
+  return new Date(iso).toLocaleDateString("en-ZM", { month: "short", year: "numeric" })
+}
+
+function ReviewSection({ farmerId, listingFarmerId }: { farmerId: number; listingFarmerId: number }) {
   const { user } = useAuth()
-  const reviews = DEMO_REVIEWS[listingId] ?? DEMO_REVIEWS[1]
-  const [helpfulSet, setHelpfulSet] = useState<Set<number>>(new Set())
+  const [reviews, setReviews] = useState<RealReview[]>([])
+  const [avgRating, setAvgRating] = useState(0)
+  const [loading, setLoading] = useState(true)
   const [userRating, setUserRating] = useState(0)
   const [hoverRating, setHoverRating] = useState(0)
   const [comment, setComment] = useState("")
+  const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
-  const avg = reviews.reduce((s, r) => s + r.rating, 0) / reviews.length
+  const fetchReviews = async () => {
+    try {
+      const data = await api.reviews.forFarmer(farmerId)
+      setReviews(data.reviews)
+      setAvgRating(data.averageRating)
+    } catch {}
+    finally { setLoading(false) }
+  }
+
+  useEffect(() => { fetchReviews() }, [farmerId])
+
   const dist = [5,4,3,2,1].map((n) => ({
     n,
     count: reviews.filter((r) => r.rating === n).length,
-    pct: (reviews.filter((r) => r.rating === n).length / reviews.length) * 100,
+    pct: reviews.length > 0 ? (reviews.filter((r) => r.rating === n).length / reviews.length) * 100 : 0,
   }))
 
-  const toggleHelpful = (id: number) => {
-    setHelpfulSet((prev) => {
-      const next = new Set(prev)
-      next.has(id) ? next.delete(id) : next.add(id)
-      return next
-    })
+  const handleSubmit = async () => {
+    if (!userRating) return
+    setSubmitting(true); setSubmitError(null)
+    try {
+      await api.reviews.create({ orderId: 0, farmerId: listingFarmerId, rating: userRating, comment: comment.trim() || undefined })
+      setSubmitted(true)
+      fetchReviews()
+    } catch (e: any) {
+      setSubmitError(e.message || "Could not submit review")
+    } finally { setSubmitting(false) }
   }
 
   return (
@@ -90,116 +100,106 @@ function ReviewSection({ listingId }: { listingId: number }) {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Aggregate */}
-        <div className="flex flex-col sm:flex-row gap-6 p-4 bg-muted/40 rounded-xl">
-          <div className="text-center shrink-0">
-            <p className="text-5xl font-bold text-foreground">{avg.toFixed(1)}</p>
-            <StarRating value={avg} size="lg" />
-            <p className="text-xs text-muted-foreground mt-1">{reviews.length} reviews</p>
-          </div>
-          <div className="flex-1 space-y-1.5">
-            {dist.map(({ n, count, pct }) => (
-              <div key={n} className="flex items-center gap-2 text-sm">
-                <span className="w-4 text-right text-muted-foreground text-xs">{n}</span>
-                <Star className="w-3 h-3 fill-yellow-400 text-yellow-400 shrink-0" />
-                <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
-                  <div className="h-full bg-yellow-400 rounded-full transition-all" style={{ width: `${pct}%` }} />
-                </div>
-                <span className="w-4 text-xs text-muted-foreground">{count}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Reviews list */}
-        <div className="space-y-4">
-          {reviews.map((review) => (
-            <div key={review.id} className="border-b border-border pb-4 last:border-0 last:pb-0">
-              <div className="flex items-start justify-between gap-2 mb-2">
-                <div className="flex items-center gap-2">
-                  <div className="w-9 h-9 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
-                    <span className="text-sm font-bold text-primary">{review.reviewer[0]}</span>
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <p className="font-semibold text-sm">{review.reviewer}</p>
-                      {review.verified && (
-                        <Badge className="h-4 text-[10px] bg-primary/10 text-primary border-0 gap-0.5 px-1.5">
-                          <CheckCircle className="w-2.5 h-2.5" /> Verified
-                        </Badge>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <StarRating value={review.rating} />
-                      <span className="text-xs text-muted-foreground">{review.date}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <p className="text-sm text-muted-foreground mb-2 ml-11">{review.comment}</p>
-              <div className="ml-11">
-                <button
-                  onClick={() => toggleHelpful(review.id)}
-                  className={`flex items-center gap-1.5 text-xs transition-colors ${helpfulSet.has(review.id) ? "text-primary font-medium" : "text-muted-foreground hover:text-foreground"}`}
-                >
-                  <ThumbsUp className="w-3 h-3" />
-                  Helpful ({review.helpful + (helpfulSet.has(review.id) ? 1 : 0)})
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Write a review */}
-        {user ? (
-          submitted ? (
-            <div className="flex items-center gap-3 p-4 bg-green-50 rounded-xl text-green-700">
-              <CheckCircle className="w-5 h-5 shrink-0" />
-              <div>
-                <p className="font-semibold text-sm">Review submitted!</p>
-                <p className="text-xs text-green-600">Thank you for helping other buyers.</p>
-              </div>
-            </div>
-          ) : (
-            <div className="border border-border rounded-xl p-4 space-y-4">
-              <p className="font-semibold text-sm">Leave a Review</p>
-              <div>
-                <p className="text-xs text-muted-foreground mb-2">Your rating</p>
-                <div className="flex gap-1">
-                  {[1,2,3,4,5].map((i) => (
-                    <button
-                      key={i}
-                      onMouseEnter={() => setHoverRating(i)}
-                      onMouseLeave={() => setHoverRating(0)}
-                      onClick={() => setUserRating(i)}
-                    >
-                      <Star className={`w-7 h-7 transition-all ${i <= (hoverRating || userRating) ? "fill-yellow-400 text-yellow-400 scale-110" : "text-muted-foreground/30"}`} />
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <textarea
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
-                  placeholder="Share your experience with this product and seller…"
-                  className="w-full h-24 px-3 py-2 rounded-lg border border-input bg-background text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring"
-                />
-              </div>
-              <Button
-                onClick={() => setSubmitted(true)}
-                disabled={!userRating || !comment.trim()}
-                className="gap-2"
-              >
-                <Star className="w-4 h-4" /> Submit Review
-              </Button>
-            </div>
-          )
+        {loading ? (
+          <div className="flex justify-center py-6"><Loader2 className="w-5 h-5 animate-spin text-muted-foreground" /></div>
         ) : (
-          <div className="p-4 bg-muted/40 rounded-xl text-center">
-            <p className="text-sm text-muted-foreground mb-3">Sign in to leave a review</p>
-            <Link href="/login"><Button size="sm" variant="outline">Sign In</Button></Link>
-          </div>
+          <>
+            {/* Aggregate */}
+            <div className="flex flex-col sm:flex-row gap-6 p-4 bg-muted/40 rounded-xl">
+              <div className="text-center shrink-0">
+                <p className="text-5xl font-bold text-foreground">{avgRating > 0 ? avgRating.toFixed(1) : "—"}</p>
+                <StarRating value={avgRating} size="lg" />
+                <p className="text-xs text-muted-foreground mt-1">{reviews.length} review{reviews.length !== 1 ? "s" : ""}</p>
+              </div>
+              <div className="flex-1 space-y-1.5">
+                {dist.map(({ n, count, pct }) => (
+                  <div key={n} className="flex items-center gap-2 text-sm">
+                    <span className="w-4 text-right text-muted-foreground text-xs">{n}</span>
+                    <Star className="w-3 h-3 fill-yellow-400 text-yellow-400 shrink-0" />
+                    <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+                      <div className="h-full bg-yellow-400 rounded-full transition-all" style={{ width: `${pct}%` }} />
+                    </div>
+                    <span className="w-4 text-xs text-muted-foreground">{count}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Reviews list */}
+            {reviews.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-4">No reviews yet — be the first to review this farmer!</p>
+            ) : (
+              <div className="space-y-4">
+                {reviews.map((review) => (
+                  <div key={review.id} className="border-b border-border pb-4 last:border-0 last:pb-0">
+                    <div className="flex items-start gap-2 mb-2">
+                      <div className="w-9 h-9 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
+                        <span className="text-sm font-bold text-primary">{(review.buyerName ?? "B")[0]}</span>
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <p className="font-semibold text-sm">{review.buyerName ?? "Verified Buyer"}</p>
+                          <Badge className="h-4 text-[10px] bg-primary/10 text-primary border-0 gap-0.5 px-1.5">
+                            <CheckCircle className="w-2.5 h-2.5" /> Verified
+                          </Badge>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <StarRating value={review.rating} />
+                          <span className="text-xs text-muted-foreground">{timeAgo(review.createdAt)}</span>
+                        </div>
+                      </div>
+                    </div>
+                    {review.comment && (
+                      <p className="text-sm text-muted-foreground ml-11">{review.comment}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Write a review */}
+            {user && Number(user.id) !== listingFarmerId ? (
+              submitted ? (
+                <div className="flex items-center gap-3 p-4 bg-green-50 rounded-xl text-green-700">
+                  <CheckCircle className="w-5 h-5 shrink-0" />
+                  <div>
+                    <p className="font-semibold text-sm">Review submitted!</p>
+                    <p className="text-xs text-green-600">Thank you for helping other buyers.</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="border border-border rounded-xl p-4 space-y-4">
+                  <p className="font-semibold text-sm">Leave a Review</p>
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-2">Your rating</p>
+                    <div className="flex gap-1">
+                      {[1,2,3,4,5].map((i) => (
+                        <button key={i} onMouseEnter={() => setHoverRating(i)} onMouseLeave={() => setHoverRating(0)} onClick={() => setUserRating(i)}>
+                          <Star className={`w-7 h-7 transition-all ${i <= (hoverRating || userRating) ? "fill-yellow-400 text-yellow-400 scale-110" : "text-muted-foreground/30"}`} />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <textarea
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    placeholder="Share your experience with this product and seller…"
+                    className="w-full h-24 px-3 py-2 rounded-lg border border-input bg-background text-sm resize-none focus:outline-none focus:ring-2 focus:ring-ring"
+                  />
+                  {submitError && <p className="text-xs text-destructive">{submitError}</p>}
+                  <Button onClick={handleSubmit} disabled={!userRating || submitting} className="gap-2">
+                    {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Star className="w-4 h-4" />}
+                    Submit Review
+                  </Button>
+                </div>
+              )
+            ) : !user ? (
+              <div className="p-4 bg-muted/40 rounded-xl text-center">
+                <p className="text-sm text-muted-foreground mb-3">Sign in to leave a review</p>
+                <Link href="/login"><Button size="sm" variant="outline">Sign In</Button></Link>
+              </div>
+            ) : null}
+          </>
         )}
       </CardContent>
     </Card>
@@ -304,8 +304,6 @@ export default function ListingDetailPage() {
   )
 
   const emoji = CROP_EMOJI[listing.category] ?? "🌿"
-  const demoRating = 4 + ((listing.id % 5) * 0.2)
-  const demoReviewCount = 8 + (listing.id * 7)
 
   return (
     <div className="min-h-screen bg-background">
@@ -337,12 +335,6 @@ export default function ListingDetailPage() {
                           <Flame className="w-3 h-3" /> Hot Deal
                         </Badge>
                       )}
-                    </div>
-                    {/* Rating */}
-                    <div className="flex items-center gap-2 mt-2">
-                      <StarRating value={demoRating} />
-                      <span className="text-sm font-semibold">{demoRating.toFixed(1)}</span>
-                      <span className="text-sm text-muted-foreground">({demoReviewCount} reviews)</span>
                     </div>
                   </div>
                   <div className="text-right">
@@ -460,7 +452,7 @@ export default function ListingDetailPage() {
             )}
 
             {/* Ratings & Reviews */}
-            <ReviewSection listingId={listingId} />
+            <ReviewSection farmerId={listing.farmerId} listingFarmerId={listing.farmerId} />
           </div>
 
           {/* Right: Order Panel */}

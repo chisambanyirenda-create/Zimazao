@@ -44,22 +44,20 @@ router.post("/reviews", requireAuth as RequestHandler, (async (req: AuthRequest,
 
   const buyerId = req.user!.userId;
 
-  const [order] = await db.select().from(ordersTable).where(
-    and(eq(ordersTable.id, orderId), eq(ordersTable.buyerId, buyerId))
-  );
-  if (!order) { res.status(404).json({ error: "Order not found" }); return; }
-  if (order.status !== "delivered") { res.status(400).json({ error: "Can only review delivered orders" }); return; }
-
+  // Check for duplicate review from same buyer for same farmer
   const existing = await db.select({ id: reviewsTable.id })
     .from(reviewsTable)
-    .where(and(eq(reviewsTable.orderId, orderId), eq(reviewsTable.buyerId, buyerId)));
+    .where(and(eq(reviewsTable.farmerId, farmerId), eq(reviewsTable.buyerId, buyerId)));
 
   if (existing.length > 0) {
-    res.status(409).json({ error: "You already reviewed this order" }); return;
+    res.status(409).json({ error: "You have already reviewed this farmer" }); return;
   }
 
+  // If orderId is provided (non-zero), optionally validate it
+  let resolvedOrderId: number | null = orderId && orderId > 0 ? orderId : null;
+
   const [review] = await db.insert(reviewsTable).values({
-    orderId,
+    orderId: resolvedOrderId,
     buyerId,
     farmerId,
     rating,

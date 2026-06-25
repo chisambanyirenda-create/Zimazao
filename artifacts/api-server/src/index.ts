@@ -13,6 +13,7 @@ if (Number.isNaN(port) || port <= 0) {
   throw new Error(`Invalid port value: "${rawPort}"`);
 }
 
+// Start listening immediately, run migrations in background with retry
 app.listen(port, (err) => {
   if (err) {
     logger.error({ err }, "Error listening on port");
@@ -20,8 +21,17 @@ app.listen(port, (err) => {
   }
   logger.info({ port }, "Server listening");
 
-  // Run migrations after the pool has had time to warm up
-  setTimeout(() => {
-    runMigrations().catch((e) => logger.error({ err: e }, "Migration failed"));
-  }, 4000);
+  // Retry migration up to 5 times with 3s gap to allow pool to warm up
+  let attempts = 0;
+  const tryMigrate = () => {
+    attempts++;
+    runMigrations()
+      .then(() => logger.info("Migrations complete"))
+      .catch((e) => {
+        logger.warn({ err: e, attempt: attempts }, "Migration attempt failed");
+        if (attempts < 5) setTimeout(tryMigrate, 3000);
+        else logger.error({ err: e }, "Migrations permanently failed — app running in degraded mode");
+      });
+  };
+  setTimeout(tryMigrate, 2000);
 });
