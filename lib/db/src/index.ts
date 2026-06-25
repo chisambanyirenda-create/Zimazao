@@ -4,6 +4,7 @@ import * as schema from "./schema";
 
 const { Pool } = pg;
 
+// Supabase is the primary DB; fall back to Replit native DB for local dev
 const connectionString = (process.env.SUPABASE_DATABASE_URL || process.env.DATABASE_URL)?.trim();
 
 if (!connectionString) {

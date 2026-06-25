@@ -23,7 +23,6 @@ timeoutMs = 20000
 
 [userenv.shared]
 JWT_SECRET = "b777c8d8230bdf3b39c9d3c6011e7ea72c8b176ac507a767e25cca38d4e28bb4"
-SUPABASE_DATABASE_URL = "postgresql://postgres.uaeeovqcvvvlomntlprk:zimazao12345678910@aws-1-eu-central-1.pooler.supabase.com:6543/postgres"
 
 [[ports]]
 localPort = 8080

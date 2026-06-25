@@ -6,46 +6,100 @@ import { requireAuth, type AuthRequest } from "../middlewares/auth";
 const FREE_LISTING_LIMIT = 3;
 const router: IRouter = Router();
 
+// ── Helper: build base listing select (lat/lon fetched via raw SQL as fallback) ──
+async function queryListings(whereClause: string, params: any[]): Promise<any[]> {
+  try {
+    const result = await db.execute(
+      sql.raw(
+        `SELECT l.id, l.farmer_id as "farmerId", u.name as "farmerName",
+                l.crop_name as "cropName", l.price, l.unit, l.quantity,
+                l.location,
+                (SELECT l2.latitude  FROM listings l2 WHERE l2.id = l.id) as latitude,
+                (SELECT l2.longitude FROM listings l2 WHERE l2.id = l.id) as longitude,
+                l.category, l.description, l.image_url as "imageUrl",
+                l.is_active as "isActive", l.created_at as "createdAt"
+         FROM listings l
+         LEFT JOIN users u ON l.farmer_id = u.id
+         ${whereClause}`
+      )
+    );
+    return (result as any).rows ?? [];
+  } catch {
+    // Fallback without lat/lon if columns don't exist yet
+    const result = await db.execute(
+      sql.raw(
+        `SELECT l.id, l.farmer_id as "farmerId", u.name as "farmerName",
+                l.crop_name as "cropName", l.price, l.unit, l.quantity,
+                l.location, NULL as latitude, NULL as longitude,
+                l.category, l.description, l.image_url as "imageUrl",
+                l.is_active as "isActive", l.created_at as "createdAt"
+         FROM listings l
+         LEFT JOIN users u ON l.farmer_id = u.id
+         ${whereClause}`
+      )
+    );
+    return (result as any).rows ?? [];
+  }
+}
+
 router.get("/listings", async (req, res): Promise<void> => {
   const { category, location, search, minPrice, maxPrice, minQty, verifiedOnly, sort } =
     req.query as Record<string, string>;
 
-  const filters: any[] = [eq(listingsTable.isActive, true)];
-  if (category && category !== "all") filters.push(eq(listingsTable.category, category as any));
-  if (location && location !== "all") filters.push(ilike(listingsTable.location, `%${location}%`));
-  if (search) {
-    filters.push(
-      or(
-        ilike(listingsTable.cropName, `%${search}%`),
-        ilike(usersTable.name, `%${search}%`),
-        ilike(listingsTable.location, `%${search}%`),
-      )
-    );
-  }
-  if (minPrice) filters.push(gte(listingsTable.price, minPrice));
-  if (maxPrice) filters.push(lte(listingsTable.price, maxPrice));
+  const conditions: string[] = ["l.is_active = true"];
+  const params: any[] = [];
 
-  let rows = await db
-    .select({
-      id: listingsTable.id,
-      farmerId: listingsTable.farmerId,
-      farmerName: usersTable.name,
-      cropName: listingsTable.cropName,
-      price: listingsTable.price,
-      unit: listingsTable.unit,
-      quantity: listingsTable.quantity,
-      location: listingsTable.location,
-      latitude: listingsTable.latitude,
-      longitude: listingsTable.longitude,
-      category: listingsTable.category,
-      description: listingsTable.description,
-      imageUrl: listingsTable.imageUrl,
-      isActive: listingsTable.isActive,
-      createdAt: listingsTable.createdAt,
-    })
-    .from(listingsTable)
-    .leftJoin(usersTable, eq(listingsTable.farmerId, usersTable.id))
-    .where(and(...filters));
+  if (category && category !== "all" && category !== "deals") {
+    params.push(category);
+    conditions.push(`l.category = $${params.length}`);
+  }
+  if (location && location !== "all") {
+    params.push(`%${location}%`);
+    conditions.push(`l.location ILIKE $${params.length}`);
+  }
+  if (search) {
+    params.push(`%${search}%`);
+    const n = params.length;
+    conditions.push(`(l.crop_name ILIKE $${n} OR u.name ILIKE $${n} OR l.location ILIKE $${n})`);
+  }
+  if (minPrice) {
+    params.push(minPrice);
+    conditions.push(`l.price >= $${params.length}`);
+  }
+  if (maxPrice) {
+    params.push(maxPrice);
+    conditions.push(`l.price <= $${params.length}`);
+  }
+
+  const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
+
+  // Use raw SQL fallback approach
+  let rows: any[] = [];
+  try {
+    const q = `SELECT l.id, l.farmer_id as "farmerId", u.name as "farmerName",
+                      l.crop_name as "cropName", l.price, l.unit, l.quantity,
+                      l.location, l.category, l.description, l.image_url as "imageUrl",
+                      l.is_active as "isActive", l.created_at as "createdAt"
+               FROM listings l
+               LEFT JOIN users u ON l.farmer_id = u.id
+               ${where}`;
+    // Try with geo columns if they exist
+    try {
+      const withGeo = q.replace(
+        "l.is_active as",
+        "l.latitude, l.longitude, l.is_active as"
+      );
+      const result = await db.execute(sql.raw(withGeo));
+      rows = (result as any).rows ?? [];
+    } catch {
+      // Fall back without geo columns
+      const result = await db.execute(sql.raw(q));
+      rows = ((result as any).rows ?? []).map((r: any) => ({ ...r, latitude: null, longitude: null }));
+    }
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+    return;
+  }
 
   if (minQty) {
     const min = parseFloat(minQty);
@@ -56,7 +110,7 @@ router.get("/listings", async (req, res): Promise<void> => {
     const proSubs = await db
       .select({ userId: subscriptionsTable.userId })
       .from(subscriptionsTable)
-      .where(and(eq(subscriptionsTable.planId, "pro"), eq(subscriptionsTable.status, "active")));
+      .where(and(eq(subscriptionsTable.plan, "pro"), eq(subscriptionsTable.status, "active")));
     const proIds = new Set(proSubs.map((s) => s.userId));
     rows = rows.filter((r) => r.farmerId != null && proIds.has(r.farmerId));
   }
@@ -73,34 +127,40 @@ router.get("/listings/:id", async (req, res): Promise<void> => {
   const id = parseInt(req.params.id, 10);
   if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }
 
-  const [listing] = await db
-    .select({
-      id: listingsTable.id,
-      farmerId: listingsTable.farmerId,
-      farmerName: usersTable.name,
-      cropName: listingsTable.cropName,
-      price: listingsTable.price,
-      unit: listingsTable.unit,
-      quantity: listingsTable.quantity,
-      location: listingsTable.location,
-      latitude: listingsTable.latitude,
-      longitude: listingsTable.longitude,
-      category: listingsTable.category,
-      description: listingsTable.description,
-      imageUrl: listingsTable.imageUrl,
-      isActive: listingsTable.isActive,
-      createdAt: listingsTable.createdAt,
-    })
-    .from(listingsTable)
-    .leftJoin(usersTable, eq(listingsTable.farmerId, usersTable.id))
-    .where(eq(listingsTable.id, id));
+  let listing: any = null;
+  try {
+    // Try with geo columns
+    const withGeo = await db.execute(sql`
+      SELECT l.id, l.farmer_id as "farmerId", u.name as "farmerName",
+             l.crop_name as "cropName", l.price, l.unit, l.quantity,
+             l.location, l.latitude, l.longitude, l.category, l.description,
+             l.image_url as "imageUrl", l.is_active as "isActive", l.created_at as "createdAt"
+      FROM listings l
+      LEFT JOIN users u ON l.farmer_id = u.id
+      WHERE l.id = ${id}
+    `);
+    listing = ((withGeo as any).rows ?? [])[0] ?? null;
+  } catch {
+    // Fallback without geo
+    const noGeo = await db.execute(sql`
+      SELECT l.id, l.farmer_id as "farmerId", u.name as "farmerName",
+             l.crop_name as "cropName", l.price, l.unit, l.quantity,
+             l.location, NULL as latitude, NULL as longitude, l.category, l.description,
+             l.image_url as "imageUrl", l.is_active as "isActive", l.created_at as "createdAt"
+      FROM listings l
+      LEFT JOIN users u ON l.farmer_id = u.id
+      WHERE l.id = ${id}
+    `);
+    listing = ((noGeo as any).rows ?? [])[0] ?? null;
+  }
 
   if (!listing) { res.status(404).json({ error: "Listing not found" }); return; }
 
   const ratingRows = await db
     .select({ avgRating: avg(reviewsTable.rating), total: count(reviewsTable.id) })
     .from(reviewsTable)
-    .where(eq(reviewsTable.farmerId, listing.farmerId!));
+    .where(eq(reviewsTable.farmerId, listing.farmerId))
+    .catch(() => [{ avgRating: null, total: 0 }]);
 
   res.json({
     ...listing,
@@ -122,7 +182,7 @@ router.post("/listings", requireAuth, async (req: AuthRequest, res): Promise<voi
     .from(subscriptionsTable)
     .where(and(eq(subscriptionsTable.userId, farmerId), eq(subscriptionsTable.status, "active")));
 
-  const isPro = sub?.planId === "pro";
+  const isPro = sub?.plan === "pro";
   if (!isPro) {
     const [{ value: activeCount }] = await db
       .select({ value: count() })
@@ -136,11 +196,24 @@ router.post("/listings", requireAuth, async (req: AuthRequest, res): Promise<voi
     }
   }
 
-  const [listing] = await db.insert(listingsTable).values({
-    farmerId, cropName, price: String(price), unit, quantity: String(quantity),
-    location, category, description: description || null, imageUrl: imageUrl || null,
-    latitude: latitude ? String(latitude) : null, longitude: longitude ? String(longitude) : null,
-  }).returning();
+  // Insert with geo columns if they exist, fallback without
+  let listing: any;
+  try {
+    [listing] = await db.insert(listingsTable).values({
+      farmerId, cropName, price: String(price), unit, quantity: String(quantity),
+      location, category, description: description || null, imageUrl: imageUrl || null,
+      latitude: latitude ? String(latitude) : null, longitude: longitude ? String(longitude) : null,
+    }).returning();
+  } catch {
+    // If geo columns don't exist, insert without them
+    const result = await db.execute(sql`
+      INSERT INTO listings (farmer_id, crop_name, price, unit, quantity, location, category, description, image_url, is_active)
+      VALUES (${farmerId}, ${cropName}, ${String(price)}, ${unit}, ${String(quantity)}, ${location}, ${category},
+              ${description || null}, ${imageUrl || null}, true)
+      RETURNING *
+    `);
+    listing = ((result as any).rows ?? [])[0];
+  }
 
   res.status(201).json(listing);
 });
