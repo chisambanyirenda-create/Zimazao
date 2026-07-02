@@ -66,6 +66,11 @@ export default defineConfig({
     fs: {
       strict: true,
     },
+    // On Replit a shared reverse proxy routes /api to the API server; when
+    // running locally (no REPL_ID) the dev server proxies it instead.
+    proxy: process.env.REPL_ID
+      ? undefined
+      : { "/api": process.env.API_PROXY_TARGET ?? "http://localhost:8080" },
   },
   preview: {
     port,
