@@ -8,7 +8,13 @@ const router: IRouter = Router();
 const FLW_SECRET_KEY = process.env.FLUTTERWAVE_SECRET_KEY || "";
 const FLW_BASE_URL = "https://api.flutterwave.com/v3";
 
-async function flwRequest(path: string, method: string, body?: object) {
+interface FlwResponse {
+  status?: string;
+  message?: string;
+  data?: { status?: string } & Record<string, unknown>;
+}
+
+async function flwRequest(path: string, method: string, body?: object): Promise<FlwResponse> {
   const res = await fetch(`${FLW_BASE_URL}${path}`, {
     method,
     headers: {
@@ -17,7 +23,7 @@ async function flwRequest(path: string, method: string, body?: object) {
     },
     body: body ? JSON.stringify(body) : undefined,
   });
-  return res.json();
+  return (await res.json()) as FlwResponse;
 }
 
 router.post("/payments/initiate", requireAuth, async (req: AuthRequest, res): Promise<void> => {

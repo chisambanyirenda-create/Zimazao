@@ -91,7 +91,7 @@ router.patch("/admin/reports/:id", requireAuth as RequestHandler, (async (req: A
     res.status(403).json({ error: "Admin access required" }); return;
   }
 
-  const id = parseInt(req.params.id, 10);
+  const id = parseInt(String(req.params.id), 10);
   const { status } = req.body;
 
   const validStatuses = ["pending", "reviewed", "dismissed", "actioned"];

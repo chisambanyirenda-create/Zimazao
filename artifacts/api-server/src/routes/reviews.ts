@@ -7,7 +7,7 @@ import type { RequestHandler } from "express";
 const router: IRouter = Router();
 
 router.get("/reviews/farmer/:farmerId", (async (req, res) => {
-  const farmerId = parseInt(req.params.farmerId);
+  const farmerId = parseInt(String(req.params.farmerId));
   if (isNaN(farmerId)) { res.status(400).json({ error: "Invalid farmer id" }); return; }
 
   const reviews = await db

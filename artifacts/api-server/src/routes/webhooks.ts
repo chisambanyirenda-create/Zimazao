@@ -9,10 +9,19 @@ const router: IRouter = Router();
 const FLW_SECRET_HASH = process.env.FLUTTERWAVE_SECRET_HASH || "";
 
 router.post("/webhooks/flutterwave", async (req, res): Promise<void> => {
-  const signature = req.headers["verif-hash"];
+  // Without a configured secret hash we cannot authenticate the sender, and an
+  // unauthenticated webhook can flip payments to "successful" — so reject.
+  if (!FLW_SECRET_HASH) {
+    logger.warn("Flutterwave webhook received but FLUTTERWAVE_SECRET_HASH is not configured — rejecting");
+    res.status(503).json({ error: "Webhook not configured" });
+    return;
+  }
 
-  if (FLW_SECRET_HASH && signature !== FLW_SECRET_HASH) {
-    logger.warn({ signature }, "Flutterwave webhook: invalid signature");
+  const signature = req.headers["verif-hash"];
+  const sigBuf = Buffer.from(typeof signature === "string" ? signature : "");
+  const expectedBuf = Buffer.from(FLW_SECRET_HASH);
+  if (sigBuf.length !== expectedBuf.length || !crypto.timingSafeEqual(sigBuf, expectedBuf)) {
+    logger.warn("Flutterwave webhook: invalid signature");
     res.status(401).json({ error: "Invalid signature" });
     return;
   }

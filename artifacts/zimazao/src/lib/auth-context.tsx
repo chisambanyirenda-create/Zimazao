@@ -57,6 +57,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     }
     setIsLoading(false)
+
+    // The API client fires this when a request comes back 401 with a stale
+    // token — reflect the logout in React state so guarded pages redirect.
+    const onSessionExpired = () => setUser(null)
+    window.addEventListener("zimazao:session-expired", onSessionExpired)
+    return () => window.removeEventListener("zimazao:session-expired", onSessionExpired)
   }, [])
 
   const login = async (email: string, password: string): Promise<boolean> => {

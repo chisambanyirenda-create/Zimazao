@@ -1,4 +1,4 @@
-import { pgTable, text, serial, timestamp, pgEnum, boolean, integer } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, timestamp, pgEnum, boolean, numeric } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
@@ -13,7 +13,9 @@ export const usersTable = pgTable("users", {
   location: text("location"),
   profilePicture: text("profile_picture"),
   userType: userTypeEnum("user_type").notNull().default("farmer"),
-  walletBalance: integer("wallet_balance").notNull().default(0),
+  // The column is NUMERIC(12,2) in Postgres; mode "number" makes drizzle
+  // parse it so arithmetic in route code stays numeric.
+  walletBalance: numeric("wallet_balance", { precision: 12, scale: 2, mode: "number" }).notNull().default(0),
   isAdmin: boolean("is_admin").notNull().default(false),
   isBanned: boolean("is_banned").notNull().default(false),
   bannedUntil: timestamp("banned_until"),

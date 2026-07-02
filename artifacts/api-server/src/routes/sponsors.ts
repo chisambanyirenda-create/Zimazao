@@ -40,7 +40,7 @@ router.post("/admin/sponsors", requireAuth, requireAdmin, async (req: AuthReques
 });
 
 router.put("/admin/sponsors/:id", requireAuth, requireAdmin, async (req: AuthRequest, res): Promise<void> => {
-  const id = parseInt(req.params.id, 10);
+  const id = parseInt(String(req.params.id), 10);
   const { isActive, companyName, productName, productImage, description, price, targetDisease, contactNumber } = req.body;
 
   const [product] = await db.update(sponsoredProductsTable)
@@ -62,7 +62,7 @@ router.put("/admin/sponsors/:id", requireAuth, requireAdmin, async (req: AuthReq
 });
 
 router.delete("/admin/sponsors/:id", requireAuth, requireAdmin, async (req: AuthRequest, res): Promise<void> => {
-  const id = parseInt(req.params.id, 10);
+  const id = parseInt(String(req.params.id), 10);
   await db.delete(sponsoredProductsTable).where(eq(sponsoredProductsTable.id, id));
   res.json({ success: true });
 });

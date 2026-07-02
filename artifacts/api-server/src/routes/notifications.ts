@@ -49,7 +49,7 @@ router.patch("/notifications/mark-all-read", requireAuth as RequestHandler, (asy
 }) as RequestHandler);
 
 router.patch("/notifications/:id/read", requireAuth as RequestHandler, (async (req: AuthRequest, res) => {
-  const notifId = parseInt(req.params.id, 10);
+  const notifId = parseInt(String(req.params.id), 10);
   const userId = req.user!.userId;
   if (isNaN(notifId)) { res.status(400).json({ error: "Invalid id" }); return; }
   await db.execute(sql`UPDATE notifications SET is_read = true WHERE id = ${notifId} AND user_id = ${userId}`).catch(() => {});
