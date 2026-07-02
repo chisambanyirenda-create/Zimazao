@@ -59,7 +59,7 @@ router.get("/transactions/admin", requireAuth as RequestHandler, (async (req: Au
 }) as RequestHandler);
 
 router.get("/transactions/events/:orderId", requireAuth as RequestHandler, (async (req: AuthRequest, res) => {
-  const orderId = parseInt(req.params.orderId);
+  const orderId = parseInt(String(req.params.orderId));
   if (isNaN(orderId)) { res.status(400).json({ error: "Invalid orderId" }); return; }
 
   const userId = req.user!.userId;

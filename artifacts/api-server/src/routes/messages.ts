@@ -51,7 +51,7 @@ router.get("/messages/unread-count", requireAuth as RequestHandler, (async (req:
 
 router.post("/messages/mark-read/:senderId", requireAuth as RequestHandler, (async (req: AuthRequest, res) => {
   const userId = req.user!.userId;
-  const senderId = parseInt(req.params.senderId, 10);
+  const senderId = parseInt(String(req.params.senderId), 10);
   if (isNaN(senderId)) { res.status(400).json({ error: "Invalid senderId" }); return; }
 
   await db
@@ -112,7 +112,7 @@ router.get("/messages", requireAuth as RequestHandler, (async (req: AuthRequest,
 
 router.get("/messages/:userId", requireAuth as RequestHandler, (async (req: AuthRequest, res) => {
   const meId = req.user!.userId;
-  const otherId = parseInt(req.params.userId, 10);
+  const otherId = parseInt(String(req.params.userId), 10);
   if (isNaN(otherId)) { res.status(400).json({ error: "Invalid userId" }); return; }
 
   const senderAlias = alias(usersTable, "sender");

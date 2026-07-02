@@ -117,14 +117,18 @@ router.post("/orders", requireAuth as RequestHandler, (async (req: AuthRequest, 
     .from(usersTable).where(eq(usersTable.id, buyerId));
 
   if (paymentMethod === "online") {
-    if (!buyer || buyer.walletBalance < Math.round(price)) {
+    const charge = Math.round(price);
+    // Atomic conditional debit — guards against both string-concat bugs on
+    // NUMERIC columns and double-spend races from concurrent orders.
+    const debit: any = await db.execute(sql`
+      UPDATE users SET wallet_balance = wallet_balance - ${charge}
+      WHERE id = ${buyerId} AND wallet_balance >= ${charge}
+    `);
+    if ((debit.rowCount ?? 0) === 0) {
       res.status(402).json({
-        error: `Insufficient wallet balance. You have K${parseFloat(String(buyer?.walletBalance ?? 0)).toLocaleString()}, need K${Math.round(price).toLocaleString()}.`,
+        error: `Insufficient wallet balance. You have K${Number(buyer?.walletBalance ?? 0).toLocaleString()}, need K${charge.toLocaleString()}.`,
       }); return;
     }
-    await db.update(usersTable)
-      .set({ walletBalance: buyer.walletBalance - Math.round(price) })
-      .where(eq(usersTable.id, buyerId));
   }
 
   const autoReleaseAt = paymentMethod === "online" ? new Date(Date.now() + 48 * 60 * 60 * 1000) : null;
@@ -181,7 +185,7 @@ router.post("/orders", requireAuth as RequestHandler, (async (req: AuthRequest, 
 }) as RequestHandler);
 
 router.post("/orders/:id/confirm-delivery", requireAuth as RequestHandler, (async (req: AuthRequest, res) => {
-  const orderId = parseInt(req.params.id);
+  const orderId = parseInt(String(req.params.id));
   const buyerId = req.user!.userId;
 
   const [order] = await db
@@ -203,10 +207,10 @@ router.post("/orders/:id/confirm-delivery", requireAuth as RequestHandler, (asyn
   const farmerPayout = price - commission;
 
   if (order.farmerId) {
-    const [farmer] = await db.select({ walletBalance: usersTable.walletBalance }).from(usersTable).where(eq(usersTable.id, order.farmerId));
-    if (farmer) {
-      await db.update(usersTable).set({ walletBalance: farmer.walletBalance + farmerPayout }).where(eq(usersTable.id, order.farmerId));
-    }
+    await db.execute(sql`
+      UPDATE users SET wallet_balance = wallet_balance + ${farmerPayout}
+      WHERE id = ${order.farmerId}
+    `);
     await db.insert(messagesTable).values({
       senderId: buyerId,
       receiverId: order.farmerId,
@@ -224,7 +228,7 @@ router.post("/orders/:id/confirm-delivery", requireAuth as RequestHandler, (asyn
 }) as RequestHandler);
 
 router.post("/orders/:id/cod-complete", requireAuth as RequestHandler, (async (req: AuthRequest, res) => {
-  const orderId = parseInt(req.params.id);
+  const orderId = parseInt(String(req.params.id));
   const farmerId = req.user!.userId;
 
   const [order] = await db
@@ -289,7 +293,7 @@ router.get("/orders/farmer-orders", requireAuth as RequestHandler, (async (req: 
 }) as RequestHandler);
 
 router.patch("/orders/:id/status", requireAuth as RequestHandler, (async (req: AuthRequest, res) => {
-  const orderId = parseInt(req.params.id);
+  const orderId = parseInt(String(req.params.id));
   const { status, estimatedDelivery } = req.body;
   const farmerId = req.user!.userId;
 
@@ -322,7 +326,7 @@ router.patch("/orders/:id/status", requireAuth as RequestHandler, (async (req: A
     await db.insert(messagesTable).values({
       senderId: farmerId,
       receiverId: order.buyerId,
-      content: `${emoji} Order #${orderId} Update: ${status.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase())}\n\n${msgBody}`,
+      content: `${emoji} Order #${orderId} Update: ${status.replace(/_/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase())}\n\n${msgBody}`,
       isRead: false,
       relatedOrderId: orderId,
     } as any).catch(() => {});
@@ -330,7 +334,7 @@ router.patch("/orders/:id/status", requireAuth as RequestHandler, (async (req: A
     await createNotification(
       order.buyerId,
       `order_${status}`,
-      `Order #${orderId} — ${status.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase())}`,
+      `Order #${orderId} — ${status.replace(/_/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase())}`,
       msgBody,
       `/orders`,
     );
@@ -380,7 +384,7 @@ interface OrderLocations { farmer?: LocationEntry; buyer?: LocationEntry }
 const locationStore = new Map<number, OrderLocations>();
 
 router.patch("/orders/:id/location", requireAuth as RequestHandler, (async (req: AuthRequest, res) => {
-  const orderId = parseInt(req.params.id);
+  const orderId = parseInt(String(req.params.id));
   const { lat, lng } = req.body;
   if (isNaN(orderId) || lat == null || lng == null) {
     res.status(400).json({ error: "orderId, lat and lng are required" }); return;
@@ -407,7 +411,7 @@ router.patch("/orders/:id/location", requireAuth as RequestHandler, (async (req:
 }) as RequestHandler);
 
 router.get("/orders/:id/locations", requireAuth as RequestHandler, (async (req: AuthRequest, res) => {
-  const orderId = parseInt(req.params.id);
+  const orderId = parseInt(String(req.params.id));
   if (isNaN(orderId)) { res.status(400).json({ error: "Invalid order id" }); return; }
 
   const userId = req.user!.userId;

@@ -19,6 +19,57 @@ export async function runMigrations(): Promise<void> {
       DO $$ BEGIN CREATE TYPE payment_method AS ENUM ('mtn_mobile_money','airtel_money','card'); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
     `);
 
+    // ── Base tables (fresh-database bootstrap) ────────────────────────────────
+    await db.execute(sql`
+      CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY, name TEXT NOT NULL, email TEXT NOT NULL UNIQUE,
+        password TEXT NOT NULL, phone TEXT, location TEXT,
+        user_type user_type NOT NULL DEFAULT 'farmer',
+        created_at TIMESTAMP NOT NULL DEFAULT NOW()
+      );
+      CREATE TABLE IF NOT EXISTS listings (
+        id SERIAL PRIMARY KEY, farmer_id INTEGER NOT NULL REFERENCES users(id),
+        crop_name TEXT NOT NULL, price NUMERIC(10,2) NOT NULL, unit TEXT NOT NULL,
+        quantity TEXT NOT NULL, location TEXT NOT NULL,
+        created_at TIMESTAMP NOT NULL DEFAULT NOW()
+      );
+      CREATE TABLE IF NOT EXISTS orders (
+        id SERIAL PRIMARY KEY, buyer_id INTEGER NOT NULL REFERENCES users(id),
+        listing_id INTEGER NOT NULL REFERENCES listings(id),
+        quantity TEXT NOT NULL, total_price NUMERIC(10,2) NOT NULL,
+        status order_status NOT NULL DEFAULT 'pending',
+        created_at TIMESTAMP NOT NULL DEFAULT NOW()
+      );
+      CREATE TABLE IF NOT EXISTS messages (
+        id SERIAL PRIMARY KEY, sender_id INTEGER NOT NULL REFERENCES users(id),
+        receiver_id INTEGER NOT NULL REFERENCES users(id),
+        content TEXT NOT NULL, created_at TIMESTAMP NOT NULL DEFAULT NOW()
+      );
+      CREATE TABLE IF NOT EXISTS disease_scans (
+        id SERIAL PRIMARY KEY, user_id INTEGER REFERENCES users(id),
+        image_url TEXT, disease_found TEXT, confidence NUMERIC(5,2),
+        treatment TEXT, created_at TIMESTAMP NOT NULL DEFAULT NOW()
+      );
+      CREATE TABLE IF NOT EXISTS subscriptions (
+        id SERIAL PRIMARY KEY, user_id INTEGER NOT NULL REFERENCES users(id),
+        plan subscription_plan NOT NULL DEFAULT 'free',
+        start_date TIMESTAMP NOT NULL DEFAULT NOW(), end_date TIMESTAMP,
+        status subscription_status NOT NULL DEFAULT 'active',
+        created_at TIMESTAMP NOT NULL DEFAULT NOW()
+      );
+      CREATE TABLE IF NOT EXISTS payments (
+        id SERIAL PRIMARY KEY, user_id INTEGER NOT NULL REFERENCES users(id),
+        amount NUMERIC(10,2) NOT NULL, currency TEXT NOT NULL DEFAULT 'ZMW',
+        method payment_method NOT NULL, status payment_status NOT NULL DEFAULT 'pending',
+        reference TEXT NOT NULL UNIQUE, purpose TEXT NOT NULL DEFAULT 'subscription',
+        created_at TIMESTAMP NOT NULL DEFAULT NOW()
+      );
+      CREATE TABLE IF NOT EXISTS announcements (
+        id SERIAL PRIMARY KEY, title TEXT NOT NULL, message TEXT NOT NULL,
+        target TEXT NOT NULL DEFAULT 'all', created_at TIMESTAMP NOT NULL DEFAULT NOW()
+      );
+    `);
+
     // ── Users: add missing columns ────────────────────────────────────────────
     await db.execute(sql`
       ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_picture    TEXT;
@@ -71,13 +122,14 @@ export async function runMigrations(): Promise<void> {
     await db.execute(sql`
       CREATE TABLE IF NOT EXISTS reviews (
         id          SERIAL PRIMARY KEY,
-        order_id    INTEGER NOT NULL REFERENCES orders(id),
+        order_id    INTEGER REFERENCES orders(id),
         buyer_id    INTEGER NOT NULL REFERENCES users(id),
         farmer_id   INTEGER NOT NULL REFERENCES users(id),
         rating      INTEGER NOT NULL,
         comment     TEXT,
         created_at  TIMESTAMP NOT NULL DEFAULT NOW()
       );
+      ALTER TABLE reviews ALTER COLUMN order_id DROP NOT NULL;
     `);
 
     // ── Notifications table ───────────────────────────────────────────────────

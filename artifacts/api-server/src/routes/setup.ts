@@ -1,15 +1,24 @@
 import { Router, type IRouter } from "express";
+import { timingSafeEqual } from "node:crypto";
 import { db } from "@workspace/db";
 import { sql } from "drizzle-orm";
 import bcryptjs from "bcryptjs";
 
 const router: IRouter = Router();
 
-const SETUP_KEY = process.env.SETUP_SECRET_KEY || "zimazao-setup-2024";
+// The setup endpoint is disabled unless SETUP_SECRET_KEY is explicitly set.
+// Never fall back to a hardcoded key — this endpoint can reset the admin account.
+const SETUP_KEY = process.env.SETUP_SECRET_KEY;
 
 router.post("/setup", async (req, res): Promise<void> => {
+  if (!SETUP_KEY) {
+    res.status(404).json({ error: "Not found" });
+    return;
+  }
   const { key } = req.body as { key?: string };
-  if (key !== SETUP_KEY) {
+  const keyBuf = Buffer.from(typeof key === "string" ? key : "");
+  const expectedBuf = Buffer.from(SETUP_KEY);
+  if (keyBuf.length !== expectedBuf.length || !timingSafeEqual(keyBuf, expectedBuf)) {
     res.status(401).json({ error: "Invalid setup key" });
     return;
   }
@@ -170,13 +179,21 @@ router.post("/setup", async (req, res): Promise<void> => {
     `);
     steps.push("Default settings seeded");
 
-    const hash = await bcryptjs.hash("zimazao1234", 10);
-    await db.execute(sql`
-      INSERT INTO users (name, email, password, user_type, is_admin)
-      VALUES ('CEO Admin', 'admin@gmail.com', ${hash}, 'farmer', true)
-      ON CONFLICT (email) DO UPDATE SET password = ${hash}, is_admin = true
-    `);
-    steps.push("Admin user seeded (admin@gmail.com / zimazao1234)");
+    // Admin account is only seeded when explicit credentials are provided via
+    // env — never bake credentials into the codebase.
+    const adminEmail = process.env.ADMIN_EMAIL;
+    const adminPassword = process.env.ADMIN_PASSWORD;
+    if (adminEmail && adminPassword) {
+      const hash = await bcryptjs.hash(adminPassword, 10);
+      await db.execute(sql`
+        INSERT INTO users (name, email, password, user_type, is_admin)
+        VALUES ('CEO Admin', ${adminEmail}, ${hash}, 'farmer', true)
+        ON CONFLICT (email) DO UPDATE SET password = ${hash}, is_admin = true
+      `);
+      steps.push("Admin user seeded from ADMIN_EMAIL/ADMIN_PASSWORD env");
+    } else {
+      steps.push("Admin seeding skipped (set ADMIN_EMAIL and ADMIN_PASSWORD to seed)");
+    }
 
     res.json({ ok: true, steps });
   } catch (err: any) {

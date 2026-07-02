@@ -124,7 +124,7 @@ router.get("/listings", async (req, res): Promise<void> => {
 });
 
 router.get("/listings/:id", async (req, res): Promise<void> => {
-  const id = parseInt(req.params.id, 10);
+  const id = parseInt(String(req.params.id), 10);
   if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }
 
   let listing: any = null;
@@ -220,7 +220,7 @@ router.post("/listings", requireAuth, async (req: AuthRequest, res): Promise<voi
 
 router.patch("/listings/:id", requireAuth, async (req: AuthRequest, res): Promise<void> => {
   const farmerId = req.user!.userId;
-  const id = parseInt(req.params.id, 10);
+  const id = parseInt(String(req.params.id), 10);
   if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }
 
   const [existing] = await db.select().from(listingsTable).where(eq(listingsTable.id, id));
@@ -247,7 +247,7 @@ router.patch("/listings/:id", requireAuth, async (req: AuthRequest, res): Promis
 
 router.delete("/listings/:id", requireAuth, async (req: AuthRequest, res): Promise<void> => {
   const farmerId = req.user!.userId;
-  const id = parseInt(req.params.id, 10);
+  const id = parseInt(String(req.params.id), 10);
   if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }
 
   const [existing] = await db.select().from(listingsTable).where(eq(listingsTable.id, id));

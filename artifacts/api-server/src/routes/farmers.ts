@@ -5,7 +5,7 @@ import { eq, and } from "drizzle-orm";
 const router: IRouter = Router();
 
 router.get("/farmers/:id", async (req, res): Promise<void> => {
-  const id = parseInt(req.params.id, 10);
+  const id = parseInt(String(req.params.id), 10);
   if (isNaN(id)) { res.status(400).json({ error: "Invalid id" }); return; }
 
   const [farmer] = await db

@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
 import { db, withdrawalsTable, usersTable, messagesTable } from "@workspace/db";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, sql } from "drizzle-orm";
 import { requireAuth, type AuthRequest } from "../middlewares/auth";
 import type { RequestHandler } from "express";
 
@@ -24,8 +24,8 @@ router.post("/withdrawals", requireAuth as RequestHandler, (async (req: AuthRequ
 
   if (!farmer) { res.status(404).json({ error: "User not found" }); return; }
 
-  if (farmer.walletBalance < withdrawAmount) {
-    res.status(402).json({ error: `Insufficient balance. Available: K${parseFloat(String(farmer.walletBalance)).toLocaleString()}` }); return;
+  if (Number(farmer.walletBalance) < withdrawAmount) {
+    res.status(402).json({ error: `Insufficient balance. Available: K${Number(farmer.walletBalance).toLocaleString()}` }); return;
   }
 
   const [request] = await db.insert(withdrawalsTable).values({
@@ -72,7 +72,7 @@ router.get("/withdrawals", requireAuth as RequestHandler, (async (req: AuthReque
 router.patch("/withdrawals/:id", requireAuth as RequestHandler, (async (req: AuthRequest, res) => {
   if (!req.user!.isAdmin) { res.status(403).json({ error: "Admin only" }); return; }
 
-  const requestId = parseInt(req.params.id);
+  const requestId = parseInt(String(req.params.id));
   const { status, adminNote } = req.body;
   if (!["approved", "rejected"].includes(status)) {
     res.status(400).json({ error: "status must be approved or rejected" }); return;
@@ -84,11 +84,15 @@ router.patch("/withdrawals/:id", requireAuth as RequestHandler, (async (req: Aut
 
   if (status === "approved") {
     const withdrawAmount = parseFloat(String(withdrawal.amount));
-    const [farmer] = await db.select({ walletBalance: usersTable.walletBalance }).from(usersTable).where(eq(usersTable.id, withdrawal.farmerId));
-    if (!farmer || farmer.walletBalance < withdrawAmount) {
+    // Atomic conditional debit — the balance check and deduction happen in one
+    // statement so concurrent approvals cannot overdraw the wallet.
+    const debit: any = await db.execute(sql`
+      UPDATE users SET wallet_balance = wallet_balance - ${withdrawAmount}
+      WHERE id = ${withdrawal.farmerId} AND wallet_balance >= ${withdrawAmount}
+    `);
+    if ((debit.rowCount ?? 0) === 0) {
       res.status(402).json({ error: "Farmer has insufficient balance" }); return;
     }
-    await db.update(usersTable).set({ walletBalance: farmer.walletBalance - withdrawAmount }).where(eq(usersTable.id, withdrawal.farmerId));
 
     await db.insert(messagesTable).values({
       senderId: req.user!.userId,

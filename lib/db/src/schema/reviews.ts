@@ -4,7 +4,7 @@ import { ordersTable } from "./orders";
 
 export const reviewsTable = pgTable("reviews", {
   id: serial("id").primaryKey(),
-  orderId: integer("order_id").notNull().references(() => ordersTable.id),
+  orderId: integer("order_id").references(() => ordersTable.id),
   buyerId: integer("buyer_id").notNull().references(() => usersTable.id),
   farmerId: integer("farmer_id").notNull().references(() => usersTable.id),
   rating: integer("rating").notNull(),

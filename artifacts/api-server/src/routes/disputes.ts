@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
 import { db, disputesTable, ordersTable, listingsTable, usersTable, transactionEventsTable, messagesTable } from "@workspace/db";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, sql } from "drizzle-orm";
 import { requireAuth, type AuthRequest } from "../middlewares/auth";
 import type { RequestHandler } from "express";
 
@@ -110,7 +110,7 @@ router.get("/disputes/my", requireAuth as RequestHandler, (async (req: AuthReque
 router.patch("/disputes/:id/resolve", requireAuth as RequestHandler, (async (req: AuthRequest, res) => {
   if (!req.user!.isAdmin) { res.status(403).json({ error: "Admin only" }); return; }
 
-  const disputeId = parseInt(req.params.id);
+  const disputeId = parseInt(String(req.params.id));
   const { resolutionAction, resolutionNote } = req.body;
   const validActions = ["refund", "release_to_farmer", "more_info"];
   if (!validActions.includes(resolutionAction)) {
@@ -135,11 +135,11 @@ router.patch("/disputes/:id/resolve", requireAuth as RequestHandler, (async (req
   if (order) {
     if (resolutionAction === "refund") {
       const amount = parseFloat(String(order.totalPrice));
-      const [[buyer]] = await Promise.all([
-        db.select({ walletBalance: usersTable.walletBalance }).from(usersTable).where(eq(usersTable.id, order.buyerId!))
-      ]);
-      if (buyer) {
-        await db.update(usersTable).set({ walletBalance: buyer.walletBalance + amount }).where(eq(usersTable.id, order.buyerId!));
+      if (order.buyerId) {
+        await db.execute(sql`
+          UPDATE users SET wallet_balance = wallet_balance + ${amount}
+          WHERE id = ${order.buyerId}
+        `);
       }
       await db.execute(
         (await import("drizzle-orm")).sql`UPDATE orders SET escrow_status = 'refunded', status = 'cancelled' WHERE id = ${dispute.orderId}`
@@ -158,10 +158,10 @@ router.patch("/disputes/:id/resolve", requireAuth as RequestHandler, (async (req
       const commission = parseFloat(String(order.commission));
       const farmerPayout = price - commission;
       if (order.farmerId) {
-        const [farmer] = await db.select({ walletBalance: usersTable.walletBalance }).from(usersTable).where(eq(usersTable.id, order.farmerId));
-        if (farmer) {
-          await db.update(usersTable).set({ walletBalance: farmer.walletBalance + farmerPayout }).where(eq(usersTable.id, order.farmerId));
-        }
+        await db.execute(sql`
+          UPDATE users SET wallet_balance = wallet_balance + ${farmerPayout}
+          WHERE id = ${order.farmerId}
+        `);
       }
       await db.execute(
         (await import("drizzle-orm")).sql`UPDATE orders SET escrow_status = 'released', status = 'delivered' WHERE id = ${dispute.orderId}`

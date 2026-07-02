@@ -14,10 +14,23 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   if (token) headers["Authorization"] = `Bearer ${token}`;
 
   const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
-  const data = await res.json();
+  let data: any = null;
+  try {
+    data = await res.json();
+  } catch {
+    // Non-JSON response (e.g. proxy error page) — fall through with null data
+  }
   if (!res.ok) {
-    const err: any = new Error(data.error || `HTTP ${res.status}`);
-    err.code = data.code;
+    // Session expired or token invalid — clear stale credentials so the UI
+    // stops treating the user as logged in.
+    if (res.status === 401 && token) {
+      localStorage.removeItem("zimazao_token");
+      localStorage.removeItem("zimazao_user");
+      window.dispatchEvent(new Event("zimazao:session-expired"));
+    }
+    const err: any = new Error(data?.error || `Request failed (${res.status})`);
+    err.code = data?.code;
+    err.status = res.status;
     throw err;
   }
   return data as T;
@@ -329,13 +342,13 @@ export interface ApiThreadResponse {
 
 export interface ApiReview {
   id: number;
-  orderId: number;
+  orderId: number | null;
   buyerId: number;
   farmerId: number;
   rating: number;
   comment: string | null;
   createdAt: string;
-  buyerName?: string | null;
+  buyerName: string | null;
 }
 
 export interface ApiFarmerReviews {
