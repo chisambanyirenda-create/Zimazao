@@ -3,10 +3,21 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Premium type system — Bricolage Grotesque display over Inter body */
+@theme {
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Bricolage Grotesque', 'Inter', system-ui, sans-serif;
+}
+
 @layer base {
   @font-face {
     font-family: 'Geist';
     src: local('Inter'), local('system-ui');
+  }
+  /* Headline elements pick up the display face by default */
+  h1, h2, h3, .font-display {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
   }
 }
 
@@ -262,10 +273,13 @@
     border-color: hsl(var(--border, oklch(0.89 0.015 95)));
   }
 
+  html {
+    background-color: var(--background);
+  }
   body {
     font-family: var(--app-font-sans);
-    background-color: oklch(var(--background, 0.975 0.004 95));
-    color: oklch(var(--foreground, 0.16 0.025 250));
+    background-color: var(--background);
+    color: var(--foreground);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -282,5 +296,97 @@
   }
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
+  }
+}
+
+/* ============================================================
+   CINEMATIC HERO — aurora lighting, film grain, light sweep
+   ============================================================ */
+
+/* Slow-drifting aurora light blobs behind the hero */
+@keyframes cine-drift-a {
+  0%   { transform: translate3d(0, 0, 0) scale(1); }
+  50%  { transform: translate3d(6%, -8%, 0) scale(1.15); }
+  100% { transform: translate3d(0, 0, 0) scale(1); }
+}
+@keyframes cine-drift-b {
+  0%   { transform: translate3d(0, 0, 0) scale(1.1); }
+  50%  { transform: translate3d(-8%, 6%, 0) scale(0.95); }
+  100% { transform: translate3d(0, 0, 0) scale(1.1); }
+}
+.cine-blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(70px);
+  opacity: 0.55;
+  will-change: transform;
+  pointer-events: none;
+}
+.cine-blob-a { animation: cine-drift-a 18s ease-in-out infinite; }
+.cine-blob-b { animation: cine-drift-b 22s ease-in-out infinite; }
+
+/* Filmic grain overlay — tiny animated noise, very low opacity */
+@keyframes cine-grain-shift {
+  0%   { transform: translate(0, 0); }
+  10%  { transform: translate(-4%, -6%); }
+  30%  { transform: translate(3%, -3%); }
+  50%  { transform: translate(-3%, 4%); }
+  70%  { transform: translate(4%, 3%); }
+  90%  { transform: translate(-2%, -4%); }
+  100% { transform: translate(0, 0); }
+}
+.cine-grain {
+  position: absolute;
+  inset: -50%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
+  opacity: 0.06;
+  mix-blend-mode: overlay;
+  animation: cine-grain-shift 6s steps(6) infinite;
+  pointer-events: none;
+}
+
+/* Light sweep that crosses a button/card on hover */
+@keyframes cine-sweep {
+  0%   { transform: translateX(-120%) skewX(-18deg); }
+  100% { transform: translateX(220%) skewX(-18deg); }
+}
+.cine-sheen { position: relative; overflow: hidden; }
+.cine-sheen::after {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; height: 100%; width: 45%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.55), transparent);
+  transform: translateX(-120%) skewX(-18deg);
+  pointer-events: none;
+}
+.cine-sheen:hover::after { animation: cine-sweep 0.9s ease; }
+
+/* Animated gold gradient that pans across the highlight word */
+@keyframes cine-text-pan {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+.cine-gold-flow {
+  background: linear-gradient(100deg,
+    oklch(0.86 0.14 90), oklch(0.78 0.18 82), oklch(0.92 0.10 95), oklch(0.78 0.18 82), oklch(0.86 0.14 90));
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: cine-text-pan 6s linear infinite;
+}
+
+/* Ken Burns slow zoom for the hero visual */
+@keyframes cine-kenburns {
+  0%   { transform: scale(1) translateY(0); }
+  50%  { transform: scale(1.08) translateY(-1%); }
+  100% { transform: scale(1) translateY(0); }
+}
+.cine-kenburns { animation: cine-kenburns 20s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .cine-blob-a, .cine-blob-b, .cine-grain, .cine-gold-flow,
+  .cine-kenburns, .cine-sheen:hover::after {
+    animation: none !important;
   }
 }

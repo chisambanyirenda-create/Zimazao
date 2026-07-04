@@ -74,8 +74,8 @@ export default function HowItWorksPage() {
             </Card>
             <Card className="border-0 shadow-md">
               <CardContent className="p-6">
-                <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center mb-4">
-                  <Banknote className="w-6 h-6 text-amber-600" />
+                <div className="w-12 h-12 bg-amber-500/20 rounded-xl flex items-center justify-center mb-4">
+                  <Banknote className="w-6 h-6 text-amber-300" />
                 </div>
                 <h3 className="text-xl font-bold mb-2">Cash on Delivery</h3>
                 <p className="text-muted-foreground text-sm mb-4 leading-relaxed">
@@ -97,8 +97,8 @@ export default function HowItWorksPage() {
         <section className="grid md:grid-cols-2 gap-10">
           <div>
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
-                <ShoppingCart className="w-5 h-5 text-blue-600" />
+              <div className="w-10 h-10 bg-blue-500/20 rounded-xl flex items-center justify-center">
+                <ShoppingCart className="w-5 h-5 text-blue-300" />
               </div>
               <h2 className="text-xl font-bold">For Buyers</h2>
             </div>
@@ -120,8 +120,8 @@ export default function HowItWorksPage() {
 
           <div>
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
-                <Tractor className="w-5 h-5 text-green-600" />
+              <div className="w-10 h-10 bg-green-500/20 rounded-xl flex items-center justify-center">
+                <Tractor className="w-5 h-5 text-green-300" />
               </div>
               <h2 className="text-xl font-bold">For Farmers</h2>
             </div>
@@ -143,7 +143,7 @@ export default function HowItWorksPage() {
         </section>
 
         {/* Escrow Explanation */}
-        <section className="bg-gradient-to-r from-primary/5 to-emerald-50 rounded-2xl p-8 border border-primary/10">
+        <section className="bg-gradient-to-r from-primary/5 to-emerald-500/10 rounded-2xl p-8 border border-primary/10">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-12 h-12 bg-primary/15 rounded-xl flex items-center justify-center">
               <Lock className="w-6 h-6 text-primary" />
@@ -173,8 +173,8 @@ export default function HowItWorksPage() {
         {/* Dispute */}
         <section>
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center">
-              <AlertTriangle className="w-5 h-5 text-red-600" />
+            <div className="w-10 h-10 bg-red-500/20 rounded-xl flex items-center justify-center">
+              <AlertTriangle className="w-5 h-5 text-red-300" />
             </div>
             <h2 className="text-xl font-bold">Dispute Resolution</h2>
           </div>

@@ -62,11 +62,11 @@ function SwitchModeDialog({
       <div className="fixed inset-0 z-[9997] bg-black/50 backdrop-blur-sm" onClick={onCancel} />
       <div className="fixed inset-0 z-[9998] flex items-center justify-center p-4 pointer-events-none">
         <div className="bg-card rounded-2xl shadow-2xl w-full max-w-sm p-6 border border-border pointer-events-auto">
-          <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 ${isFarmerMode ? "bg-green-100" : "bg-blue-100"}`}>
+          <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 ${isFarmerMode ? "bg-green-500/20" : "bg-blue-500/20"}`}>
             <span className="text-4xl">{isFarmerMode ? "🚜" : "🛒"}</span>
           </div>
           <div className="flex justify-center mb-3">
-            <Badge className={`text-xs px-3 py-1 ${isFarmerMode ? "bg-green-100 text-green-700 border-green-200" : "bg-blue-100 text-blue-700 border-blue-200"}`}>
+            <Badge className={`text-xs px-3 py-1 ${isFarmerMode ? "bg-green-500/20 text-green-300 border-green-500/25" : "bg-blue-500/20 text-blue-300 border-blue-500/25"}`}>
               Mode Switch Request
             </Badge>
           </div>
@@ -76,10 +76,10 @@ function SwitchModeDialog({
           <p className="text-muted-foreground text-sm text-center mb-5 leading-relaxed">
             Dear <span className="font-semibold text-foreground">{from === "farmer" ? "Farmer" : "Customer"}</span>, you are switching from{" "}
             <span className="font-semibold capitalize text-foreground">{from}</span> to{" "}
-            <span className={`font-semibold capitalize ${isFarmerMode ? "text-green-600" : "text-blue-600"}`}>{to}</span> mode.{" "}
+            <span className={`font-semibold capitalize ${isFarmerMode ? "text-green-300" : "text-blue-300"}`}>{to}</span> mode.{" "}
             Your dashboard and available features will change to match your new role.
           </p>
-          <div className={`flex items-start gap-2 p-3 rounded-xl mb-5 text-xs ${isFarmerMode ? "bg-green-50 text-green-700" : "bg-blue-50 text-blue-700"}`}>
+          <div className={`flex items-start gap-2 p-3 rounded-xl mb-5 text-xs ${isFarmerMode ? "bg-green-500/15 text-green-300" : "bg-blue-500/15 text-blue-300"}`}>
             <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
             <span>
               {isFarmerMode
@@ -180,12 +180,11 @@ export function Navbar() {
 
       {/* ── Mobile slide-in panel (z-1000) ── */}
       <div
-        className={`fixed inset-y-0 right-0 z-[1000] w-[85%] max-w-sm flex flex-col overflow-y-auto transition-transform duration-300 ease-in-out ${
+        className={`dark fixed inset-y-0 right-0 z-[1000] w-[85%] max-w-sm flex flex-col overflow-y-auto bg-[#05160e] text-foreground transition-transform duration-300 ease-in-out ${
           mobileMenuOpen ? "translate-x-0" : "translate-x-full"
         }`}
         style={{
-          backgroundColor: "white",
-          boxShadow: "-8px 0 40px rgba(0,0,0,0.2), -2px 0 12px rgba(0,0,0,0.1)",
+          boxShadow: "-8px 0 40px rgba(0,0,0,0.5), -2px 0 12px rgba(0,0,0,0.3)",
         }}
       >
         {/* Panel header */}
@@ -215,10 +214,10 @@ export function Navbar() {
                   <p className="text-xs text-muted-foreground truncate">{user.email}</p>
                 </div>
                 <div className="text-right shrink-0">
-                  <Badge className={`capitalize text-xs border-0 block mb-1 ${isFarmer ? "bg-green-100 text-green-700" : "bg-blue-100 text-blue-700"}`}>
+                  <Badge className={`capitalize text-xs border-0 block mb-1 ${isFarmer ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"}`}>
                     {isFarmer ? "🚜" : "🛒"} {user.userType}
                   </Badge>
-                  <span className="text-xs font-bold text-emerald-600">ZMW {(user.walletBalance ?? 0).toLocaleString()}</span>
+                  <span className="text-xs font-bold text-emerald-300">ZMW {(user.walletBalance ?? 0).toLocaleString()}</span>
                 </div>
               </div>
 
@@ -226,8 +225,8 @@ export function Navbar() {
                 onClick={() => { setSwitchTarget(isFarmer ? "buyer" : "farmer"); closeMenu() }}
                 className={`w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl font-semibold text-sm border transition-colors ${
                   isFarmer
-                    ? "bg-blue-50 text-blue-600 border-blue-100 hover:bg-blue-100"
-                    : "bg-green-50 text-green-700 border-green-100 hover:bg-green-100"
+                    ? "bg-blue-500/15 text-blue-300 border-blue-500/20 hover:bg-blue-500/20"
+                    : "bg-green-500/15 text-green-300 border-green-500/20 hover:bg-green-500/20"
                 }`}
               >
                 <ArrowRightLeft className="w-4 h-4" />
@@ -236,7 +235,7 @@ export function Navbar() {
 
               <button
                 onClick={() => { logout(); closeMenu() }}
-                className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-red-50 text-red-600 font-semibold text-sm border border-red-100 hover:bg-red-100 transition-colors"
+                className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-red-500/15 text-red-300 font-semibold text-sm border border-red-500/20 hover:bg-red-500/20 transition-colors"
               >
                 <LogOut className="w-4 h-4" /> Sign Out
               </button>
@@ -319,7 +318,7 @@ export function Navbar() {
       <div className="h-16" />
 
       {/* ── Navbar bar ── */}
-      <nav className="fixed top-0 left-0 right-0 z-[1100] border-b border-border/60 shadow-sm" style={{ backgroundColor: "white" }}>
+      <nav className="dark fixed top-0 left-0 right-0 z-[1100] border-b border-white/10 bg-[#05160e]/80 backdrop-blur-xl supports-[backdrop-filter]:bg-[#05160e]/70">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
 
@@ -357,9 +356,9 @@ export function Navbar() {
               <NotificationsBell onOpen={() => setMobileMenuOpen(false)} />
               {user ? (
                 <>
-                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700">
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-400/25 text-emerald-300">
                     <Wallet className="w-3.5 h-3.5" />
-                    <span className="text-xs font-bold">ZMW {(user.walletBalance ?? 0).toLocaleString()}</span>
+                    <span className="text-xs font-bold tabular-nums">ZMW {(user.walletBalance ?? 0).toLocaleString()}</span>
                   </div>
                   {isFarmer && (
                     <Link href="/new-listing">
@@ -396,10 +395,10 @@ export function Navbar() {
                               <p className="font-semibold text-sm truncate">{user.name}</p>
                               <p className="text-xs text-muted-foreground truncate">{user.email}</p>
                               <div className="flex items-center gap-2 mt-1">
-                                <Badge className={`text-[10px] h-4 px-1.5 capitalize border-0 ${isFarmer ? "bg-green-100 text-green-700" : "bg-blue-100 text-blue-700"}`}>
+                                <Badge className={`text-[10px] h-4 px-1.5 capitalize border-0 ${isFarmer ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"}`}>
                                   {isFarmer ? "🚜" : "🛒"} {user.userType}
                                 </Badge>
-                                <span className="text-[10px] text-emerald-600 font-semibold">ZMW {(user.walletBalance ?? 0).toLocaleString()}</span>
+                                <span className="text-[10px] text-emerald-300 font-semibold">ZMW {(user.walletBalance ?? 0).toLocaleString()}</span>
                               </div>
                             </div>
                           </div>
@@ -413,7 +412,7 @@ export function Navbar() {
                         ))}
                         <DropdownMenuSeparator />
                         <DropdownMenuItem className="gap-2 text-sm font-medium" onClick={() => { setSwitchTarget(isFarmer ? "buyer" : "farmer"); setDropdownOpen(false) }}>
-                          <ArrowRightLeft className={`w-4 h-4 ${isFarmer ? "text-blue-500" : "text-green-600"}`} />
+                          <ArrowRightLeft className={`w-4 h-4 ${isFarmer ? "text-blue-500" : "text-green-300"}`} />
                           Switch to {isFarmer ? "Buyer" : "Farmer"} Mode
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />

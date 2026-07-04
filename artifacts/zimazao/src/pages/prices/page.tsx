@@ -198,7 +198,7 @@ function PricesContent() {
                 Updated today, 10:30 AM
               </Badge>
               <a href="/price-alerts">
-                <button className="flex items-center gap-1.5 px-4 py-2 bg-white text-emerald-700 font-semibold text-sm rounded-xl hover:bg-white/90 transition-colors shadow-sm">
+                <button className="flex items-center gap-1.5 px-4 py-2 bg-white text-emerald-300 font-semibold text-sm rounded-xl hover:bg-white/90 transition-colors shadow-sm">
                   <Bell className="w-4 h-4" /> Set Alerts
                 </button>
               </a>
@@ -211,27 +211,27 @@ function PricesContent() {
 
         {/* Market Insights */}
         <div className="grid md:grid-cols-3 gap-5 mb-8">
-          <Card className="border-0 shadow-sm bg-gradient-to-br from-emerald-50 to-green-50">
+          <Card className="border-0 shadow-sm bg-gradient-to-br from-emerald-500/10 to-green-500/10">
             <CardContent className="p-5">
               <div className="flex items-center gap-2 mb-3">
-                <TrendingUp className="w-5 h-5 text-emerald-600" />
-                <p className="text-sm font-semibold text-emerald-700">Top Gainer This Week</p>
+                <TrendingUp className="w-5 h-5 text-emerald-300" />
+                <p className="text-sm font-semibold text-emerald-300">Top Gainer This Week</p>
               </div>
               <div className="flex items-center gap-3">
                 <span className="text-4xl">🌻</span>
                 <div>
                   <p className="font-bold text-foreground text-lg">Sunflower Seeds</p>
-                  <p className="text-emerald-600 font-bold text-xl">+4.1%</p>
+                  <p className="text-emerald-300 font-bold text-xl">+4.1%</p>
                   <p className="text-muted-foreground text-xs">ZMW 278 avg · 25kg bag</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-          <Card className="border-0 shadow-sm bg-gradient-to-br from-red-50 to-rose-50">
+          <Card className="border-0 shadow-sm bg-gradient-to-br from-red-500/10 to-rose-500/10">
             <CardContent className="p-5">
               <div className="flex items-center gap-2 mb-3">
                 <TrendingDown className="w-5 h-5 text-red-500" />
-                <p className="text-sm font-semibold text-red-600">Top Decliner This Week</p>
+                <p className="text-sm font-semibold text-red-300">Top Decliner This Week</p>
               </div>
               <div className="flex items-center gap-3">
                 <span className="text-4xl">🫘</span>
@@ -243,17 +243,17 @@ function PricesContent() {
               </div>
             </CardContent>
           </Card>
-          <Card className="border-0 shadow-sm bg-gradient-to-br from-blue-50 to-indigo-50">
+          <Card className="border-0 shadow-sm bg-gradient-to-br from-blue-500/10 to-indigo-500/10">
             <CardContent className="p-5">
               <div className="flex items-center gap-2 mb-3">
-                <BarChart3 className="w-5 h-5 text-blue-600" />
-                <p className="text-sm font-semibold text-blue-700">Most Traded Crop</p>
+                <BarChart3 className="w-5 h-5 text-blue-300" />
+                <p className="text-sm font-semibold text-blue-300">Most Traded Crop</p>
               </div>
               <div className="flex items-center gap-3">
                 <span className="text-4xl">🌽</span>
                 <div>
                   <p className="font-bold text-foreground text-lg">White Maize</p>
-                  <p className="text-blue-600 font-bold text-xl">+3.1%</p>
+                  <p className="text-blue-300 font-bold text-xl">+3.1%</p>
                   <p className="text-muted-foreground text-xs">ZMW 445 avg · Highest volume</p>
                 </div>
               </div>

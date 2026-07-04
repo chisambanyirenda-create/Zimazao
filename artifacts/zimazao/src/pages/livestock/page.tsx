@@ -208,7 +208,7 @@ function ListingCard({ listing }: { listing: typeof SAMPLE_LISTINGS[0] }) {
         {listing.image ? (
           <img src={listing.image} alt={listing.type} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-amber-100 to-orange-50 flex items-center justify-center">
+          <div className="w-full h-full bg-gradient-to-br from-amber-500/15 to-orange-500/10 flex items-center justify-center">
             <span className="text-7xl">{listing.emoji}</span>
           </div>
         )}
@@ -379,7 +379,7 @@ export default function LivestockPage() {
             </p>
             <div className="flex flex-wrap gap-3">
               <Link href="/new-listing">
-                <Button className="bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold px-6 py-3 h-auto rounded-xl gap-2 shadow-lg">
+                <Button className="bg-amber-500 hover:bg-amber-400 text-white font-bold px-6 py-3 h-auto rounded-xl gap-2 shadow-lg">
                   <Beef className="w-4 h-4" /> List Your Animals
                 </Button>
               </Link>
@@ -482,15 +482,15 @@ export default function LivestockPage() {
         <section className="grid md:grid-cols-3 gap-6 mb-12 mt-4">
           {[
             {
-              icon: Shield, title: "Verified Sellers", color: "text-emerald-600", bg: "bg-emerald-50",
+              icon: Shield, title: "Verified Sellers", color: "text-emerald-300", bg: "bg-emerald-500/15",
               desc: "All livestock sellers go through ID verification and farm inspection before listing.",
             },
             {
-              icon: Syringe, title: "Health Certificates", color: "text-blue-600", bg: "bg-blue-50",
+              icon: Syringe, title: "Health Certificates", color: "text-blue-300", bg: "bg-blue-500/15",
               desc: "Download vaccination records, vet inspection certificates, and disease-free documentation.",
             },
             {
-              icon: Scale, title: "Fair Pricing", color: "text-amber-600", bg: "bg-amber-50",
+              icon: Scale, title: "Fair Pricing", color: "text-amber-300", bg: "bg-amber-500/15",
               desc: "Our live price index shows current market rates so you always know the right price.",
             },
           ].map((card) => (
@@ -516,7 +516,7 @@ export default function LivestockPage() {
               <p className="text-white/80">List your cattle, goats, pigs or poultry and reach buyers across Zambia.</p>
             </div>
             <Link href="/new-listing">
-              <Button className="bg-white text-amber-700 hover:bg-white/90 font-bold px-8 py-3 h-auto rounded-xl gap-2 shadow-lg shrink-0">
+              <Button className="bg-white text-amber-300 hover:bg-white/90 font-bold px-8 py-3 h-auto rounded-xl gap-2 shadow-lg shrink-0">
                 <Beef className="w-4 h-4" /> List Animals Now <ChevronRight className="w-4 h-4" />
               </Button>
             </Link>

@@ -85,15 +85,18 @@ function LoginForm() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      <main className="flex items-center justify-center py-16 px-4">
-        <div className="w-full max-w-md space-y-4">
-          <Card>
+      <main className="relative flex items-center justify-center overflow-hidden py-20 px-4">
+        <div className="pointer-events-none absolute -top-24 left-1/4 h-80 w-96 rounded-full bg-emerald-500/15 blur-[110px]" />
+        <div className="pointer-events-none absolute -bottom-24 right-1/4 h-80 w-96 rounded-full bg-amber-400/12 blur-[110px]" />
+        <div className="cine-grain" />
+        <div className="relative w-full max-w-md space-y-4">
+          <Card className="border border-white/10 bg-white/[0.03] backdrop-blur-xl glow-gold">
             <CardHeader className="text-center">
-              <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <Leaf className="w-8 h-8 text-primary-foreground" />
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 shadow-[0_0_28px_-4px_rgba(52,211,153,0.7)]">
+                <Leaf className="h-8 w-8 text-emerald-950" />
               </div>
-              <CardTitle className="text-2xl">Welcome Back</CardTitle>
-              <CardDescription>Sign in to your Zimazao account</CardDescription>
+              <CardTitle className="font-display text-2xl text-white">Welcome Back</CardTitle>
+              <CardDescription className="text-white/55">Sign in to your Zimazao account</CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">

@@ -80,9 +80,9 @@ const CROPS: Crop[] = [
 ]
 
 const SEASONS = [
-  { label: "Rainy Season", months: [10, 11, 0, 1, 2, 3], color: "bg-blue-100 text-blue-700", icon: CloudRain },
-  { label: "Cool Dry", months: [4, 5, 6, 7], color: "bg-slate-100 text-slate-600", icon: Wind },
-  { label: "Hot Dry", months: [8, 9], color: "bg-orange-100 text-orange-700", icon: Sun },
+  { label: "Rainy Season", months: [10, 11, 0, 1, 2, 3], color: "bg-blue-500/20 text-blue-300", icon: CloudRain },
+  { label: "Cool Dry", months: [4, 5, 6, 7], color: "bg-white/10 text-white/60", icon: Wind },
+  { label: "Hot Dry", months: [8, 9], color: "bg-orange-500/20 text-orange-300", icon: Sun },
 ]
 
 function getSeasonForMonth(m: number) {

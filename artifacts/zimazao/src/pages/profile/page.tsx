@@ -108,7 +108,7 @@ export default function ProfilePage() {
                 <div className="bg-destructive/10 text-destructive text-sm p-3 rounded-lg">{error}</div>
               )}
               {success && (
-                <div className="bg-green-50 text-green-700 text-sm p-3 rounded-lg flex items-center gap-2">
+                <div className="bg-green-500/15 text-green-300 text-sm p-3 rounded-lg flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4" />{success}
                 </div>
               )}
@@ -189,7 +189,7 @@ export default function ProfilePage() {
                 <div className="bg-destructive/10 text-destructive text-sm p-3 rounded-lg">{pwError}</div>
               )}
               {pwSuccess && (
-                <div className="bg-green-50 text-green-700 text-sm p-3 rounded-lg flex items-center gap-2">
+                <div className="bg-green-500/15 text-green-300 text-sm p-3 rounded-lg flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4" />{pwSuccess}
                 </div>
               )}
@@ -254,7 +254,7 @@ export default function ProfilePage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-medium text-sm">Account Type</p>
-                <p className="text-muted-foreground text-xs capitalize mt-0.5">{user.userType} account · Member since {new Date(user.createdAt ?? "").getFullYear() || "2025"}</p>
+                <p className="text-muted-foreground text-xs capitalize mt-0.5">{user.userType} account Â· Member since {new Date(user.createdAt ?? "").getFullYear() || "2025"}</p>
               </div>
               <Badge className="capitalize bg-primary/10 text-primary border-0">{user.userType}</Badge>
             </div>

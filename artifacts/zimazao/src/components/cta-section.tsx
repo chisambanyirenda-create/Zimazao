@@ -1,3 +1,4 @@
+import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Link } from "wouter"
@@ -14,80 +15,104 @@ const benefits = [
 
 const miniStats = [
   { icon: Users, value: "10,000+", label: "Farmers" },
-  { icon: TrendingUp, value: "ZMW5M+", label: "Sales" },
+  { icon: TrendingUp, value: "ZMW 5M+", label: "Sales" },
   { icon: Star, value: "4.9★", label: "Rating" },
+]
+
+const floatingCards = [
+  { pos: "-top-4 -right-4", label: "Today's Top Sale", value: "🌽 ZMW 450/bag", accent: "text-amber-300" },
+  { pos: "-bottom-4 -left-4", label: "New Farmers Today", value: "👨‍🌾 +12 joined", accent: "text-emerald-300" },
+  { pos: "top-1/2 -right-12 -translate-y-1/2", label: "Disease Scans", value: "🔬 847 today", accent: "text-sky-300" },
 ]
 
 export function CTASection() {
   return (
-    <section className="py-20 relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary to-emerald-800" />
-      <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/3 pointer-events-none" />
+    <section className="relative overflow-hidden bg-[#040f0a] py-24">
+      {/* Aurora glow */}
+      <div className="pointer-events-none absolute -right-24 top-0 h-[30rem] w-[30rem] rounded-full bg-emerald-500/15 blur-[110px]" />
+      <div className="pointer-events-none absolute -left-24 bottom-0 h-96 w-96 rounded-full bg-amber-400/15 blur-[110px]" />
+      <div className="cine-grain" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
-          <div>
-            <Badge className="mb-5 bg-white/15 text-white border-white/25 text-sm px-4 py-1.5">
+      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="grid items-center gap-12 md:grid-cols-2">
+          <motion.div
+            initial={{ opacity: 0, y: 26 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <Badge className="mb-5 border-amber-300/25 bg-amber-300/10 px-4 py-1.5 text-sm text-amber-300">
               🇿🇲 Proudly Zambian
             </Badge>
-            <h2 className="text-3xl md:text-5xl font-bold text-white mb-4 leading-tight">
-              Ready to Grow Your Farm Business?
+            <h2 className="mb-4 font-display text-3xl font-bold leading-tight text-white md:text-5xl">
+              Ready to grow your{" "}
+              <span className="cine-gold-flow">farm business?</span>
             </h2>
-            <p className="text-white/80 text-lg mb-8 leading-relaxed">
+            <p className="mb-8 text-lg leading-relaxed text-white/70">
               Join thousands of Zambian farmers already using Zimazao to sell crops, protect harvests, and increase income. It's 100% free to start.
             </p>
-            <ul className="space-y-2.5 mb-8">
-              {benefits.map((benefit, index) => (
-                <li key={index} className="flex items-center gap-3">
-                  <CheckCircle className="w-5 h-5 text-yellow-300 shrink-0" />
-                  <span className="text-white/90">{benefit}</span>
+            <ul className="mb-8 space-y-2.5">
+              {benefits.map((benefit) => (
+                <li key={benefit} className="flex items-center gap-3">
+                  <CheckCircle className="h-5 w-5 shrink-0 text-amber-300" strokeWidth={1.75} />
+                  <span className="text-white/85">{benefit}</span>
                 </li>
               ))}
             </ul>
-            <div className="flex flex-col sm:flex-row gap-4 mb-8">
+            <div className="mb-8 flex flex-col gap-4 sm:flex-row">
               <Link href="/register">
-                <Button size="lg" className="bg-white text-primary hover:bg-white/90 gap-2 text-base px-8 font-semibold shadow-xl h-12">
-                  Get Started Free <ArrowRight className="w-5 h-5" />
+                <Button
+                  size="lg"
+                  className="cine-sheen h-12 gap-2 bg-gradient-to-r from-amber-300 to-amber-500 px-8 text-base font-semibold text-amber-950 shadow-xl hover:from-amber-200 hover:to-amber-400 glow-gold"
+                >
+                  Get Started Free <ArrowRight className="h-5 w-5" />
                 </Button>
               </Link>
               <Link href="/marketplace">
-                <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 text-base px-8 h-12">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="h-12 border-white/25 bg-white/5 px-8 text-base text-white backdrop-blur-md hover:bg-white/15 hover:text-white"
+                >
                   Browse Marketplace
                 </Button>
               </Link>
             </div>
-            <div className="flex gap-6">
-              {miniStats.map((s, i) => (
-                <div key={i} className="text-center">
-                  <p className="text-2xl font-bold text-white">{s.value}</p>
-                  <p className="text-white/60 text-xs">{s.label}</p>
+            <div className="flex gap-8">
+              {miniStats.map((s) => (
+                <div key={s.label} className="text-center">
+                  <p className="font-display text-2xl font-bold text-white tabular-nums">{s.value}</p>
+                  <p className="text-xs text-white/50">{s.label}</p>
                 </div>
               ))}
             </div>
-          </div>
+          </motion.div>
 
-          <div className="hidden md:flex items-center justify-center">
-            <div className="relative w-80 h-80">
-              <div className="absolute inset-0 bg-white/10 rounded-full" />
-              <div className="absolute inset-6 bg-white/10 rounded-full" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-[130px]">🌱</span>
+          <div className="hidden items-center justify-center md:flex">
+            <motion.div
+              className="relative h-80 w-80"
+              initial={{ opacity: 0, scale: 0.85 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <div className="absolute inset-0 rounded-full border border-white/10 bg-white/[0.04] backdrop-blur-md glow-gold" />
+              <div className="absolute inset-6 rounded-full border border-white/10 bg-white/[0.03]" />
+              <div className="cine-kenburns absolute inset-0 flex items-center justify-center">
+                <span className="text-[130px] drop-shadow-2xl">🌱</span>
               </div>
-              {/* Floating badges */}
-              <div className="absolute -top-4 -right-4 bg-white rounded-2xl px-4 py-3 shadow-xl">
-                <p className="text-xs text-muted-foreground">Today's Top Sale</p>
-                <p className="font-bold text-primary text-sm">🌽 ZMW 450/bag</p>
-              </div>
-              <div className="absolute -bottom-4 -left-4 bg-white rounded-2xl px-4 py-3 shadow-xl">
-                <p className="text-xs text-muted-foreground">New Farmer Today</p>
-                <p className="font-bold text-foreground text-sm">👨‍🌾 +12 joined</p>
-              </div>
-              <div className="absolute top-1/2 -right-12 -translate-y-1/2 bg-white rounded-2xl px-4 py-3 shadow-xl">
-                <p className="text-xs text-muted-foreground">Disease Scans</p>
-                <p className="font-bold text-blue-600 text-sm">🔬 847 today</p>
-              </div>
-            </div>
+              {floatingCards.map((c, i) => (
+                <motion.div
+                  key={c.label}
+                  className={`absolute ${c.pos} rounded-2xl border border-white/10 bg-white/[0.07] px-4 py-3 backdrop-blur-xl shadow-2xl`}
+                  animate={{ y: [0, i % 2 === 0 ? -8 : 8, 0] }}
+                  transition={{ duration: 4 + i, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  <p className="text-xs text-white/50">{c.label}</p>
+                  <p className={`text-sm font-bold ${c.accent}`}>{c.value}</p>
+                </motion.div>
+              ))}
+            </motion.div>
           </div>
         </div>
       </div>

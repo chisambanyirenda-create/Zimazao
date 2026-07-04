@@ -160,11 +160,11 @@ function ReviewSection({ farmerId, listingFarmerId }: { farmerId: number; listin
             {/* Write a review */}
             {user && Number(user.id) !== listingFarmerId ? (
               submitted ? (
-                <div className="flex items-center gap-3 p-4 bg-green-50 rounded-xl text-green-700">
+                <div className="flex items-center gap-3 p-4 bg-green-500/15 rounded-xl text-green-300">
                   <CheckCircle className="w-5 h-5 shrink-0" />
                   <div>
                     <p className="font-semibold text-sm">Review submitted!</p>
-                    <p className="text-xs text-green-600">Thank you for helping other buyers.</p>
+                    <p className="text-xs text-green-300">Thank you for helping other buyers.</p>
                   </div>
                 </div>
               ) : (
@@ -428,7 +428,7 @@ export default function ListingDetailPage() {
                 <CardHeader><CardTitle className="text-lg flex items-center gap-2"><MessageCircle className="w-5 h-5" />Message Farmer</CardTitle></CardHeader>
                 <CardContent className="space-y-3">
                   {msgSent ? (
-                    <div className="flex items-center gap-2 text-green-600">
+                    <div className="flex items-center gap-2 text-green-300">
                       <CheckCircle className="w-5 h-5" />
                       <span>Message sent! Check your inbox for a reply.</span>
                     </div>
@@ -462,9 +462,9 @@ export default function ListingDetailPage() {
               <Card className="sticky top-20 border-0 shadow-md">
                 <CardHeader><CardTitle className="flex items-center gap-2"><Package className="w-5 h-5" />Your Listing</CardTitle></CardHeader>
                 <CardContent className="space-y-3">
-                  <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-center">
-                    <p className="text-emerald-800 font-semibold text-sm mb-1">This is your listing</p>
-                    <p className="text-emerald-700 text-xs">Buyers can see this and place orders. You'll be notified via messages.</p>
+                  <div className="bg-emerald-500/15 border border-emerald-500/25 rounded-xl p-4 text-center">
+                    <p className="text-emerald-200 font-semibold text-sm mb-1">This is your listing</p>
+                    <p className="text-emerald-300 text-xs">Buyers can see this and place orders. You'll be notified via messages.</p>
                   </div>
                   <Link href="/dashboard">
                     <Button variant="outline" className="w-full gap-2">View Dashboard</Button>
@@ -481,12 +481,12 @@ export default function ListingDetailPage() {
               <Card className="sticky top-20 border-0 shadow-md">
                 <CardHeader><CardTitle className="flex items-center gap-2"><ShoppingCart className="w-5 h-5" />Place Order</CardTitle></CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 text-center">
-                    <div className="w-14 h-14 bg-amber-100 rounded-xl flex items-center justify-center mx-auto mb-3">
+                  <div className="bg-amber-500/15 border border-amber-500/25 rounded-2xl p-5 text-center">
+                    <div className="w-14 h-14 bg-amber-500/20 rounded-xl flex items-center justify-center mx-auto mb-3">
                       <span className="text-3xl">🛒</span>
                     </div>
-                    <p className="font-bold text-amber-900 mb-1">Switch to Buyer Mode</p>
-                    <p className="text-amber-700 text-sm mb-4">
+                    <p className="font-bold text-amber-200 mb-1">Switch to Buyer Mode</p>
+                    <p className="text-amber-300 text-sm mb-4">
                       You are in <strong>Farmer mode</strong>. To buy crops, switch to Buyer mode from your account menu.
                     </p>
                     <Link href="/dashboard">
@@ -504,8 +504,8 @@ export default function ListingDetailPage() {
                 <CardContent className="space-y-4">
                   {orderDone ? (
                     <div className="text-center py-4">
-                      <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                        <CheckCircle className="w-8 h-8 text-green-600" />
+                      <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <CheckCircle className="w-8 h-8 text-green-300" />
                       </div>
                       <p className="font-bold text-lg">Order placed!</p>
                       <p className="text-sm text-muted-foreground mb-1">The farmer has been notified.</p>
@@ -559,7 +559,7 @@ export default function ListingDetailPage() {
                           <button
                             type="button"
                             onClick={() => setPaymentMethod("cod")}
-                            className={`p-3 rounded-xl border-2 text-left transition-all ${paymentMethod === "cod" ? "border-amber-500 bg-amber-50" : "border-border bg-background"}`}
+                            className={`p-3 rounded-xl border-2 text-left transition-all ${paymentMethod === "cod" ? "border-amber-500 bg-amber-500/15" : "border-border bg-background"}`}
                           >
                             <div className="flex items-center gap-1.5 mb-1">
                               <span className="text-base">💵</span>
@@ -574,7 +574,7 @@ export default function ListingDetailPage() {
                           </p>
                         )}
                         {paymentMethod === "cod" && (
-                          <p className="text-[10px] text-amber-600 flex items-center gap-1">
+                          <p className="text-[10px] text-amber-300 flex items-center gap-1">
                             <span>ℹ️</span> No online payment. Pay cash when crops arrive. 3% commission applies.
                           </p>
                         )}

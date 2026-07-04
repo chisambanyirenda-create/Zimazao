@@ -58,16 +58,16 @@ function FarmerDashboard({ stats }: { stats: ApiDashboardStats | null }) {
 
   const liveStats = stats
     ? [
-        { title: "Total Sales", value: `ZMW ${stats.totalSales.toLocaleString()}`, change: "+12%", trend: "up" as const, icon: DollarSign, color: "text-emerald-600", bg: "bg-emerald-50" },
-        { title: "Active Listings", value: String(stats.activeListings), change: "+2 this week", trend: "up" as const, icon: Package, color: "text-blue-600", bg: "bg-blue-50" },
-        { title: "Orders Received", value: String(stats.totalOrders), change: "+5 this month", trend: "up" as const, icon: ShoppingBag, color: "text-purple-600", bg: "bg-purple-50" },
-        { title: "Messages", value: String(stats.messages), change: "3 unread", trend: "up" as const, icon: MessageSquare, color: "text-amber-600", bg: "bg-amber-50" },
+        { title: "Total Sales", value: `ZMW ${stats.totalSales.toLocaleString()}`, change: "+12%", trend: "up" as const, icon: DollarSign, color: "text-emerald-300", bg: "bg-emerald-500/15" },
+        { title: "Active Listings", value: String(stats.activeListings), change: "+2 this week", trend: "up" as const, icon: Package, color: "text-blue-300", bg: "bg-blue-500/15" },
+        { title: "Orders Received", value: String(stats.totalOrders), change: "+5 this month", trend: "up" as const, icon: ShoppingBag, color: "text-purple-300", bg: "bg-purple-500/15" },
+        { title: "Messages", value: String(stats.messages), change: "3 unread", trend: "up" as const, icon: MessageSquare, color: "text-amber-300", bg: "bg-amber-500/15" },
       ]
     : [
-        { title: "Total Sales", value: "ZMW 0", change: "No sales yet", trend: "up" as const, icon: DollarSign, color: "text-emerald-600", bg: "bg-emerald-50" },
-        { title: "Active Listings", value: "0", change: "Create a listing", trend: "up" as const, icon: Package, color: "text-blue-600", bg: "bg-blue-50" },
-        { title: "Orders Received", value: "0", change: "Start selling", trend: "up" as const, icon: ShoppingBag, color: "text-purple-600", bg: "bg-purple-50" },
-        { title: "Messages", value: "0", change: "No messages", trend: "up" as const, icon: MessageSquare, color: "text-amber-600", bg: "bg-amber-50" },
+        { title: "Total Sales", value: "ZMW 0", change: "No sales yet", trend: "up" as const, icon: DollarSign, color: "text-emerald-300", bg: "bg-emerald-500/15" },
+        { title: "Active Listings", value: "0", change: "Create a listing", trend: "up" as const, icon: Package, color: "text-blue-300", bg: "bg-blue-500/15" },
+        { title: "Orders Received", value: "0", change: "Start selling", trend: "up" as const, icon: ShoppingBag, color: "text-purple-300", bg: "bg-purple-500/15" },
+        { title: "Messages", value: "0", change: "No messages", trend: "up" as const, icon: MessageSquare, color: "text-amber-300", bg: "bg-amber-500/15" },
       ]
 
   const liveListings = stats?.recentListings
@@ -79,14 +79,14 @@ function FarmerDashboard({ stats }: { stats: ApiDashboardStats | null }) {
 
   const farmerActions = [
     { href: "/new-listing", icon: Plus, label: "New Listing", color: "text-primary", bg: "bg-primary/10" },
-    { href: "/disease-detector", icon: Camera, label: "Scan Crops", color: "text-blue-600", bg: "bg-blue-50" },
-    { href: "/prices", icon: BarChart3, label: "Market Prices", color: "text-amber-600", bg: "bg-amber-50" },
-    { href: "/price-alerts", icon: Bell, label: "Price Alerts", color: "text-orange-600", bg: "bg-orange-50" },
-    { href: "/messages", icon: MessageSquare, label: "Messages", color: "text-purple-600", bg: "bg-purple-50" },
-    { href: "/crop-calendar", icon: Star, label: "Crop Calendar", color: "text-emerald-600", bg: "bg-emerald-50" },
-    { href: "/marketplace", icon: ShoppingBag, label: "Marketplace", color: "text-rose-600", bg: "bg-rose-50" },
-    { href: "/orders", icon: Package, label: "Orders", color: "text-indigo-600", bg: "bg-indigo-50" },
-    { href: "/farmer/" + (user.id ?? ""), icon: Users, label: "My Profile", color: "text-teal-600", bg: "bg-teal-50" },
+    { href: "/disease-detector", icon: Camera, label: "Scan Crops", color: "text-blue-300", bg: "bg-blue-500/15" },
+    { href: "/prices", icon: BarChart3, label: "Market Prices", color: "text-amber-300", bg: "bg-amber-500/15" },
+    { href: "/price-alerts", icon: Bell, label: "Price Alerts", color: "text-orange-300", bg: "bg-orange-500/15" },
+    { href: "/messages", icon: MessageSquare, label: "Messages", color: "text-purple-300", bg: "bg-purple-500/15" },
+    { href: "/crop-calendar", icon: Star, label: "Crop Calendar", color: "text-emerald-300", bg: "bg-emerald-500/15" },
+    { href: "/marketplace", icon: ShoppingBag, label: "Marketplace", color: "text-rose-300", bg: "bg-rose-500/15" },
+    { href: "/orders", icon: Package, label: "Orders", color: "text-indigo-300", bg: "bg-indigo-500/15" },
+    { href: "/farmer/" + (user.id ?? ""), icon: Users, label: "My Profile", color: "text-teal-300", bg: "bg-teal-500/15" },
   ]
 
   return (
@@ -95,20 +95,20 @@ function FarmerDashboard({ stats }: { stats: ApiDashboardStats | null }) {
       {/* Live pending orders banner */}
       {pendingCount > 0 && (
         <Link href="/orders">
-          <div className="mb-5 flex items-center gap-3 p-4 rounded-2xl bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-200 cursor-pointer hover:shadow-md transition-shadow">
+          <div className="mb-5 flex items-center gap-3 p-4 rounded-2xl bg-gradient-to-r from-orange-500/10 to-amber-500/10 border border-orange-500/25 cursor-pointer hover:shadow-md transition-shadow">
             <div className="relative shrink-0">
-              <div className="w-11 h-11 bg-orange-100 rounded-xl flex items-center justify-center">
-                <Bell className="w-5 h-5 text-orange-600" />
+              <div className="w-11 h-11 bg-orange-500/20 rounded-xl flex items-center justify-center">
+                <Bell className="w-5 h-5 text-orange-300" />
               </div>
               <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center animate-bounce">
                 {pendingCount}
               </span>
             </div>
             <div className="flex-1">
-              <p className="font-bold text-orange-800 text-sm">
+              <p className="font-bold text-orange-200 text-sm">
                 You have {pendingCount} pending order{pendingCount > 1 ? "s" : ""} waiting for your confirmation
               </p>
-              <p className="text-orange-600/70 text-xs mt-0.5">Tap to review and confirm — updates every 15 seconds</p>
+              <p className="text-orange-300/70 text-xs mt-0.5">Tap to review and confirm — updates every 15 seconds</p>
             </div>
             <div className="shrink-0">
               <ArrowRight className="w-4 h-4 text-orange-500" />
@@ -148,7 +148,7 @@ function FarmerDashboard({ stats }: { stats: ApiDashboardStats | null }) {
                 <div className={`w-11 h-11 ${stat.bg} rounded-xl flex items-center justify-center`}>
                   <stat.icon className={`w-5 h-5 ${stat.color}`} />
                 </div>
-                <Badge variant="secondary" className={`text-xs ${stat.trend === "up" ? "bg-emerald-50 text-emerald-700" : "bg-red-50 text-red-600"}`}>
+                <Badge variant="secondary" className={`text-xs ${stat.trend === "up" ? "bg-emerald-500/15 text-emerald-300" : "bg-red-500/15 text-red-300"}`}>
                   {stat.trend === "up" ? <TrendingUp className="w-3 h-3 mr-1 inline" /> : <TrendingDown className="w-3 h-3 mr-1 inline" />}
                   {stat.change}
                 </Badge>
@@ -236,7 +236,7 @@ function FarmerDashboard({ stats }: { stats: ApiDashboardStats | null }) {
                       <p className="font-semibold text-foreground truncate">{listing.name}</p>
                       <p className="text-sm text-muted-foreground">{listing.quantity} · ZMW {listing.price}/{listing.unit}</p>
                     </div>
-                    <Badge className="bg-emerald-100 text-emerald-700 border-0">
+                    <Badge className="bg-emerald-500/20 text-emerald-300 border-0">
                       <CheckCircle className="w-3 h-3 mr-1 inline" />active
                     </Badge>
                   </div>
@@ -295,20 +295,20 @@ function BuyerDashboard({ orders }: { orders: ApiOrderDetail[] }) {
 
   const buyerActions = [
     { href: "/marketplace", icon: ShoppingCart, label: "Shop Crops", color: "text-primary", bg: "bg-primary/10" },
-    { href: "/livestock", icon: Users, label: "Livestock", color: "text-amber-600", bg: "bg-amber-50" },
-    { href: "/orders", icon: Package, label: "My Orders", color: "text-blue-600", bg: "bg-blue-50" },
-    { href: "/messages", icon: MessageSquare, label: "Messages", color: "text-purple-600", bg: "bg-purple-50" },
-    { href: "/prices", icon: BarChart3, label: "Price Trends", color: "text-emerald-600", bg: "bg-emerald-50" },
-    { href: "/price-alerts", icon: Bell, label: "Price Alerts", color: "text-orange-600", bg: "bg-orange-50" },
-    { href: "/profile", icon: Star, label: "My Profile", color: "text-rose-600", bg: "bg-rose-50" },
+    { href: "/livestock", icon: Users, label: "Livestock", color: "text-amber-300", bg: "bg-amber-500/15" },
+    { href: "/orders", icon: Package, label: "My Orders", color: "text-blue-300", bg: "bg-blue-500/15" },
+    { href: "/messages", icon: MessageSquare, label: "Messages", color: "text-purple-300", bg: "bg-purple-500/15" },
+    { href: "/prices", icon: BarChart3, label: "Price Trends", color: "text-emerald-300", bg: "bg-emerald-500/15" },
+    { href: "/price-alerts", icon: Bell, label: "Price Alerts", color: "text-orange-300", bg: "bg-orange-500/15" },
+    { href: "/profile", icon: Star, label: "My Profile", color: "text-rose-300", bg: "bg-rose-500/15" },
   ]
 
   const statusColor = (status: string) => ({
-    pending: "bg-amber-100 text-amber-700",
-    confirmed: "bg-blue-100 text-blue-700",
-    shipped: "bg-indigo-100 text-indigo-700",
-    delivered: "bg-green-100 text-green-700",
-    cancelled: "bg-red-100 text-red-600",
+    pending: "bg-amber-500/20 text-amber-300",
+    confirmed: "bg-blue-500/20 text-blue-300",
+    shipped: "bg-indigo-500/20 text-indigo-300",
+    delivered: "bg-green-500/20 text-green-300",
+    cancelled: "bg-red-500/20 text-red-300",
   }[status] ?? "bg-muted text-muted-foreground")
 
   return (
@@ -316,7 +316,7 @@ function BuyerDashboard({ orders }: { orders: ApiOrderDetail[] }) {
       {/* Welcome Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+          <div className="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center">
             <span className="text-2xl">🛒</span>
           </div>
           <div>
@@ -341,36 +341,36 @@ function BuyerDashboard({ orders }: { orders: ApiOrderDetail[] }) {
             value: `ZMW ${user.walletBalance.toLocaleString()}`,
             sub: "Available to spend",
             icon: Wallet,
-            color: "text-emerald-600",
-            bg: "bg-emerald-50",
-            border: "border-emerald-200",
+            color: "text-emerald-300",
+            bg: "bg-emerald-500/15",
+            border: "border-emerald-500/25",
           },
           {
             title: "Total Spent",
             value: `ZMW ${totalSpent.toLocaleString()}`,
             sub: `${orders.length} order${orders.length !== 1 ? "s" : ""}`,
             icon: ShoppingBag,
-            color: "text-blue-600",
-            bg: "bg-blue-50",
-            border: "border-blue-200",
+            color: "text-blue-300",
+            bg: "bg-blue-500/15",
+            border: "border-blue-500/25",
           },
           {
             title: "Active Orders",
             value: String(activeOrders.length),
             sub: activeOrders.length > 0 ? "On the way" : "All delivered",
             icon: Truck,
-            color: "text-indigo-600",
-            bg: "bg-indigo-50",
-            border: "border-indigo-200",
+            color: "text-indigo-300",
+            bg: "bg-indigo-500/15",
+            border: "border-indigo-500/25",
           },
           {
             title: "Completed",
             value: String(deliveredOrders.length),
             sub: "Delivered orders",
             icon: CheckCircle,
-            color: "text-green-600",
-            bg: "bg-green-50",
-            border: "border-green-200",
+            color: "text-green-300",
+            bg: "bg-green-500/15",
+            border: "border-green-500/25",
           },
         ].map((stat, i) => (
           <Card key={i} className={`border shadow-sm hover:shadow-md transition-shadow ${stat.border}`}>
@@ -412,7 +412,7 @@ function BuyerDashboard({ orders }: { orders: ApiOrderDetail[] }) {
               <div className="space-y-3">
                 {orders.slice(0, 5).map((order) => (
                   <div key={order.id} className="flex items-center gap-3 p-3 bg-muted/40 rounded-xl hover:bg-muted/60 transition-colors">
-                    <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center text-xl shrink-0">🌾</div>
+                    <div className="w-10 h-10 bg-blue-500/20 rounded-xl flex items-center justify-center text-xl shrink-0">🌾</div>
                     <div className="flex-1 min-w-0">
                       <p className="font-semibold text-sm text-foreground truncate">{order.cropName}</p>
                       <p className="text-xs text-muted-foreground">{order.quantity} · {order.farmerName ?? "Farmer"}</p>
@@ -451,10 +451,10 @@ function BuyerDashboard({ orders }: { orders: ApiOrderDetail[] }) {
       </div>
 
       {/* Wallet notice */}
-      <Card className="bg-gradient-to-r from-emerald-50 to-teal-50 border-emerald-200">
+      <Card className="bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border-emerald-500/25">
         <CardContent className="p-5 flex items-center gap-4">
-          <div className="w-14 h-14 bg-emerald-100 rounded-2xl flex items-center justify-center shrink-0">
-            <Gift className="w-7 h-7 text-emerald-600" />
+          <div className="w-14 h-14 bg-emerald-500/20 rounded-2xl flex items-center justify-center shrink-0">
+            <Gift className="w-7 h-7 text-emerald-300" />
           </div>
           <div className="flex-1">
             <p className="font-bold text-foreground mb-0.5">Your test wallet: ZMW {user.walletBalance.toLocaleString()} available</p>

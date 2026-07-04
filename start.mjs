@@ -64,14 +64,22 @@ if (!env.DATABASE_URL) {
 
 // ── 4. Install dependencies ──────────────────────────────────────────────────
 log("Installing dependencies (first run can take a few minutes)...");
-const install = spawnSync("pnpm", ["install"], { cwd: root, shell: true, stdio: "inherit" });
+const install = spawnSync("pnpm", ["install", "--config.dangerouslyAllowAllBuilds=true"], { cwd: root, shell: true, stdio: "inherit" });
 if (install.status !== 0) fail("pnpm install failed — see the error above.");
 
-// ── 5. Start API + web app ───────────────────────────────────────────────────
+// ── 5. Build + start API, then the web app ───────────────────────────────────
+// Build the API bundle first (the package's own "dev" script uses a Unix-only
+// `export`, so we invoke build + start directly — works on Windows too).
+const apiEnv = { ...env, API_PORT: String(API_PORT), NODE_ENV: "development" };
+log("Building the API server...");
+const apiBuild = spawnSync("pnpm", ["--filter", "@workspace/api-server", "run", "build"], {
+  cwd: root, shell: true, stdio: "inherit", env: apiEnv,
+});
+if (apiBuild.status !== 0) fail("Building the API server failed — see the error above.");
+
 log(`Starting API server on port ${API_PORT}...`);
-const api = spawn("pnpm", ["--filter", "@workspace/api-server", "run", "dev"], {
-  cwd: root, shell: true, stdio: "inherit",
-  env: { ...env, API_PORT: String(API_PORT), NODE_ENV: "development" },
+const api = spawn("pnpm", ["--filter", "@workspace/api-server", "run", "start"], {
+  cwd: root, shell: true, stdio: "inherit", env: apiEnv,
 });
 
 log(`Starting web app on port ${WEB_PORT}...`);

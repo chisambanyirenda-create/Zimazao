@@ -78,7 +78,7 @@ function DiseaseDetectorContent() {
   const getSeverityColor = (severity: string) => {
     switch (severity) {
       case "low": return "bg-primary/10 text-primary"
-      case "medium": return "bg-amber-100 text-amber-700"
+      case "medium": return "bg-amber-500/20 text-amber-300"
       case "high": return "bg-destructive/10 text-destructive"
       default: return "bg-muted text-muted-foreground"
     }
@@ -133,10 +133,10 @@ function DiseaseDetectorContent() {
               {scanError && (
                 <div className="mt-4">
                   {scanError.code === "SCAN_LIMIT_REACHED" ? (
-                    <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl text-center">
+                    <div className="p-4 bg-amber-500/15 border border-amber-500/25 rounded-xl text-center">
                       <Crown className="w-8 h-8 text-amber-500 mx-auto mb-2" />
-                      <p className="font-semibold text-amber-800 mb-1">Monthly scan limit reached</p>
-                      <p className="text-sm text-amber-700 mb-3">Free plan allows 5 scans/month. Upgrade to Pro for unlimited scans.</p>
+                      <p className="font-semibold text-amber-200 mb-1">Monthly scan limit reached</p>
+                      <p className="text-sm text-amber-300 mb-3">Free plan allows 5 scans/month. Upgrade to Pro for unlimited scans.</p>
                       <Link href="/subscription">
                         <Button className="bg-amber-500 hover:bg-amber-600 text-white gap-2">
                           <Crown className="w-4 h-4" /> Upgrade to Pro — ZMW 80/month
@@ -144,9 +144,9 @@ function DiseaseDetectorContent() {
                       </Link>
                     </div>
                   ) : (
-                    <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-center">
-                      <p className="font-semibold text-red-700">Analysis failed</p>
-                      <p className="text-sm text-red-600 mt-1">{scanError.message}</p>
+                    <div className="p-4 bg-red-500/15 border border-red-500/25 rounded-xl text-center">
+                      <p className="font-semibold text-red-300">Analysis failed</p>
+                      <p className="text-sm text-red-300 mt-1">{scanError.message}</p>
                       <Button onClick={analyzeImage} variant="outline" className="mt-3">Try Again</Button>
                     </div>
                   )}
@@ -247,26 +247,26 @@ function DiseaseDetectorContent() {
                 )}
 
                 {diagnosis.sponsoredProducts && diagnosis.sponsoredProducts.length > 0 && (
-                  <Card className="border-amber-200 bg-amber-50/50">
+                  <Card className="border-amber-500/25 bg-amber-500/15/50">
                     <CardHeader className="pb-3">
                       <CardTitle className="text-lg flex items-center gap-2">
                         🛒 Recommended Products
-                        <Badge className="bg-amber-100 text-amber-700 border-amber-200 text-xs font-normal">Sponsored</Badge>
+                        <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/25 text-xs font-normal">Sponsored</Badge>
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-3">
                         {diagnosis.sponsoredProducts.map((p) => (
-                          <div key={p.id} className="flex items-start gap-3 p-4 bg-white rounded-xl border border-amber-100">
+                          <div key={p.id} className="flex items-start gap-3 p-4 bg-white rounded-xl border border-amber-500/20">
                             {p.productImage ? (
                               <img src={p.productImage} alt={p.productName} className="w-14 h-14 object-cover rounded-lg shrink-0" />
                             ) : (
-                              <div className="w-14 h-14 bg-amber-100 rounded-lg flex items-center justify-center shrink-0 text-2xl">🧪</div>
+                              <div className="w-14 h-14 bg-amber-500/20 rounded-lg flex items-center justify-center shrink-0 text-2xl">🧪</div>
                             )}
                             <div className="flex-1">
                               <div className="flex items-center justify-between gap-2">
                                 <p className="font-semibold text-sm">{p.productName}</p>
-                                {p.price && <p className="text-sm font-bold text-amber-700">ZMW {Number(p.price).toLocaleString()}</p>}
+                                {p.price && <p className="text-sm font-bold text-amber-300">ZMW {Number(p.price).toLocaleString()}</p>}
                               </div>
                               <p className="text-xs text-muted-foreground mb-1">{p.companyName}</p>
                               {p.description && <p className="text-xs text-muted-foreground">{p.description}</p>}

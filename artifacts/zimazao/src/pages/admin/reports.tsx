@@ -34,10 +34,10 @@ const REASON_LABELS: Record<string, string> = {
 }
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  pending: { label: "Pending", color: "bg-amber-100 text-amber-700 border-amber-200", icon: <Clock className="w-3 h-3" /> },
-  reviewed: { label: "Reviewed", color: "bg-blue-100 text-blue-700 border-blue-200", icon: <CheckCircle className="w-3 h-3" /> },
-  actioned: { label: "Actioned", color: "bg-green-100 text-green-700 border-green-200", icon: <CheckCircle className="w-3 h-3" /> },
-  dismissed: { label: "Dismissed", color: "bg-gray-100 text-gray-600 border-gray-200", icon: <XCircle className="w-3 h-3" /> },
+  pending: { label: "Pending", color: "bg-amber-500/20 text-amber-300 border-amber-500/25", icon: <Clock className="w-3 h-3" /> },
+  reviewed: { label: "Reviewed", color: "bg-blue-500/20 text-blue-300 border-blue-500/25", icon: <CheckCircle className="w-3 h-3" /> },
+  actioned: { label: "Actioned", color: "bg-green-500/20 text-green-300 border-green-500/25", icon: <CheckCircle className="w-3 h-3" /> },
+  dismissed: { label: "Dismissed", color: "bg-white/10 text-white/60 border-white/10", icon: <XCircle className="w-3 h-3" /> },
 }
 
 function timeAgo(iso: string) {
@@ -188,11 +188,11 @@ export default function AdminReportsPage() {
               const statusCfg = STATUS_CONFIG[report.status] ?? STATUS_CONFIG.pending
               const isPending = report.status === "pending"
               return (
-                <Card key={report.id} className={`border transition-all ${isPending ? "border-amber-200 shadow-amber-50 shadow-md" : "border-border"}`}>
+                <Card key={report.id} className={`border transition-all ${isPending ? "border-amber-500/25 shadow-amber-50 shadow-md" : "border-border"}`}>
                   <CardContent className="p-5">
                     <div className="flex flex-col sm:flex-row gap-4">
                       {/* Icon */}
-                      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${isPending ? "bg-amber-50" : "bg-muted"}`}>
+                      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${isPending ? "bg-amber-500/15" : "bg-muted"}`}>
                         <Flag className={`w-5 h-5 ${isPending ? "text-amber-500" : "text-muted-foreground"}`} />
                       </div>
 

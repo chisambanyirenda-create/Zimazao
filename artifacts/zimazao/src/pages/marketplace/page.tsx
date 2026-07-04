@@ -23,16 +23,30 @@ const CROP_EMOJI: Record<string, string> = {
 }
 
 const CROP_GRADIENT: Record<string, string> = {
-  cereals: "from-yellow-100 to-amber-50",
-  legumes: "from-green-100 to-emerald-50",
-  tubers: "from-orange-100 to-amber-50",
-  oilseeds: "from-yellow-100 to-orange-50",
-  vegetables: "from-green-100 to-teal-50",
-  fruits: "from-red-100 to-rose-50",
-  cash_crops: "from-purple-100 to-violet-50",
-  livestock: "from-amber-100 to-orange-50",
-  poultry: "from-yellow-100 to-amber-50",
-  other: "from-gray-100 to-slate-50",
+  cereals: "from-amber-500/15 to-transparent",
+  legumes: "from-emerald-500/15 to-transparent",
+  tubers: "from-orange-500/15 to-transparent",
+  oilseeds: "from-yellow-500/15 to-transparent",
+  vegetables: "from-teal-500/15 to-transparent",
+  fruits: "from-rose-500/15 to-transparent",
+  cash_crops: "from-violet-500/15 to-transparent",
+  livestock: "from-amber-500/15 to-transparent",
+  poultry: "from-yellow-500/15 to-transparent",
+  other: "from-white/10 to-transparent",
+}
+
+// Real category photos (fallback to the emoji if none)
+const CATEGORY_IMAGE: Record<string, string> = {
+  cereals: "/crops/maize.jpg",
+  legumes: "/crops/groundnuts.jpg",
+  tubers: "/crops/cassava.jpg",
+  oilseeds: "/crops/sunflower.jpg",
+  vegetables: "/crops/tomato.jpg",
+  fruits: "/crops/watermelon.jpg",
+  cash_crops: "/crops/sunflower.jpg",
+  livestock: "/livestock-cow.png",
+  poultry: "/livestock-poultry.png",
+  other: "/crops/maize.jpg",
 }
 
 const FALLBACK_CROPS = [
@@ -82,19 +96,20 @@ function CropCard({ crop, viewMode }: { crop: CropWithExtras; viewMode: "grid" |
   const { user } = useAuth()
   const isFarmer = user?.userType === "farmer"
   const emoji = CROP_EMOJI[crop.category] ?? "🌾"
-  const gradient = CROP_GRADIENT[crop.category] ?? "from-gray-100 to-slate-50"
+  const gradient = CROP_GRADIENT[crop.category] ?? "from-white/10 to-transparent"
+  const img = crop.imageUrl || CATEGORY_IMAGE[crop.category]
   const hasDiscount = (crop.discount ?? 0) > 0
 
   if (viewMode === "list") {
     return (
-      <Card className="hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5 border-0 shadow-sm">
+      <Card className="border border-white/10 bg-white/[0.03] backdrop-blur-md hover:border-emerald-400/25 hover:-translate-y-0.5 transition-all duration-200">
         <CardContent className="p-4">
           <div className="flex gap-4">
             <Link href={`/listing/${crop.id}`} className="shrink-0">
-              {crop.imageUrl ? (
-                <img src={crop.imageUrl} alt={crop.cropName} className="w-24 h-24 rounded-xl object-cover" />
+              {img ? (
+                <img src={img} alt={crop.cropName} className="w-24 h-24 rounded-xl object-cover border border-white/10" loading="lazy" />
               ) : (
-                <div className={`w-24 h-24 bg-gradient-to-br ${gradient} rounded-xl flex items-center justify-center`}>
+                <div className={`w-24 h-24 bg-gradient-to-br ${gradient} rounded-xl flex items-center justify-center border border-white/10`}>
                   <span className="text-5xl">{emoji}</span>
                 </div>
               )}
@@ -152,23 +167,26 @@ function CropCard({ crop, viewMode }: { crop: CropWithExtras; viewMode: "grid" |
   }
 
   return (
-    <Card className="neon-listing overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col border-0 shadow-md">
-      <Link href={`/listing/${crop.id}`}>
-        {crop.imageUrl ? (
-          <img src={crop.imageUrl} alt={crop.cropName} className="w-full h-44 object-cover" />
+    <Card className="group overflow-hidden hover:-translate-y-1.5 transition-all duration-300 flex flex-col border border-white/10 bg-white/[0.03] backdrop-blur-md hover:border-emerald-400/30 hover:shadow-[0_0_44px_-12px_rgba(52,211,153,0.4)]">
+      <Link href={`/listing/${crop.id}`} className="relative block h-44 overflow-hidden">
+        {img ? (
+          <>
+            <img src={img} alt={crop.cropName} className="h-44 w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/5 to-black/25" />
+          </>
         ) : (
-          <div className={`bg-gradient-to-br ${gradient} h-44 flex items-center justify-center relative`}>
-            <span className="text-8xl">{emoji}</span>
-            <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
-              <Badge className="bg-white/90 text-foreground text-xs border-0 shadow-sm capitalize">{crop.category.replace("_", " ")}</Badge>
-              <div className="flex gap-1">
-                {crop.hot && <Badge className="bg-orange-500 text-white border-0 text-xs gap-1"><Flame className="w-3 h-3" /></Badge>}
-                {hasDiscount && <Badge className="bg-green-600 text-white border-0 text-xs gap-1"><Tag className="w-3 h-3" />{crop.discount}%</Badge>}
-                {crop.verified && <Badge className="bg-primary text-white border-0 text-xs"><CheckCircle2 className="w-3 h-3" /></Badge>}
-              </div>
-            </div>
+          <div className={`bg-gradient-to-br ${gradient} h-44 flex items-center justify-center`}>
+            <span className="text-8xl drop-shadow-2xl">{emoji}</span>
           </div>
         )}
+        <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
+          <Badge className="bg-black/40 text-white/80 text-xs border border-white/10 backdrop-blur-md capitalize">{crop.category.replace("_", " ")}</Badge>
+          <div className="flex gap-1">
+            {crop.hot && <Badge className="bg-orange-500 text-white border-0 text-xs gap-1"><Flame className="w-3 h-3" /></Badge>}
+            {hasDiscount && <Badge className="bg-green-600 text-white border-0 text-xs gap-1"><Tag className="w-3 h-3" />{crop.discount}%</Badge>}
+            {crop.verified && <Badge className="bg-primary text-white border-0 text-xs"><CheckCircle2 className="w-3 h-3" /></Badge>}
+          </div>
+        </div>
       </Link>
       <CardContent className="p-4 flex-1">
         <Link href={`/listing/${crop.id}`}>
@@ -180,16 +198,16 @@ function CropCard({ crop, viewMode }: { crop: CropWithExtras; viewMode: "grid" |
         </div>
         <div className="flex items-center justify-between mb-1">
           <div>
-            <p className="text-xl font-bold text-primary">ZMW {parseFloat(crop.price).toLocaleString()}</p>
+            <p className="font-display text-xl font-bold text-amber-300 tabular-nums">ZMW {parseFloat(crop.price).toLocaleString()}</p>
             {hasDiscount && crop.originalPrice && (
-              <p className="text-xs text-muted-foreground line-through">ZMW {parseFloat(crop.originalPrice).toLocaleString()}</p>
+              <p className="text-xs text-white/40 line-through">ZMW {parseFloat(crop.originalPrice).toLocaleString()}</p>
             )}
             <p className="text-xs text-muted-foreground">per {crop.unit}</p>
           </div>
           {crop.rating && (
-            <div className="flex items-center gap-0.5 bg-yellow-50 px-2 py-1 rounded-lg">
-              <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
-              <span className="text-sm font-bold text-foreground">{crop.rating}</span>
+            <div className="flex items-center gap-0.5 rounded-lg border border-white/10 bg-white/5 px-2 py-1">
+              <Star className="w-3.5 h-3.5 fill-amber-300 text-amber-300" />
+              <span className="text-sm font-bold text-white">{crop.rating}</span>
             </div>
           )}
         </div>
@@ -304,12 +322,14 @@ export default function MarketplacePage() {
       <Navbar />
 
       {/* Hero Banner */}
-      <div className="bg-gradient-to-r from-primary to-emerald-700 text-white py-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative overflow-hidden bg-[#04140d] text-white py-12">
+        <div className="pointer-events-none absolute -top-20 right-0 h-72 w-[36rem] rounded-full bg-emerald-500/15 blur-[100px]" />
+        <div className="pointer-events-none absolute bottom-0 left-1/4 h-56 w-96 rounded-full bg-amber-400/10 blur-[100px]" />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold mb-2">🌾 Crop Marketplace</h1>
-              <p className="text-white/80">Browse fresh crops from verified farmers across all 10 provinces of Zambia</p>
+              <h1 className="font-display text-3xl md:text-4xl font-bold mb-2">🌾 Crop Marketplace</h1>
+              <p className="text-white/70">Browse fresh crops from verified farmers across all 10 provinces of Zambia</p>
               {dealsCount > 0 && (
                 <button
                   onClick={() => setCategory("deals")}
@@ -348,8 +368,8 @@ export default function MarketplacePage() {
                 category === c.value
                   ? "bg-primary text-primary-foreground shadow-md"
                   : c.value === "deals"
-                  ? "bg-green-100 hover:bg-green-200 text-green-800"
-                  : "bg-muted hover:bg-muted/80 text-foreground"
+                  ? "bg-amber-400/15 hover:bg-amber-400/25 text-amber-300 border border-amber-300/20"
+                  : "bg-white/5 hover:bg-white/10 text-foreground border border-white/10"
               }`}
             >
               {c.value !== "deals" && c.emoji} {c.label}
@@ -467,7 +487,7 @@ export default function MarketplacePage() {
                       onChange={(e) => setDealsOnly(e.target.checked)}
                       className="rounded border-border accent-primary w-4 h-4"
                     />
-                    <Tag className="w-3.5 h-3.5 text-green-600" />
+                    <Tag className="w-3.5 h-3.5 text-green-300" />
                     <span>Deals only</span>
                   </label>
                   <label className="flex items-center gap-2 text-sm cursor-pointer select-none">
@@ -489,26 +509,26 @@ export default function MarketplacePage() {
         <div className="flex items-center justify-between mb-5">
           <p className="text-muted-foreground text-sm">
             Showing <span className="font-semibold text-foreground">{filtered.length}</span> crops
-            {!apiListings && <Badge variant="outline" className="ml-2 text-xs text-amber-600 border-amber-300">Demo data</Badge>}
+            {!apiListings && <Badge variant="outline" className="ml-2 text-xs text-amber-300 border-amber-300">Demo data</Badge>}
           </p>
           {loading && <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />}
         </div>
 
         {/* Deals Banner */}
         {category !== "deals" && dealsOnly === false && (
-          <div className="hidden md:flex items-center justify-between bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-2xl p-4 mb-6 gap-4">
+          <div className="hidden md:flex items-center justify-between rounded-2xl border border-amber-300/20 bg-gradient-to-r from-amber-400/10 to-emerald-500/10 p-4 mb-6 gap-4 backdrop-blur-md">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
-                <Tag className="w-5 h-5 text-green-600" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-amber-300/25 bg-amber-400/15">
+                <Tag className="w-5 h-5 text-amber-300" />
               </div>
               <div>
-                <p className="font-bold text-green-900 text-sm">{dealsCount} Flash Deals Active</p>
-                <p className="text-green-700 text-xs">Farmers offering 10–20% discounts — limited time only</p>
+                <p className="font-bold text-white text-sm">{dealsCount} Flash Deals Active</p>
+                <p className="text-white/60 text-xs">Farmers offering 10–20% discounts — limited time only</p>
               </div>
             </div>
             <button
               onClick={() => { setCategory("deals"); setDealsOnly(true) }}
-              className="flex items-center gap-1.5 bg-green-600 hover:bg-green-700 text-white text-sm px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap"
+              className="flex items-center gap-1.5 bg-gradient-to-r from-amber-300 to-amber-500 hover:from-amber-200 hover:to-amber-400 text-amber-950 text-sm px-4 py-2 rounded-lg font-semibold transition-colors whitespace-nowrap"
             >
               View Deals <TrendingDown className="w-4 h-4" />
             </button>

@@ -172,7 +172,7 @@ function NewListingContent() {
         <Navbar />
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <Card className="max-w-md mx-auto text-center p-8 border-0 shadow-lg">
-            <div className="w-20 h-20 bg-amber-100 rounded-2xl flex items-center justify-center mx-auto mb-5">
+            <div className="w-20 h-20 bg-amber-500/20 rounded-2xl flex items-center justify-center mx-auto mb-5">
               <span className="text-4xl">🚜</span>
             </div>
             <h2 className="text-xl font-bold mb-2">Farmer Mode Required</h2>
@@ -411,15 +411,15 @@ function NewListingContent() {
                       />
                     </div>
                   </div>
-                  <div className="flex items-center gap-3 p-4 bg-blue-50 rounded-xl border border-blue-200">
+                  <div className="flex items-center gap-3 p-4 bg-blue-500/15 rounded-xl border border-blue-500/25">
                     <Checkbox
                       id="vaccinated"
                       checked={livestockData.vaccinated}
                       onCheckedChange={(checked) => setLivestockData({ ...livestockData, vaccinated: !!checked })}
                     />
                     <div>
-                      <Label htmlFor="vaccinated" className="cursor-pointer font-medium text-blue-800">Animals are vaccinated</Label>
-                      <p className="text-xs text-blue-600">Vaccinated animals attract more buyers and command higher prices</p>
+                      <Label htmlFor="vaccinated" className="cursor-pointer font-medium text-blue-200">Animals are vaccinated</Label>
+                      <p className="text-xs text-blue-300">Vaccinated animals attract more buyers and command higher prices</p>
                     </div>
                   </div>
                 </div>

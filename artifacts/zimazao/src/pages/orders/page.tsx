@@ -30,14 +30,14 @@ const STEP_INDEX: Record<string, number> = {
 }
 
 const STATUS_COLOR: Record<string, string> = {
-  pending:          "bg-yellow-100 text-yellow-800 border-yellow-200",
-  confirmed:        "bg-blue-100 text-blue-800 border-blue-200",
-  packed:           "bg-indigo-100 text-indigo-800 border-indigo-200",
-  shipped:          "bg-purple-100 text-purple-800 border-purple-200",
-  out_for_delivery: "bg-orange-100 text-orange-800 border-orange-200",
-  delivered:        "bg-green-100 text-green-800 border-green-200",
-  cancelled:        "bg-red-100 text-red-800 border-red-200",
-  disputed:         "bg-orange-100 text-orange-800 border-orange-200",
+  pending:          "bg-yellow-500/20 text-yellow-200 border-yellow-500/25",
+  confirmed:        "bg-blue-500/20 text-blue-200 border-blue-500/25",
+  packed:           "bg-indigo-500/20 text-indigo-200 border-indigo-500/25",
+  shipped:          "bg-purple-500/20 text-purple-200 border-purple-500/25",
+  out_for_delivery: "bg-orange-500/20 text-orange-200 border-orange-500/25",
+  delivered:        "bg-green-500/20 text-green-200 border-green-500/25",
+  cancelled:        "bg-red-500/20 text-red-200 border-red-500/25",
+  disputed:         "bg-orange-500/20 text-orange-200 border-orange-500/25",
 }
 
 const CROP_EMOJI: Record<string, string> = {
@@ -50,10 +50,10 @@ function OrderTimeline({ status }: { status: string }) {
   if (status === "cancelled") {
     return (
       <div className="flex items-center gap-2 py-3">
-        <div className="w-7 h-7 rounded-full bg-red-100 flex items-center justify-center">
-          <RotateCcw className="w-3.5 h-3.5 text-red-600" />
+        <div className="w-7 h-7 rounded-full bg-red-500/20 flex items-center justify-center">
+          <RotateCcw className="w-3.5 h-3.5 text-red-300" />
         </div>
-        <span className="text-sm font-medium text-red-600">Order Cancelled</span>
+        <span className="text-sm font-medium text-red-300">Order Cancelled</span>
       </div>
     )
   }
@@ -138,7 +138,7 @@ function ReviewModal({
       <Card className="w-full max-w-md shadow-2xl">
         <CardContent className="pt-6 pb-6 space-y-4">
           <div className="text-center">
-            <div className="w-12 h-12 bg-yellow-100 rounded-2xl flex items-center justify-center mx-auto mb-3">
+            <div className="w-12 h-12 bg-yellow-500/20 rounded-2xl flex items-center justify-center mx-auto mb-3">
               <Star className="w-6 h-6 text-yellow-500" />
             </div>
             <h3 className="text-lg font-bold">Rate Your Experience</h3>
@@ -208,8 +208,8 @@ function DisputeModal({ order, onClose, onSubmit }: {
         <CardContent className="pt-6 pb-6 space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center">
-                <AlertTriangle className="w-5 h-5 text-red-600" />
+              <div className="w-10 h-10 bg-red-500/20 rounded-xl flex items-center justify-center">
+                <AlertTriangle className="w-5 h-5 text-red-300" />
               </div>
               <div>
                 <h3 className="font-bold">Report a Problem</h3>
@@ -220,7 +220,7 @@ function DisputeModal({ order, onClose, onSubmit }: {
               <X className="w-4 h-4" />
             </button>
           </div>
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-700">
+          <div className="bg-amber-500/15 border border-amber-500/25 rounded-xl p-3 text-xs text-amber-300">
             <strong>Important:</strong> Raising a dispute will <strong>freeze the transaction</strong>. Our team will review and resolve within 24–48 hours. Both parties will be notified.
           </div>
           <form onSubmit={handleSubmit} className="space-y-3">
@@ -341,7 +341,7 @@ export default function OrdersPage() {
   }
 
   const nextStatuses: Record<string, { label: string; value: string; color: string }[]> = {
-    pending:          [{ label: "Confirm Order", value: "confirmed", color: "bg-blue-500 hover:bg-blue-600 text-white" }, { label: "Cancel", value: "cancelled", color: "bg-red-100 hover:bg-red-200 text-red-700" }],
+    pending:          [{ label: "Confirm Order", value: "confirmed", color: "bg-blue-500 hover:bg-blue-600 text-white" }, { label: "Cancel", value: "cancelled", color: "bg-red-500/20 hover:bg-red-200 text-red-300" }],
     confirmed:        [{ label: "Mark as Packed", value: "packed", color: "bg-indigo-500 hover:bg-indigo-600 text-white" }],
     packed:           [{ label: "Mark Dispatched", value: "shipped", color: "bg-purple-500 hover:bg-purple-600 text-white" }],
     shipped:          [{ label: "Out for Delivery", value: "out_for_delivery", color: "bg-orange-500 hover:bg-orange-600 text-white" }],
@@ -480,19 +480,19 @@ export default function OrdersPage() {
                                 {order.status === "shipped" ? "In Transit" : order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                               </span>
                               {order.paymentMethod === "cod" ? (
-                                <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 border border-amber-200 flex items-center gap-1">
+                                <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-200 border border-amber-500/25 flex items-center gap-1">
                                   <Banknote className="w-3 h-3" /> COD
                                 </span>
                               ) : order.escrowStatus === "held" ? (
-                                <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 border border-blue-200 flex items-center gap-1">
+                                <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-200 border border-blue-500/25 flex items-center gap-1">
                                   <Lock className="w-3 h-3" /> Escrow
                                 </span>
                               ) : order.escrowStatus === "released" ? (
-                                <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-green-100 text-green-800 border border-green-200 flex items-center gap-1">
+                                <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-green-500/20 text-green-200 border border-green-500/25 flex items-center gap-1">
                                   <ShieldCheck className="w-3 h-3" /> Paid
                                 </span>
                               ) : order.escrowStatus === "frozen" ? (
-                                <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-orange-100 text-orange-800 border border-orange-200 flex items-center gap-1">
+                                <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-200 border border-orange-500/25 flex items-center gap-1">
                                   <AlertTriangle className="w-3 h-3" /> Disputed
                                 </span>
                               ) : null}
@@ -578,7 +578,7 @@ export default function OrdersPage() {
                             </Button>
                           )}
                           {view === "buyer" && alreadyReviewed && (
-                            <span className="flex items-center gap-1 text-xs text-green-600 font-medium">
+                            <span className="flex items-center gap-1 text-xs text-green-300 font-medium">
                               <CheckCircle2 className="w-3.5 h-3.5" /> Reviewed
                             </span>
                           )}
@@ -597,7 +597,7 @@ export default function OrdersPage() {
                             <Button
                               size="sm"
                               variant="outline"
-                              className="gap-1.5 text-xs text-red-600 border-red-200 hover:bg-red-50"
+                              className="gap-1.5 text-xs text-red-300 border-red-500/25 hover:bg-red-500/15"
                               onClick={() => setDisputeOrder(order)}
                             >
                               <AlertTriangle className="w-3.5 h-3.5" /> Report Problem
@@ -637,7 +637,7 @@ export default function OrdersPage() {
         )}
 
         {!loading && orders.length > 0 && view === "buyer" && (
-          <div className="mt-8 rounded-2xl bg-gradient-to-r from-primary/10 to-emerald-100 border border-primary/20 p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="mt-8 rounded-2xl bg-gradient-to-r from-primary/10 to-emerald-500/15 border border-primary/20 p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-primary/15 rounded-xl flex items-center justify-center">
                 <TrendingUp className="w-5 h-5 text-primary" />

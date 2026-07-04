@@ -153,7 +153,7 @@ export default function PriceAlertsPage() {
               )}
               <Button
                 onClick={() => setShowForm((p) => !p)}
-                className="gap-2 bg-white text-emerald-800 hover:bg-white/90 font-semibold"
+                className="gap-2 bg-white text-emerald-200 hover:bg-white/90 font-semibold"
               >
                 <Plus className="w-4 h-4" /> New Alert
               </Button>
@@ -178,7 +178,7 @@ export default function PriceAlertsPage() {
 
         {/* Add Alert Form */}
         {showForm && (
-          <Card className="border-emerald-200 shadow-lg">
+          <Card className="border-emerald-500/25 shadow-lg">
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-base flex items-center gap-2">
@@ -321,18 +321,18 @@ export default function PriceAlertsPage() {
               const current = alert.currentPrice
               const priceDiff = current != null ? current - alert.targetPrice : null
               return (
-                <Card key={alert.id} className={`border transition-all ${isTriggered ? "border-amber-300 bg-amber-50/50 shadow-amber-100 shadow-md" : "border-border hover:shadow-md"}`}>
+                <Card key={alert.id} className={`border transition-all ${isTriggered ? "border-amber-300 bg-amber-500/15/50 shadow-amber-100 shadow-md" : "border-border hover:shadow-md"}`}>
                   <CardContent className="p-4">
                     <div className="flex items-center gap-4">
                       {/* Icon */}
                       <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${
-                        isTriggered ? "bg-amber-100" : alert.direction === "below" ? "bg-blue-50" : "bg-emerald-50"
+                        isTriggered ? "bg-amber-500/20" : alert.direction === "below" ? "bg-blue-500/15" : "bg-emerald-500/15"
                       }`}>
                         {isTriggered
-                          ? <BellRing className="w-5 h-5 text-amber-600" />
+                          ? <BellRing className="w-5 h-5 text-amber-300" />
                           : alert.direction === "below"
-                            ? <TrendingDown className="w-5 h-5 text-blue-600" />
-                            : <TrendingUp className="w-5 h-5 text-emerald-600" />
+                            ? <TrendingDown className="w-5 h-5 text-blue-300" />
+                            : <TrendingUp className="w-5 h-5 text-emerald-300" />
                         }
                       </div>
 
@@ -346,7 +346,7 @@ export default function PriceAlertsPage() {
                         </div>
                         <p className="text-sm text-muted-foreground">
                           Alert when price goes{" "}
-                          <span className={`font-semibold ${alert.direction === "below" ? "text-blue-600" : "text-emerald-600"}`}>
+                          <span className={`font-semibold ${alert.direction === "below" ? "text-blue-300" : "text-emerald-300"}`}>
                             {alert.direction}
                           </span>
                           {" "}
@@ -357,7 +357,7 @@ export default function PriceAlertsPage() {
                           <p className="text-xs text-muted-foreground mt-1">
                             Current market price: <span className="font-semibold text-foreground">ZMW {current.toLocaleString()}</span>
                             {priceDiff != null && (
-                              <span className={` ml-1 ${priceDiff > 0 ? "text-emerald-600" : "text-red-500"}`}>
+                              <span className={` ml-1 ${priceDiff > 0 ? "text-emerald-300" : "text-red-500"}`}>
                                 ({priceDiff > 0 ? "+" : ""}{priceDiff.toLocaleString()} ZMW)
                               </span>
                             )}
@@ -368,7 +368,7 @@ export default function PriceAlertsPage() {
                       {/* Delete */}
                       <button
                         onClick={() => handleDelete(alert.id)}
-                        className="w-9 h-9 rounded-xl flex items-center justify-center text-muted-foreground hover:text-red-500 hover:bg-red-50 transition-colors shrink-0"
+                        className="w-9 h-9 rounded-xl flex items-center justify-center text-muted-foreground hover:text-red-500 hover:bg-red-500/15 transition-colors shrink-0"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>

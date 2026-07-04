@@ -100,7 +100,7 @@ export default function TrackingPage() {
                 <h3 className="font-bold text-lg">{info.cropName}</h3>
                 <p className="text-muted-foreground text-sm">{info.quantity} {info.unit}(s)</p>
               </div>
-              <Badge className={isCancelled ? "bg-red-100 text-red-700 border-red-200" : "bg-primary/10 text-primary border-primary/20"}>
+              <Badge className={isCancelled ? "bg-red-500/20 text-red-300 border-red-500/25" : "bg-primary/10 text-primary border-primary/20"}>
                 {isCancelled ? "Cancelled" : STEPS[currentIdx]?.label ?? info.status}
               </Badge>
             </div>
@@ -126,10 +126,10 @@ export default function TrackingPage() {
         {isCancelled ? (
           <Card>
             <CardContent className="p-6 text-center">
-              <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                <AlertCircle className="w-6 h-6 text-red-600" />
+              <div className="w-12 h-12 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                <AlertCircle className="w-6 h-6 text-red-300" />
               </div>
-              <p className="font-semibold text-red-700">Order Cancelled</p>
+              <p className="font-semibold text-red-300">Order Cancelled</p>
               <p className="text-muted-foreground text-sm mt-1">This order has been cancelled.</p>
             </CardContent>
           </Card>

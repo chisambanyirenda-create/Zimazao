@@ -60,7 +60,7 @@ export function ReportModal({ targetType, targetId, targetName, onClose }: Props
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-border">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-red-500/15 rounded-lg flex items-center justify-center">
               <Flag className="w-4 h-4 text-red-500" />
             </div>
             <h2 className="font-bold text-foreground text-base">
@@ -74,8 +74,8 @@ export function ReportModal({ targetType, targetId, targetName, onClose }: Props
 
         {done ? (
           <div className="p-8 text-center">
-            <div className="w-16 h-16 bg-green-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <CheckCircle2 className="w-8 h-8 text-green-600" />
+            <div className="w-16 h-16 bg-green-500/15 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <CheckCircle2 className="w-8 h-8 text-green-300" />
             </div>
             <h3 className="font-bold text-foreground text-lg mb-2">Report Submitted</h3>
             <p className="text-muted-foreground text-sm mb-1">Thank you for keeping Zimazao safe.</p>

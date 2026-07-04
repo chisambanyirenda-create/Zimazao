@@ -27,12 +27,12 @@ function getTypeIcon(type: string) {
 }
 
 function getTypeColor(type: string) {
-  if (type.includes("message")) return "bg-emerald-100 text-emerald-600"
-  if (type.includes("dispatch") || type.includes("shipped") || type.includes("out_for")) return "bg-purple-100 text-purple-600"
-  if (type.includes("delivered") || type.includes("confirmed")) return "bg-green-100 text-green-600"
-  if (type.includes("cancelled") || type.includes("dispute")) return "bg-red-100 text-red-600"
-  if (type.includes("order")) return "bg-blue-100 text-blue-600"
-  return "bg-gray-100 text-gray-600"
+  if (type.includes("message")) return "bg-emerald-500/20 text-emerald-300"
+  if (type.includes("dispatch") || type.includes("shipped") || type.includes("out_for")) return "bg-purple-500/20 text-purple-300"
+  if (type.includes("delivered") || type.includes("confirmed")) return "bg-green-500/20 text-green-300"
+  if (type.includes("cancelled") || type.includes("dispute")) return "bg-red-500/20 text-red-300"
+  if (type.includes("order")) return "bg-blue-500/20 text-blue-300"
+  return "bg-white/10 text-white/60"
 }
 
 interface NotificationsBellProps {

@@ -22,15 +22,15 @@ const CROP_EMOJI: Record<string, string> = {
 }
 
 const CROP_GRADIENT: Record<string, string> = {
-  cereals: "from-yellow-100 to-amber-50",
-  legumes: "from-green-100 to-emerald-50",
-  tubers: "from-orange-100 to-amber-50",
-  oilseeds: "from-yellow-100 to-orange-50",
-  vegetables: "from-green-100 to-teal-50",
-  fruits: "from-red-100 to-rose-50",
-  cash_crops: "from-purple-100 to-violet-50",
-  livestock: "from-amber-100 to-orange-50",
-  poultry: "from-yellow-100 to-amber-50",
+  cereals: "from-yellow-500/15 to-amber-500/10",
+  legumes: "from-green-500/15 to-emerald-500/10",
+  tubers: "from-orange-500/15 to-amber-500/10",
+  oilseeds: "from-yellow-500/15 to-orange-500/10",
+  vegetables: "from-green-500/15 to-teal-500/10",
+  fruits: "from-red-500/15 to-rose-500/10",
+  cash_crops: "from-purple-500/15 to-violet-500/10",
+  livestock: "from-amber-500/15 to-orange-500/10",
+  poultry: "from-yellow-500/15 to-amber-500/10",
   other: "from-gray-100 to-slate-50",
 }
 
@@ -389,7 +389,7 @@ export default function FarmerProfilePage() {
                   </>
                 ) : (
                   <div className="text-center py-20">
-                    <div className="w-20 h-20 bg-yellow-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <div className="w-20 h-20 bg-yellow-500/15 rounded-full flex items-center justify-center mx-auto mb-4">
                       <Star className="w-10 h-10 text-yellow-300" />
                     </div>
                     <p className="text-xl font-semibold text-foreground mb-1">No reviews yet</p>
@@ -520,8 +520,8 @@ export default function FarmerProfilePage() {
                 <div className="space-y-2.5">
                   {[
                     { icon: CheckCircle2, color: "text-primary bg-primary/10", label: "ID Verified", desc: "Government ID confirmed" },
-                    { icon: Shield, color: "text-blue-600 bg-blue-50", label: "Trusted Seller", desc: "Consistent positive feedback" },
-                    { icon: Award, color: "text-amber-600 bg-amber-50", label: "Active Farmer", desc: `${farmer.totalListings}+ listings posted` },
+                    { icon: Shield, color: "text-blue-300 bg-blue-500/15", label: "Trusted Seller", desc: "Consistent positive feedback" },
+                    { icon: Award, color: "text-amber-300 bg-amber-500/15", label: "Active Farmer", desc: `${farmer.totalListings}+ listings posted` },
                   ].map((badge) => (
                     <div key={badge.label} className="flex items-center gap-3">
                       <div className={`w-9 h-9 ${badge.color} rounded-lg flex items-center justify-center shrink-0`}>

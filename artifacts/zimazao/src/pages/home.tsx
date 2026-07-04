@@ -52,7 +52,7 @@ function QuickPriceBar() {
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="dark min-h-screen bg-background text-foreground">
       <Navbar />
       <QuickPriceBar />
       <main>
@@ -136,7 +136,7 @@ export default function HomePage() {
                   </div>
                   <div className="flex gap-3">
                     <Link href="/livestock">
-                      <button className="bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold px-6 py-3 rounded-xl gap-2 flex items-center shadow-lg transition-all">
+                      <button className="bg-amber-500 hover:bg-amber-400 text-white font-bold px-6 py-3 rounded-xl gap-2 flex items-center shadow-lg transition-all">
                         <Beef className="w-4 h-4" /> Browse Livestock <ArrowRight className="w-4 h-4" />
                       </button>
                     </Link>

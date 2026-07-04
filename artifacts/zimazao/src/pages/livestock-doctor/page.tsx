@@ -59,10 +59,10 @@ const MOCK_DIAGNOSIS: LivestockDiagnosis = {
 }
 
 const URGENCY_CONFIG = {
-  routine: { label: "Routine", color: "bg-green-100 text-green-700 border-green-200", icon: CheckCircle, bar: "bg-green-500" },
-  soon: { label: "See Vet Soon", color: "bg-yellow-100 text-yellow-700 border-yellow-200", icon: Clock, bar: "bg-yellow-500" },
-  urgent: { label: "Urgent", color: "bg-orange-100 text-orange-700 border-orange-200", icon: AlertTriangle, bar: "bg-orange-500" },
-  emergency: { label: "EMERGENCY", color: "bg-red-100 text-red-700 border-red-200", icon: Zap, bar: "bg-red-500" },
+  routine: { label: "Routine", color: "bg-green-500/20 text-green-300 border-green-500/25", icon: CheckCircle, bar: "bg-green-500" },
+  soon: { label: "See Vet Soon", color: "bg-yellow-500/20 text-yellow-300 border-yellow-500/25", icon: Clock, bar: "bg-yellow-500" },
+  urgent: { label: "Urgent", color: "bg-orange-500/20 text-orange-300 border-orange-500/25", icon: AlertTriangle, bar: "bg-orange-500" },
+  emergency: { label: "EMERGENCY", color: "bg-red-500/20 text-red-300 border-red-500/25", icon: Zap, bar: "bg-red-500" },
 }
 
 const ANIMAL_EMOJI: Record<string, string> = {
@@ -202,10 +202,10 @@ export default function LivestockDoctorPage() {
                 {!selectedImage ? (
                   <div
                     onClick={() => fileInputRef.current?.click()}
-                    className="border-2 border-dashed border-border rounded-2xl p-12 text-center cursor-pointer hover:border-amber-400 hover:bg-amber-50/50 dark:hover:bg-amber-950/20 transition-all group"
+                    className="border-2 border-dashed border-border rounded-2xl p-12 text-center cursor-pointer hover:border-amber-400 hover:bg-amber-500/15/50 dark:hover:bg-amber-950/20 transition-all group"
                   >
-                    <div className="w-16 h-16 bg-amber-100 dark:bg-amber-950/50 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                      <Upload className="w-8 h-8 text-amber-600" />
+                    <div className="w-16 h-16 bg-amber-500/20 dark:bg-amber-950/50 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                      <Upload className="w-8 h-8 text-amber-300" />
                     </div>
                     <p className="text-foreground font-semibold mb-1">Click to upload animal photo</p>
                     <p className="text-sm text-muted-foreground mb-3">Drag and drop or click to browse</p>
@@ -249,12 +249,12 @@ export default function LivestockDoctorPage() {
                 )}
 
                 {/* Tips */}
-                <div className="mt-5 p-4 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-xl">
+                <div className="mt-5 p-4 bg-amber-500/15 dark:bg-amber-950/30 border border-amber-500/25 dark:border-amber-800 rounded-xl">
                   <div className="flex items-start gap-3">
-                    <Info className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                    <Info className="w-4 h-4 text-amber-300 shrink-0 mt-0.5" />
                     <div>
-                      <p className="font-semibold text-sm text-amber-900 dark:text-amber-300 mb-1">Tips for best results</p>
-                      <ul className="text-xs text-amber-700 dark:text-amber-400 space-y-1">
+                      <p className="font-semibold text-sm text-amber-200 dark:text-amber-300 mb-1">Tips for best results</p>
+                      <ul className="text-xs text-amber-300 dark:text-amber-400 space-y-1">
                         <li>• Photograph the affected area clearly (skin, eyes, mouth, hooves)</li>
                         <li>• Use good natural lighting — avoid shadows</li>
                         <li>• Include the whole animal if possible</li>
@@ -290,8 +290,8 @@ export default function LivestockDoctorPage() {
             {isAnalyzing && (
               <Card className="border-0 shadow-md">
                 <CardContent className="p-12 text-center">
-                  <div className="w-20 h-20 bg-amber-100 dark:bg-amber-950/50 rounded-full flex items-center justify-center mx-auto mb-5 animate-pulse">
-                    <Stethoscope className="w-10 h-10 text-amber-600" />
+                  <div className="w-20 h-20 bg-amber-500/20 dark:bg-amber-950/50 rounded-full flex items-center justify-center mx-auto mb-5 animate-pulse">
+                    <Stethoscope className="w-10 h-10 text-amber-300" />
                   </div>
                   <p className="text-xl font-bold text-foreground mb-2">AI Vet is consulting…</p>
                   <p className="text-muted-foreground text-sm">Analyzing symptoms against Zambian livestock disease database</p>
@@ -323,7 +323,7 @@ export default function LivestockDoctorPage() {
                   <CardContent className="p-6">
                     <div className="flex items-start justify-between gap-4 mb-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-14 h-14 bg-amber-100 dark:bg-amber-950/50 rounded-2xl flex items-center justify-center text-3xl shrink-0">
+                        <div className="w-14 h-14 bg-amber-500/20 dark:bg-amber-950/50 rounded-2xl flex items-center justify-center text-3xl shrink-0">
                           {ANIMAL_EMOJI[diagnosis.animalType] ?? "🐾"}
                         </div>
                         <div>
@@ -399,13 +399,13 @@ export default function LivestockDoctorPage() {
                   <Card className="border-0 shadow-sm border-l-4 border-l-blue-500">
                     <CardHeader className="pb-3">
                       <CardTitle className="text-base flex items-center gap-2">
-                        <Syringe className="w-4 h-4 text-blue-600" /> Recommended Medications
+                        <Syringe className="w-4 h-4 text-blue-300" /> Recommended Medications
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="flex flex-wrap gap-2">
                         {diagnosis.medicines.map((med, i) => (
-                          <Badge key={i} className="bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/50 dark:text-blue-300 dark:border-blue-800 text-xs py-1 px-3">
+                          <Badge key={i} className="bg-blue-500/15 text-blue-300 border-blue-500/25 dark:bg-blue-950/50 dark:text-blue-300 dark:border-blue-800 text-xs py-1 px-3">
                             💊 {med}
                           </Badge>
                         ))}
@@ -459,7 +459,7 @@ export default function LivestockDoctorPage() {
                 {/* Empty state */}
                 <Card className="border-0 shadow-md">
                   <CardContent className="p-12 text-center">
-                    <div className="w-20 h-20 bg-amber-100 dark:bg-amber-950/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <div className="w-20 h-20 bg-amber-500/20 dark:bg-amber-950/30 rounded-full flex items-center justify-center mx-auto mb-4">
                       <span className="text-4xl">🐾</span>
                     </div>
                     <h3 className="text-lg font-bold text-foreground mb-2">Ready to Diagnose</h3>
@@ -480,7 +480,7 @@ export default function LivestockDoctorPage() {
                         <div key={c.name} className="flex items-center gap-2 p-2.5 bg-muted/50 rounded-xl text-sm">
                           <span>{c.emoji}</span>
                           <span className="text-muted-foreground font-medium text-xs">{c.name}</span>
-                          {c.severity === "high" && <Badge className="ml-auto bg-red-100 text-red-600 border-red-200 text-[9px] px-1.5 py-0 h-4">HIGH</Badge>}
+                          {c.severity === "high" && <Badge className="ml-auto bg-red-500/20 text-red-300 border-red-500/25 text-[9px] px-1.5 py-0 h-4">HIGH</Badge>}
                         </div>
                       ))}
                     </div>

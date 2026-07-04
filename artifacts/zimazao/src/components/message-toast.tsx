@@ -46,15 +46,15 @@ export function MessageToast() {
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 mb-0.5">
             <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shrink-0" />
-            <p className="text-xs font-semibold text-emerald-600 uppercase tracking-wide">
+            <p className="text-xs font-semibold text-emerald-300 uppercase tracking-wide">
               {isOrderMsg ? "New Order Message" : "New Message"}
             </p>
           </div>
-          <p className="text-sm font-bold text-gray-900 leading-tight">{toast.senderName}</p>
+          <p className="text-sm font-bold text-white leading-tight">{toast.senderName}</p>
           <p className="text-xs text-gray-500 mt-0.5 leading-relaxed line-clamp-2">
             {truncate(toast.content)}
           </p>
-          <p className="text-[10px] text-emerald-600 font-medium mt-1.5 flex items-center gap-1">
+          <p className="text-[10px] text-emerald-300 font-medium mt-1.5 flex items-center gap-1">
             <MessageCircle className="w-3 h-3" />
             Tap to open chat
           </p>
@@ -63,13 +63,13 @@ export function MessageToast() {
         {/* Dismiss */}
         <button
           onClick={(e) => { e.stopPropagation(); dismissToast() }}
-          className="shrink-0 w-7 h-7 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors ml-1"
+          className="shrink-0 w-7 h-7 rounded-full bg-white/10 hover:bg-gray-200 flex items-center justify-center transition-colors ml-1"
         >
           <X className="w-3.5 h-3.5 text-gray-500" />
         </button>
 
         {/* Progress bar auto-dismiss */}
-        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-100">
+        <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-500/20">
           <div
             className="h-full bg-gradient-to-r from-emerald-500 to-teal-400"
             style={{ animation: "toastProgress 6s linear forwards" }}

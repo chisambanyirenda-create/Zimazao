@@ -82,9 +82,9 @@ function PaymentModal({
 
         {step === "form" ? (
           <div className="space-y-4">
-            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-center">
-              <p className="text-2xl font-bold text-amber-700">ZMW {PLAN_PRICE}</p>
-              <p className="text-sm text-amber-600">Pro Plan — 1 Month</p>
+            <div className="bg-amber-500/15 border border-amber-500/25 rounded-xl p-4 text-center">
+              <p className="text-2xl font-bold text-amber-300">ZMW {PLAN_PRICE}</p>
+              <p className="text-sm text-amber-300">Pro Plan — 1 Month</p>
             </div>
 
             <div>
@@ -128,8 +128,8 @@ function PaymentModal({
           </div>
         ) : (
           <div className="space-y-4 text-center">
-            <div className="w-16 h-16 bg-amber-50 rounded-full flex items-center justify-center mx-auto">
-              <Smartphone className="w-8 h-8 text-amber-600" />
+            <div className="w-16 h-16 bg-amber-500/15 rounded-full flex items-center justify-center mx-auto">
+              <Smartphone className="w-8 h-8 text-amber-300" />
             </div>
             <p className="font-semibold">Check your phone!</p>
             <p className="text-sm text-muted-foreground">Approve the mobile money prompt on your phone, then click verify below.</p>
@@ -210,11 +210,11 @@ export default function SubscriptionPage() {
         </div>
 
         {isPro && (
-          <div className="mb-8 p-4 bg-amber-50 border border-amber-200 rounded-2xl flex items-center gap-3">
+          <div className="mb-8 p-4 bg-amber-500/15 border border-amber-500/25 rounded-2xl flex items-center gap-3">
             <Crown className="w-6 h-6 text-amber-500 shrink-0" />
             <div>
-              <p className="font-semibold text-amber-800">You are on the Pro Plan 🎉</p>
-              <p className="text-sm text-amber-700">
+              <p className="font-semibold text-amber-200">You are on the Pro Plan 🎉</p>
+              <p className="text-sm text-amber-300">
                 {subStatus?.endDate
                   ? `Active until ${new Date(subStatus.endDate).toLocaleDateString("en-ZM", { day: "numeric", month: "long", year: "numeric" })}`
                   : "Active"}
@@ -259,7 +259,7 @@ export default function SubscriptionPage() {
                 <CardTitle className="text-xl flex items-center gap-2">
                   <Crown className="w-5 h-5 text-amber-500" /> Pro
                 </CardTitle>
-                {isPro && <Badge className="neon-pro-badge bg-amber-100 text-amber-700 border-0">Active</Badge>}
+                {isPro && <Badge className="neon-pro-badge bg-amber-500/20 text-amber-300 border-0">Active</Badge>}
               </div>
               <p className="text-3xl font-bold">ZMW {PLAN_PRICE}<span className="text-base font-normal text-muted-foreground">/month</span></p>
               <p className="text-sm text-muted-foreground">For serious farmers</p>

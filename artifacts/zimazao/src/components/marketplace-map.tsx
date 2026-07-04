@@ -249,7 +249,7 @@ export function MarketplaceMap({ listings }: MarketplaceMapProps) {
                   </Badge>
                 )}
                 {(selectedListing as any).rating && (
-                  <div className="flex items-center gap-1 bg-yellow-50 rounded-lg px-2 py-0.5">
+                  <div className="flex items-center gap-1 bg-yellow-500/15 rounded-lg px-2 py-0.5">
                     <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
                     <span className="text-xs font-bold">{(selectedListing as any).rating}</span>
                   </div>
