@@ -75,9 +75,12 @@
     "zod": "catalog:"
   },
   "dependencies": {
+    "@react-three/fiber": "^9.6.1",
     "@types/leaflet": "^1.9.21",
+    "@types/three": "^0.185.0",
     "embla-carousel-autoplay": "^8.6.0",
     "leaflet": "^1.9.4",
-    "react-leaflet": "^5.0.0"
+    "react-leaflet": "^5.0.0",
+    "three": "^0.185.1"
   }
 }

@@ -1,4 +1,6 @@
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState, Suspense, lazy } from "react"
+
+const HeroGlobe = lazy(() => import("@/components/hero-globe"))
 import {
   motion,
   AnimatePresence,
@@ -198,6 +200,15 @@ export function HeroSlideshow() {
       {/* Cursor spotlight + film grain + vignette */}
       <motion.div className="absolute inset-0 -z-10" style={{ background: spotlight }} />
       <div className="cine-grain -z-10" />
+      {/* 3D holographic globe — stronger on the right, fades behind the copy */}
+      <div
+        className="absolute inset-0 -z-10 opacity-80"
+        style={{ WebkitMaskImage: "linear-gradient(to right, transparent, black 45%)", maskImage: "linear-gradient(to right, transparent, black 45%)" }}
+      >
+        <Suspense fallback={null}>
+          <HeroGlobe />
+        </Suspense>
+      </div>
       <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black/55 via-transparent to-black/25" />
 
       {/* Content */}
