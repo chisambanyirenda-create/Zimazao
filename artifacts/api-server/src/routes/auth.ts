@@ -85,7 +85,9 @@ const avatarUpload = multer({
 
 const router: IRouter = Router();
 
-const WELCOME_BALANCE = 20_000;
+// New accounts start with a real, empty wallet. It only grows from real sales —
+// no fake balance. Trust first; monetisation later.
+const WELCOME_BALANCE = 0;
 
 function formatUser(user: typeof usersTable.$inferSelect) {
   return {

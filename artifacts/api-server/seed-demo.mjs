@@ -50,7 +50,7 @@ async function main() {
     for (const f of FARMERS) {
       const r = await client.query(
         `INSERT INTO users (name, email, password, location, user_type, wallet_balance, email_verified)
-         VALUES ($1,$2,$3,$4,'farmer',20000,true)
+         VALUES ($1,$2,$3,$4,'farmer',0,true)
          ON CONFLICT (email) DO UPDATE SET location = EXCLUDED.location
          RETURNING id`,
         [f.name, f.email, hash, f.location],
