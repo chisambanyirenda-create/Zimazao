@@ -15,7 +15,7 @@ import { useAuth } from "@/lib/auth-context"
 
 const LIVESTOCK_CATEGORIES = [
   {
-    value: "cattle", label: "Cattle", emoji: "🐄",
+    value: "cattle", label: "Cattle", emoji: "ðŸ„",
     desc: "Beef bulls, dairy cows, and heifers from verified ranches across Zambia.",
     tagline: "Premium Beef & Dairy",
     video: "/cattle-video.mp4",
@@ -24,8 +24,8 @@ const LIVESTOCK_CATEGORIES = [
     accent: "text-amber-300", badge: "bg-amber-500/20 text-amber-300 border-amber-500/30",
   },
   {
-    value: "goats", label: "Goats", emoji: "🐐",
-    desc: "Boer goats, local breeds and mixed herds — fully vaccinated and dewormed.",
+    value: "goats", label: "Goats", emoji: "ðŸ",
+    desc: "Boer goats, local breeds and mixed herds â€” fully vaccinated and dewormed.",
     tagline: "Boer & Local Breeds",
     video: "/goats-video.mp4",
     poster: "/livestock-goats.png",
@@ -33,7 +33,7 @@ const LIVESTOCK_CATEGORIES = [
     accent: "text-green-300", badge: "bg-green-500/20 text-green-300 border-green-500/30",
   },
   {
-    value: "sheep", label: "Sheep", emoji: "🐑",
+    value: "sheep", label: "Sheep", emoji: "ðŸ‘",
     desc: "Mutton sheep and wool breeds for slaughter, breeding, and fibre production.",
     tagline: "Mutton & Wool",
     video: "/sheep-video.mp4",
@@ -42,7 +42,7 @@ const LIVESTOCK_CATEGORIES = [
     accent: "text-blue-300", badge: "bg-blue-500/20 text-blue-300 border-blue-500/30",
   },
   {
-    value: "pigs", label: "Pigs", emoji: "🐷",
+    value: "pigs", label: "Pigs", emoji: "ðŸ·",
     desc: "Large White, Landrace and crossbred pigs at market weight from established piggeries.",
     tagline: "Large White & Landrace",
     video: "/pigs-video.mp4",
@@ -51,7 +51,7 @@ const LIVESTOCK_CATEGORIES = [
     accent: "text-pink-300", badge: "bg-pink-500/20 text-pink-300 border-pink-500/30",
   },
   {
-    value: "poultry", label: "Poultry", emoji: "🐔",
+    value: "poultry", label: "Poultry", emoji: "ðŸ”",
     desc: "Day-old chicks, market-ready broilers, and productive laying hens.",
     tagline: "Broilers & Layers",
     video: "/poultry-video.mp4",
@@ -60,8 +60,8 @@ const LIVESTOCK_CATEGORIES = [
     accent: "text-yellow-300", badge: "bg-yellow-500/20 text-yellow-300 border-yellow-500/30",
   },
   {
-    value: "rabbits", label: "Rabbits", emoji: "🐇",
-    desc: "Meat rabbits — New Zealand White, Californian, and local breeds.",
+    value: "rabbits", label: "Rabbits", emoji: "ðŸ‡",
+    desc: "Meat rabbits â€” New Zealand White, Californian, and local breeds.",
     tagline: "Meat Rabbits",
     video: "/rabbits-video.mp4",
     poster: "/livestock-hero.png",
@@ -71,19 +71,19 @@ const LIVESTOCK_CATEGORIES = [
 ]
 
 const LIVESTOCK_PRICES = [
-  { type: "Mature Bull", emoji: "🐂", unit: "per head", avg: 8500, change: 4.2, hot: true },
-  { type: "Heifer (2yr)", emoji: "🐄", unit: "per head", avg: 5200, change: 2.8, hot: true },
-  { type: "Dairy Cow", emoji: "🐄", unit: "per head", avg: 7800, change: 1.5, hot: false },
-  { type: "Boer Goat", emoji: "🐐", unit: "per head", avg: 850, change: 5.3, hot: true },
-  { type: "Local Goat", emoji: "🐐", unit: "per head", avg: 450, change: 3.1, hot: false },
-  { type: "Large White Pig", emoji: "🐷", unit: "per head", avg: 1200, change: -1.2, hot: false },
-  { type: "Broiler Chicken", emoji: "🐔", unit: "per bird", avg: 85, change: 6.5, hot: true },
-  { type: "Layer Hen", emoji: "🐓", unit: "per bird", avg: 95, change: 2.0, hot: false },
+  { type: "Mature Bull", emoji: "ðŸ‚", unit: "per head", avg: 8500, change: 4.2, hot: true },
+  { type: "Heifer (2yr)", emoji: "ðŸ„", unit: "per head", avg: 5200, change: 2.8, hot: true },
+  { type: "Dairy Cow", emoji: "ðŸ„", unit: "per head", avg: 7800, change: 1.5, hot: false },
+  { type: "Boer Goat", emoji: "ðŸ", unit: "per head", avg: 850, change: 5.3, hot: true },
+  { type: "Local Goat", emoji: "ðŸ", unit: "per head", avg: 450, change: 3.1, hot: false },
+  { type: "Large White Pig", emoji: "ðŸ·", unit: "per head", avg: 1200, change: -1.2, hot: false },
+  { type: "Broiler Chicken", emoji: "ðŸ”", unit: "per bird", avg: 85, change: 6.5, hot: true },
+  { type: "Layer Hen", emoji: "ðŸ“", unit: "per bird", avg: 95, change: 2.0, hot: false },
 ]
 
 const SAMPLE_LISTINGS = [
   {
-    id: 101, type: "Brahman Bull", category: "cattle", emoji: "🐂",
+    id: 101, type: "Brahman Bull", category: "cattle", emoji: "ðŸ‚",
     age: "3 years", weight: "450kg", breed: "Brahman Cross",
     price: 9500, unit: "per head", qty: 2,
     location: "Mkushi, Central", verified: true, vaccinated: true,
@@ -92,7 +92,7 @@ const SAMPLE_LISTINGS = [
     desc: "Well-fed Brahman cross bull, excellent conformation, suitable for breeding or beef.",
   },
   {
-    id: 104, type: "Heifer Cattle", category: "cattle", emoji: "🐄",
+    id: 104, type: "Heifer Cattle", category: "cattle", emoji: "ðŸ„",
     age: "2 years", weight: "320kg avg", breed: "Angus Cross",
     price: 5400, unit: "per head", qty: 6,
     location: "Livingstone, Southern", verified: false, vaccinated: true,
@@ -101,7 +101,7 @@ const SAMPLE_LISTINGS = [
     desc: "Good quality Angus cross heifers, ready for breeding or feedlot.",
   },
   {
-    id: 105, type: "Friesian Dairy Cows", category: "cattle", emoji: "🐄",
+    id: 105, type: "Friesian Dairy Cows", category: "cattle", emoji: "ðŸ„",
     age: "4 years", weight: "420kg avg", breed: "Friesian",
     price: 8200, unit: "per head", qty: 3,
     location: "Kabwe, Central", verified: true, vaccinated: true,
@@ -110,7 +110,7 @@ const SAMPLE_LISTINGS = [
     desc: "High-yielding Friesian dairy cows producing 20+ litres/day. All in calf.",
   },
   {
-    id: 102, type: "Boer Goats", category: "goats", emoji: "🐐",
+    id: 102, type: "Boer Goats", category: "goats", emoji: "ðŸ",
     age: "18 months", weight: "35kg avg", breed: "Boer",
     price: 850, unit: "per head", qty: 15,
     location: "Choma, Southern", verified: true, vaccinated: true,
@@ -119,7 +119,7 @@ const SAMPLE_LISTINGS = [
     desc: "Pure Boer goats, fully vaccinated, dewormed and ready for collection.",
   },
   {
-    id: 107, type: "Local Goats", category: "goats", emoji: "🐐",
+    id: 107, type: "Local Goats", category: "goats", emoji: "ðŸ",
     age: "12 months", weight: "22kg avg", breed: "Local Breed",
     price: 450, unit: "per head", qty: 30,
     location: "Chipata, Eastern", verified: true, vaccinated: false,
@@ -128,7 +128,7 @@ const SAMPLE_LISTINGS = [
     desc: "Hardy local breed goats, excellent for meat production in any climate.",
   },
   {
-    id: 108, type: "Mutton Sheep", category: "sheep", emoji: "🐑",
+    id: 108, type: "Mutton Sheep", category: "sheep", emoji: "ðŸ‘",
     age: "18 months", weight: "40kg avg", breed: "Dorper Cross",
     price: 950, unit: "per head", qty: 20,
     location: "Mazabuka, Southern", verified: true, vaccinated: true,
@@ -137,7 +137,7 @@ const SAMPLE_LISTINGS = [
     desc: "Plump Dorper cross sheep ready for slaughter or breeding.",
   },
   {
-    id: 109, type: "Wool Sheep", category: "sheep", emoji: "🐑",
+    id: 109, type: "Wool Sheep", category: "sheep", emoji: "ðŸ‘",
     age: "2 years", weight: "50kg avg", breed: "Merino",
     price: 1200, unit: "per head", qty: 8,
     location: "Mongu, Western", verified: false, vaccinated: true,
@@ -146,7 +146,7 @@ const SAMPLE_LISTINGS = [
     desc: "Merino wool sheep producing fine fibre, dual-purpose for wool and meat.",
   },
   {
-    id: 106, type: "Market Pigs", category: "pigs", emoji: "🐷",
+    id: 106, type: "Market Pigs", category: "pigs", emoji: "ðŸ·",
     age: "5 months", weight: "65kg avg", breed: "Large White Cross",
     price: 1100, unit: "per head", qty: 10,
     location: "Chipata, Eastern", verified: true, vaccinated: false,
@@ -155,7 +155,7 @@ const SAMPLE_LISTINGS = [
     desc: "Ready-to-slaughter pigs at good market weight.",
   },
   {
-    id: 110, type: "Breeding Sows", category: "pigs", emoji: "🐷",
+    id: 110, type: "Breeding Sows", category: "pigs", emoji: "ðŸ·",
     age: "1 year", weight: "90kg avg", breed: "Landrace",
     price: 2200, unit: "per head", qty: 4,
     location: "Lusaka, Lusaka", verified: true, vaccinated: true,
@@ -164,7 +164,7 @@ const SAMPLE_LISTINGS = [
     desc: "Productive Landrace sows, already farrowed once, proven breeders.",
   },
   {
-    id: 103, type: "Broiler Chickens", category: "poultry", emoji: "🐔",
+    id: 103, type: "Broiler Chickens", category: "poultry", emoji: "ðŸ”",
     age: "6 weeks", weight: "2.2kg avg", breed: "Ross 308",
     price: 88, unit: "per bird", qty: 500,
     location: "Lusaka, Lusaka", verified: true, vaccinated: true,
@@ -173,7 +173,7 @@ const SAMPLE_LISTINGS = [
     desc: "Market-ready Ross 308 broilers, vaccinated, well-fed on quality feed.",
   },
   {
-    id: 111, type: "Layer Hens", category: "poultry", emoji: "🐓",
+    id: 111, type: "Layer Hens", category: "poultry", emoji: "ðŸ“",
     age: "20 weeks", weight: "1.8kg avg", breed: "Lohmann Brown",
     price: 95, unit: "per bird", qty: 300,
     location: "Ndola, Copperbelt", verified: true, vaccinated: true,
@@ -182,7 +182,7 @@ const SAMPLE_LISTINGS = [
     desc: "Peak production Lohmann Brown hens laying 300+ eggs per year.",
   },
   {
-    id: 112, type: "Meat Rabbits", category: "rabbits", emoji: "🐇",
+    id: 112, type: "Meat Rabbits", category: "rabbits", emoji: "ðŸ‡",
     age: "3 months", weight: "2.5kg avg", breed: "New Zealand White",
     price: 180, unit: "per rabbit", qty: 50,
     location: "Lusaka, Lusaka", verified: true, vaccinated: false,
@@ -191,7 +191,7 @@ const SAMPLE_LISTINGS = [
     desc: "Fast-growing New Zealand White rabbits, excellent feed conversion ratio.",
   },
   {
-    id: 113, type: "Californian Rabbits", category: "rabbits", emoji: "🐇",
+    id: 113, type: "Californian Rabbits", category: "rabbits", emoji: "ðŸ‡",
     age: "4 months", weight: "3kg avg", breed: "Californian",
     price: 220, unit: "per rabbit", qty: 30,
     location: "Kabwe, Central", verified: false, vaccinated: false,
@@ -226,7 +226,7 @@ function ListingCard({ listing }: { listing: typeof SAMPLE_LISTINGS[0] }) {
         <div className="flex items-start justify-between gap-2 mb-1">
           <div>
             <h3 className="font-bold text-base text-foreground group-hover:text-primary transition-colors leading-tight">{listing.type}</h3>
-            <p className="text-xs text-muted-foreground">{listing.breed} · {listing.age} · {listing.weight}</p>
+            <p className="text-xs text-muted-foreground">{listing.breed} Â· {listing.age} Â· {listing.weight}</p>
           </div>
           <div className="text-right shrink-0">
             <div className="text-lg font-bold text-primary">ZMW {listing.price.toLocaleString()}</div>
@@ -235,7 +235,7 @@ function ListingCard({ listing }: { listing: typeof SAMPLE_LISTINGS[0] }) {
         </div>
         <p className="text-xs text-muted-foreground mb-2 line-clamp-2">{listing.desc}</p>
         <div className="flex items-center gap-1 text-xs text-muted-foreground mb-3">
-          <MapPin className="w-3 h-3 shrink-0" />{listing.location} · Qty: {listing.qty}
+          <MapPin className="w-3 h-3 shrink-0" />{listing.location} Â· Qty: {listing.qty}
         </div>
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-1">
@@ -364,7 +364,7 @@ export default function LivestockPage() {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
           <div className="max-w-2xl">
             <Badge className="bg-amber-500/20 text-amber-300 border border-amber-500/30 mb-4 text-sm px-4 py-1.5">
-              🐄 Zambia's #1 Livestock Exchange
+              ðŸ„ Zambia's #1 Livestock Exchange
             </Badge>
             <h1 className="text-4xl md:text-6xl font-bold mb-4 leading-tight">
               Buy & Sell{" "}
@@ -374,7 +374,7 @@ export default function LivestockPage() {
               Direct
             </h1>
             <p className="text-white/75 text-lg mb-8 leading-relaxed">
-              Cattle, goats, pigs, poultry and more — connect with verified farmers across
+              Cattle, goats, pigs, poultry and more â€” connect with verified farmers across
               all 10 provinces. Health certificates, vaccination records, and fair prices.
             </p>
             <div className="flex flex-wrap gap-3">
@@ -403,7 +403,7 @@ export default function LivestockPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3 mb-4">
             <Badge className="bg-green-500/20 text-green-400 border border-green-500/30 text-xs px-3 py-1">
-              📈 Live Livestock Prices — Zambia
+              ðŸ“ˆ Live Livestock Prices â€” Zambia
             </Badge>
           </div>
           <div className="flex gap-6 overflow-x-auto scrollbar-hide pb-2">
@@ -437,7 +437,7 @@ export default function LivestockPage() {
                   : "bg-card border-border hover:border-primary/40 hover:bg-primary/5"
               }`}
             >
-              🐾 All Animals
+              ðŸ¾ All Animals
             </button>
             {LIVESTOCK_CATEGORIES.map((cat) => (
               <button
@@ -468,7 +468,7 @@ export default function LivestockPage() {
           </div>
         </div>
 
-        {/* Category Sections — each with its own video banner */}
+        {/* Category Sections â€” each with its own video banner */}
         {visibleCategories.map((cat) => (
           <CategorySection
             key={cat.value}
@@ -516,7 +516,7 @@ export default function LivestockPage() {
               <p className="text-white/80">List your cattle, goats, pigs or poultry and reach buyers across Zambia.</p>
             </div>
             <Link href="/new-listing">
-              <Button className="bg-white text-amber-300 hover:bg-white/90 font-bold px-8 py-3 h-auto rounded-xl gap-2 shadow-lg shrink-0">
+              <Button className="bg-white text-amber-700 hover:bg-white/90 font-bold px-8 py-3 h-auto rounded-xl gap-2 shadow-lg shrink-0">
                 <Beef className="w-4 h-4" /> List Animals Now <ChevronRight className="w-4 h-4" />
               </Button>
             </Link>

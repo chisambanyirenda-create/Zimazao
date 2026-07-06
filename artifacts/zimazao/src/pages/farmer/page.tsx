@@ -16,9 +16,9 @@ import { ReportModal } from "@/components/report-modal"
 type FarmerListing = Omit<ApiListing, "farmerId" | "farmerName" | "isActive">
 
 const CROP_EMOJI: Record<string, string> = {
-  cereals: "🌽", legumes: "🫘", tubers: "🥔", oilseeds: "🌻",
-  vegetables: "🥬", fruits: "🍎", cash_crops: "🌿", livestock: "🐄",
-  poultry: "🐔", other: "🌾",
+  cereals: "Ã°Å¸Å’Â½", legumes: "Ã°Å¸Â«Ëœ", tubers: "Ã°Å¸Â¥â€", oilseeds: "Ã°Å¸Å’Â»",
+  vegetables: "Ã°Å¸Â¥Â¬", fruits: "Ã°Å¸ÂÅ½", cash_crops: "Ã°Å¸Å’Â¿", livestock: "Ã°Å¸Ââ€ž",
+  poultry: "Ã°Å¸Ââ€", other: "Ã°Å¸Å’Â¾",
 }
 
 const CROP_GRADIENT: Record<string, string> = {
@@ -94,7 +94,7 @@ export default function FarmerProfilePage() {
       <Navbar />
       <div className="flex flex-col items-center justify-center py-40 gap-4">
         <Loader2 className="w-10 h-10 animate-spin text-primary" />
-        <p className="text-muted-foreground text-sm">Loading farmer profile…</p>
+        <p className="text-muted-foreground text-sm">Loading farmer profileÃ¢â‚¬Â¦</p>
       </div>
       <Footer />
     </div>
@@ -136,8 +136,8 @@ export default function FarmerProfilePage() {
       {/* Hero Banner */}
       <div className="relative bg-gradient-to-br from-primary via-emerald-700 to-green-900 overflow-hidden">
         <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-white rounded-full -translate-y-1/2 translate-x-1/2" />
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-white rounded-full translate-y-1/2 -translate-x-1/2" />
+          <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
         </div>
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 pb-0">
@@ -172,7 +172,7 @@ export default function FarmerProfilePage() {
               <div className="flex flex-wrap gap-2">
                 {categories.map((cat) => (
                   <Badge key={cat} className="bg-white/15 text-white border-white/25 text-xs capitalize gap-1">
-                    {CROP_EMOJI[cat] ?? "🌾"} {cat.replace("_", " ")}
+                    {CROP_EMOJI[cat] ?? "Ã°Å¸Å’Â¾"} {cat.replace("_", " ")}
                   </Badge>
                 ))}
               </div>
@@ -180,7 +180,7 @@ export default function FarmerProfilePage() {
 
             <div className="hidden md:flex flex-col gap-2 shrink-0">
               <Link href={`/messages?farmer=${farmer.id}&name=${encodeURIComponent(farmer.name)}`}>
-                <Button className="bg-white text-primary hover:bg-white/90 font-semibold gap-2 w-full shadow-lg">
+                <Button className="bg-white text-emerald-700 hover:bg-white/90 font-semibold gap-2 w-full shadow-lg">
                   <MessageCircle className="w-4 h-4" /> Send Message
                 </Button>
               </Link>
@@ -275,7 +275,7 @@ export default function FarmerProfilePage() {
                 ) : (
                   <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-5">
                     {farmer.listings.map((listing) => {
-                      const emoji = CROP_EMOJI[listing.category] ?? "🌾"
+                      const emoji = CROP_EMOJI[listing.category] ?? "Ã°Å¸Å’Â¾"
                       const gradient = CROP_GRADIENT[listing.category] ?? "from-gray-100 to-slate-50"
                       return (
                         <Card key={listing.id} className="overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 shadow-md flex flex-col group">
@@ -460,7 +460,7 @@ export default function FarmerProfilePage() {
                     <div className="flex flex-wrap gap-2">
                       {categories.map((cat) => (
                         <div key={cat} className="flex items-center gap-2 px-3 py-2 bg-muted rounded-xl text-sm">
-                          <span>{CROP_EMOJI[cat] ?? "🌾"}</span>
+                          <span>{CROP_EMOJI[cat] ?? "Ã°Å¸Å’Â¾"}</span>
                           <span className="font-medium capitalize">{cat.replace("_", " ")}</span>
                         </div>
                       ))}
@@ -547,7 +547,7 @@ export default function FarmerProfilePage() {
                   {farmer.listings.slice(0, 4).map((listing) => (
                     <Link key={listing.id} href={`/listing/${listing.id}`}>
                       <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted transition-colors group cursor-pointer">
-                        <span className="text-xl">{CROP_EMOJI[listing.category] ?? "🌾"}</span>
+                        <span className="text-xl">{CROP_EMOJI[listing.category] ?? "Ã°Å¸Å’Â¾"}</span>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium truncate group-hover:text-primary transition-colors">{listing.cropName}</p>
                           <p className="text-xs text-muted-foreground">ZMW {parseFloat(listing.price).toLocaleString()} / {listing.unit}</p>

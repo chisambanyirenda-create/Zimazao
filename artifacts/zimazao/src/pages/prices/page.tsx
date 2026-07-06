@@ -16,7 +16,7 @@ import { TrendingUp, TrendingDown, Minus, RefreshCw, Info, Bell, Search, BarChar
 
 const marketPrices = [
   {
-    crop: "White Maize", emoji: "🌽", unit: "50kg bag",
+    crop: "White Maize", emoji: "ðŸŒ½", unit: "50kg bag",
     markets: [
       { name: "Lusaka", price: 450, change: 5.2 },
       { name: "Ndola", price: 440, change: 3.1 },
@@ -33,7 +33,7 @@ const marketPrices = [
     ],
   },
   {
-    crop: "Groundnuts (Shelled)", emoji: "🥜", unit: "25kg bag",
+    crop: "Groundnuts (Shelled)", emoji: "ðŸ¥œ", unit: "25kg bag",
     markets: [
       { name: "Lusaka", price: 380, change: 2.5 },
       { name: "Ndola", price: 370, change: 1.8 },
@@ -50,7 +50,7 @@ const marketPrices = [
     ],
   },
   {
-    crop: "Soybeans", emoji: "🫘", unit: "50kg bag",
+    crop: "Soybeans", emoji: "ðŸ«˜", unit: "50kg bag",
     markets: [
       { name: "Lusaka", price: 520, change: -1.2 },
       { name: "Ndola", price: 510, change: -0.8 },
@@ -67,7 +67,7 @@ const marketPrices = [
     ],
   },
   {
-    crop: "Sunflower Seeds", emoji: "🌻", unit: "25kg bag",
+    crop: "Sunflower Seeds", emoji: "ðŸŒ»", unit: "25kg bag",
     markets: [
       { name: "Lusaka", price: 280, change: 4.5 },
       { name: "Ndola", price: 275, change: 3.8 },
@@ -84,7 +84,7 @@ const marketPrices = [
     ],
   },
   {
-    crop: "Cassava (Fresh)", emoji: "🥔", unit: "50kg bag",
+    crop: "Cassava (Fresh)", emoji: "ðŸ¥”", unit: "50kg bag",
     markets: [
       { name: "Lusaka", price: 150, change: 0.0 },
       { name: "Ndola", price: 145, change: -0.5 },
@@ -101,7 +101,7 @@ const marketPrices = [
     ],
   },
   {
-    crop: "Sorghum", emoji: "🌾", unit: "50kg bag",
+    crop: "Sorghum", emoji: "ðŸŒ¾", unit: "50kg bag",
     markets: [
       { name: "Lusaka", price: 320, change: 2.0 },
       { name: "Ndola", price: 310, change: 1.5 },
@@ -176,7 +176,7 @@ function PricesContent() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold mb-2">📊 Live Market Prices</h1>
+              <h1 className="text-3xl md:text-4xl font-bold mb-2">ðŸ“Š Live Market Prices</h1>
               <p className="text-white/80">Real-time commodity prices from 5 major Zambian markets</p>
             </div>
             <div className="flex items-center gap-3">
@@ -198,7 +198,7 @@ function PricesContent() {
                 Updated today, 10:30 AM
               </Badge>
               <a href="/price-alerts">
-                <button className="flex items-center gap-1.5 px-4 py-2 bg-white text-emerald-300 font-semibold text-sm rounded-xl hover:bg-white/90 transition-colors shadow-sm">
+                <button className="flex items-center gap-1.5 px-4 py-2 bg-white text-emerald-700 font-semibold text-sm rounded-xl hover:bg-white/90 transition-colors shadow-sm">
                   <Bell className="w-4 h-4" /> Set Alerts
                 </button>
               </a>
@@ -218,11 +218,11 @@ function PricesContent() {
                 <p className="text-sm font-semibold text-emerald-300">Top Gainer This Week</p>
               </div>
               <div className="flex items-center gap-3">
-                <span className="text-4xl">🌻</span>
+                <span className="text-4xl">ðŸŒ»</span>
                 <div>
                   <p className="font-bold text-foreground text-lg">Sunflower Seeds</p>
                   <p className="text-emerald-300 font-bold text-xl">+4.1%</p>
-                  <p className="text-muted-foreground text-xs">ZMW 278 avg · 25kg bag</p>
+                  <p className="text-muted-foreground text-xs">ZMW 278 avg Â· 25kg bag</p>
                 </div>
               </div>
             </CardContent>
@@ -234,11 +234,11 @@ function PricesContent() {
                 <p className="text-sm font-semibold text-red-300">Top Decliner This Week</p>
               </div>
               <div className="flex items-center gap-3">
-                <span className="text-4xl">🫘</span>
+                <span className="text-4xl">ðŸ«˜</span>
                 <div>
                   <p className="font-bold text-foreground text-lg">Soybeans</p>
                   <p className="text-red-500 font-bold text-xl">-0.9%</p>
-                  <p className="text-muted-foreground text-xs">ZMW 515 avg · 50kg bag</p>
+                  <p className="text-muted-foreground text-xs">ZMW 515 avg Â· 50kg bag</p>
                 </div>
               </div>
             </CardContent>
@@ -250,11 +250,11 @@ function PricesContent() {
                 <p className="text-sm font-semibold text-blue-300">Most Traded Crop</p>
               </div>
               <div className="flex items-center gap-3">
-                <span className="text-4xl">🌽</span>
+                <span className="text-4xl">ðŸŒ½</span>
                 <div>
                   <p className="font-bold text-foreground text-lg">White Maize</p>
                   <p className="text-blue-300 font-bold text-xl">+3.1%</p>
-                  <p className="text-muted-foreground text-xs">ZMW 445 avg · Highest volume</p>
+                  <p className="text-muted-foreground text-xs">ZMW 445 avg Â· Highest volume</p>
                 </div>
               </div>
             </CardContent>
@@ -318,7 +318,7 @@ function PricesContent() {
             <div>
               <p className="font-medium text-foreground">How these prices work</p>
               <p className="text-sm text-muted-foreground">
-                Prices are updated daily from verified traders in 5 major markets. Use them as guidance — actual prices may vary based on crop quality, quantity, and transport costs.
+                Prices are updated daily from verified traders in 5 major markets. Use them as guidance â€” actual prices may vary based on crop quality, quantity, and transport costs.
               </p>
             </div>
           </CardContent>
@@ -398,7 +398,7 @@ function PricesContent() {
                   <h3 className="text-xl font-bold">Get SMS Price Alerts</h3>
                 </div>
                 <p className="text-white/80 max-w-md">
-                  Never miss a good selling opportunity. Get SMS notifications when crop prices reach your target — straight to your Zambian phone number.
+                  Never miss a good selling opportunity. Get SMS notifications when crop prices reach your target â€” straight to your Zambian phone number.
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
@@ -408,7 +408,7 @@ function PricesContent() {
                   onChange={(e) => setAlertPhone(e.target.value)}
                   className="bg-white/15 border-white/30 text-white placeholder:text-white/50 w-full sm:w-52 h-11"
                 />
-                <Button className="bg-white text-primary hover:bg-white/90 font-semibold h-11 px-6">
+                <Button className="bg-white text-emerald-700 hover:bg-white/90 font-semibold h-11 px-6">
                   Set Alert
                 </Button>
               </div>

@@ -39,7 +39,7 @@ export default function HowItWorksPage() {
           <Badge className="bg-white/20 text-white border-0 mb-4">How Zimazao Works</Badge>
           <h1 className="text-3xl sm:text-4xl font-bold mb-4">Simple, Safe & Fair for Everyone</h1>
           <p className="text-white/80 text-lg max-w-2xl mx-auto">
-            Zimazao connects Zambian farmers directly with buyers. Our escrow system protects every transaction — farmers get paid, buyers get their crops.
+            Zimazao connects Zambian farmers directly with buyers. Our escrow system protects every transaction â€” farmers get paid, buyers get their crops.
           </p>
         </div>
       </div>
@@ -61,7 +61,7 @@ export default function HowItWorksPage() {
                 <Badge className="bg-primary/10 text-primary border-0 mb-3">Recommended</Badge>
                 <h3 className="text-xl font-bold mb-2">Online Payment (Escrow)</h3>
                 <p className="text-muted-foreground text-sm mb-4 leading-relaxed">
-                  Pay online via mobile money. Your money is held securely by Zimazao until you confirm you received your crops — then and only then is the farmer paid. You're always protected.
+                  Pay online via mobile money. Your money is held securely by Zimazao until you confirm you received your crops â€” then and only then is the farmer paid. You're always protected.
                 </p>
                 <ul className="space-y-2 text-sm">
                   {["Money held safely until delivery confirmed", "Full refund if something goes wrong", "48-hour auto-release if you don't respond", "Dispute resolution by our team"].map((t) => (
@@ -137,7 +137,7 @@ export default function HowItWorksPage() {
               <Step number={5} icon={Banknote} color="bg-amber-500" title="Cash on Delivery"
                 description="For COD orders, collect payment directly from the buyer and mark the order Complete. Zimazao will invoice you for the 3% commission." />
               <Step number={6} icon={Smartphone} color="bg-purple-500" title="Request Withdrawal"
-                description="Request a payout from your wallet to your MTN or Airtel mobile money at any time. Processed within 1–3 business hours." />
+                description="Request a payout from your wallet to your MTN or Airtel mobile money at any time. Processed within 1â€“3 business hours." />
             </div>
           </div>
         </section>
@@ -155,12 +155,12 @@ export default function HowItWorksPage() {
           </div>
           <div className="grid sm:grid-cols-3 gap-6 text-sm">
             {[
-              { icon: Lock, title: "Funds Held Safely", desc: "When you pay online, funds are held by Zimazao — not sent to the farmer yet." },
+              { icon: Lock, title: "Funds Held Safely", desc: "When you pay online, funds are held by Zimazao â€” not sent to the farmer yet." },
               { icon: CheckCircle2, title: "Released on Confirmation", desc: "Only after you confirm you received the correct crops does the payment reach the farmer." },
               { icon: AlertTriangle, title: "48-Hour Auto-Release", desc: "If you don't confirm or dispute within 48 hours of delivery, funds are automatically released to the farmer." },
             ].map((item) => (
               <div key={item.title} className="flex flex-col items-center text-center gap-2">
-                <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm">
+                <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center">
                   <item.icon className="w-5 h-5 text-primary" />
                 </div>
                 <h3 className="font-bold">{item.title}</h3>

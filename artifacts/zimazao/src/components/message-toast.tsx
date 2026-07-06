@@ -24,7 +24,7 @@ export function MessageToast() {
       style={{ animation: "toastSlideIn 0.3s cubic-bezier(0.34,1.56,0.64,1)" }}
     >
       <div
-        className="relative flex items-start gap-3 bg-white rounded-2xl shadow-2xl border border-gray-100 p-4 cursor-pointer group overflow-hidden"
+        className="relative flex items-start gap-3 bg-card rounded-2xl shadow-2xl border border-border p-4 cursor-pointer group overflow-hidden"
         style={{ boxShadow: "0 20px 60px rgba(0,0,0,0.18), 0 4px 16px rgba(16,185,129,0.12)" }}
         onClick={() => {
           dismissToast()
@@ -51,7 +51,7 @@ export function MessageToast() {
             </p>
           </div>
           <p className="text-sm font-bold text-white leading-tight">{toast.senderName}</p>
-          <p className="text-xs text-gray-500 mt-0.5 leading-relaxed line-clamp-2">
+          <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed line-clamp-2">
             {truncate(toast.content)}
           </p>
           <p className="text-[10px] text-emerald-300 font-medium mt-1.5 flex items-center gap-1">
@@ -63,9 +63,9 @@ export function MessageToast() {
         {/* Dismiss */}
         <button
           onClick={(e) => { e.stopPropagation(); dismissToast() }}
-          className="shrink-0 w-7 h-7 rounded-full bg-white/10 hover:bg-gray-200 flex items-center justify-center transition-colors ml-1"
+          className="shrink-0 w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors ml-1"
         >
-          <X className="w-3.5 h-3.5 text-gray-500" />
+          <X className="w-3.5 h-3.5 text-white/60" />
         </button>
 
         {/* Progress bar auto-dismiss */}

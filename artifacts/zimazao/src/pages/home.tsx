@@ -15,11 +15,11 @@ import { TrendingUp, TrendingDown, Minus, Beef, ArrowRight, Shield, Syringe, Sca
 import { Link } from "wouter";
 
 const quickPrices = [
-  { name: "White Maize", emoji: "🌽", price: 450, change: 3.1 },
-  { name: "Groundnuts", emoji: "🥜", price: 380, change: 2.0 },
-  { name: "Soybeans", emoji: "🫘", price: 520, change: -0.9 },
-  { name: "Sunflower", emoji: "🌻", price: 280, change: 4.1 },
-  { name: "Cassava", emoji: "🥔", price: 150, change: 0.0 },
+  { name: "White Maize", emoji: "ðŸŒ½", price: 450, change: 3.1 },
+  { name: "Groundnuts", emoji: "ðŸ¥œ", price: 380, change: 2.0 },
+  { name: "Soybeans", emoji: "ðŸ«˜", price: 520, change: -0.9 },
+  { name: "Sunflower", emoji: "ðŸŒ»", price: 280, change: 4.1 },
+  { name: "Cassava", emoji: "ðŸ¥”", price: 150, change: 0.0 },
 ];
 
 function QuickPriceBar() {
@@ -28,7 +28,7 @@ function QuickPriceBar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-6 overflow-x-auto scrollbar-hide">
           <Badge className="bg-white/20 text-white border-0 shrink-0 text-xs">
-            📊 Live Prices
+            ðŸ“Š Live Prices
           </Badge>
           {quickPrices.map((p) => (
             <Link key={p.name} href="/prices" className="flex items-center gap-2 shrink-0 hover:opacity-80 transition-opacity">
@@ -68,17 +68,17 @@ export default function HomePage() {
               <Card className="overflow-hidden border-0 shadow-lg bg-gradient-to-br from-primary to-emerald-700">
                 <CardContent className="p-6 text-white h-full flex flex-col justify-between">
                   <div>
-                    <Badge className="bg-white/20 text-white border-0 mb-3 text-xs">🤖 AI Feature</Badge>
+                    <Badge className="bg-white/20 text-white border-0 mb-3 text-xs">ðŸ¤– AI Feature</Badge>
                     <h3 className="text-xl font-bold mb-2">Detect Crop Diseases Instantly</h3>
                     <p className="text-white/80 text-sm mb-4 leading-relaxed">
                       Simply take a photo of your sick crop. Our AI powered by Google Gemini gives you diagnosis, symptoms and treatment in seconds.
                     </p>
                   </div>
                   <div className="flex items-center justify-between">
-                    <div className="flex gap-2 text-3xl">🌽 🫘 🌻 🥬</div>
+                    <div className="flex gap-2 text-3xl">ðŸŒ½ ðŸ«˜ ðŸŒ» ðŸ¥¬</div>
                     <Link href="/disease-detector">
-                      <button className="bg-white text-primary font-semibold text-sm px-5 py-2.5 rounded-xl hover:bg-white/90 transition-colors">
-                        Try Free Now →
+                      <button className="bg-white text-emerald-700 font-semibold text-sm px-5 py-2.5 rounded-xl hover:bg-white/90 transition-colors">
+                        Try Free Now â†’
                       </button>
                     </Link>
                   </div>
@@ -107,7 +107,7 @@ export default function HomePage() {
               <div className="grid md:grid-cols-2 gap-12 items-center">
                 <div>
                   <Badge className="bg-amber-500/20 text-amber-300 border border-amber-500/30 mb-5 text-sm px-4 py-1.5">
-                    🐄 NEW — Livestock Exchange
+                    ðŸ„ NEW â€” Livestock Exchange
                   </Badge>
                   <h2 className="text-3xl md:text-5xl font-bold mb-4 leading-tight">
                     Zambia's First{" "}
@@ -117,16 +117,16 @@ export default function HomePage() {
                     Marketplace
                   </h2>
                   <p className="text-white/70 text-lg mb-6 leading-relaxed">
-                    Cattle, goats, pigs, and poultry — buy and sell with verified farmers.
+                    Cattle, goats, pigs, and poultry â€” buy and sell with verified farmers.
                     Live price index, vaccination certificates, and secure transactions.
                   </p>
                   <div className="flex flex-wrap gap-4 mb-8">
                     {[
-                      { emoji: "🐄", label: "Cattle" },
-                      { emoji: "🐐", label: "Goats" },
-                      { emoji: "🐷", label: "Pigs" },
-                      { emoji: "🐔", label: "Poultry" },
-                      { emoji: "🐑", label: "Sheep" },
+                      { emoji: "ðŸ„", label: "Cattle" },
+                      { emoji: "ðŸ", label: "Goats" },
+                      { emoji: "ðŸ·", label: "Pigs" },
+                      { emoji: "ðŸ”", label: "Poultry" },
+                      { emoji: "ðŸ‘", label: "Sheep" },
                     ].map((item) => (
                       <div key={item.label} className="flex items-center gap-2 bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-sm">
                         <span className="text-xl">{item.emoji}</span>
