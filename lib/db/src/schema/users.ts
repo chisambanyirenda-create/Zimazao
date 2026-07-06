@@ -17,6 +17,7 @@ export const usersTable = pgTable("users", {
   // parse it so arithmetic in route code stays numeric.
   walletBalance: numeric("wallet_balance", { precision: 12, scale: 2, mode: "number" }).notNull().default(0),
   isAdmin: boolean("is_admin").notNull().default(false),
+  emailVerified: boolean("email_verified").notNull().default(false),
   isBanned: boolean("is_banned").notNull().default(false),
   bannedUntil: timestamp("banned_until"),
   banReason: text("ban_reason"),

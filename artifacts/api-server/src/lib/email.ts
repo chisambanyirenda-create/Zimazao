@@ -29,6 +29,17 @@ export async function sendEmail(opts: { to: string; subject: string; html: strin
   }
 }
 
+export function verifyEmailHtml(name: string, link: string): string {
+  return `
+  <div style="font-family:system-ui,sans-serif;max-width:480px;margin:0 auto;padding:24px;background:#0a1f14;color:#e6fff0;border-radius:16px">
+    <h1 style="color:#4ade80;font-size:22px;margin:0 0 8px">Welcome to Zimazao 🌱</h1>
+    <p style="color:#b8d8c4;line-height:1.6">Hi ${name || "there"}, confirm your email to verify your account and earn buyer trust. This link expires in 24 hours.</p>
+    <a href="${link}" style="display:inline-block;margin:16px 0;background:linear-gradient(135deg,#22c55e,#16a34a);color:#04140d;font-weight:700;text-decoration:none;padding:12px 24px;border-radius:12px">Verify My Email</a>
+    <p style="color:#6b8578;font-size:13px;line-height:1.6">If you didn't create a Zimazao account, you can ignore this email.</p>
+    <p style="color:#6b8578;font-size:12px">Zimazao — Zambia's farm marketplace</p>
+  </div>`;
+}
+
 export function resetEmailHtml(name: string, link: string): string {
   return `
   <div style="font-family:system-ui,sans-serif;max-width:480px;margin:0 auto;padding:24px;background:#0a1f14;color:#e6fff0;border-radius:16px">

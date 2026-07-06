@@ -7,7 +7,7 @@ import { db, usersTable } from "@workspace/db";
 import { eq, sql } from "drizzle-orm";
 import { signToken } from "../lib/jwt";
 import { requireAuth, type AuthRequest } from "../middlewares/auth";
-import { sendEmail, resetEmailHtml } from "../lib/email";
+import { sendEmail, resetEmailHtml, verifyEmailHtml } from "../lib/email";
 
 // ── Input sanitization ───────────────────────────────────────────────────────
 function sanitizeString(val: unknown): string {
@@ -98,8 +98,23 @@ function formatUser(user: typeof usersTable.$inferSelect) {
     userType: user.userType,
     walletBalance: user.walletBalance,
     isAdmin: user.isAdmin,
+    emailVerified: user.emailVerified,
     createdAt: user.createdAt,
   };
+}
+
+const APP_BASE = (req: Request) =>
+  (process.env.APP_URL || `${req.headers["x-forwarded-proto"] || req.protocol}://${req.headers.host}`).replace(/\/$/, "");
+
+/** Create a fresh email-verification token and send the verification email. */
+async function sendVerification(userId: number, name: string, email: string, req: Request) {
+  const token = crypto.randomBytes(32).toString("hex");
+  const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+  const expires = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+  await db.execute(sql`DELETE FROM email_verifications WHERE user_id = ${userId}`);
+  await db.execute(sql`INSERT INTO email_verifications (user_id, token_hash, expires_at) VALUES (${userId}, ${tokenHash}, ${expires})`);
+  const link = `${APP_BASE(req)}/verify-email?token=${token}`;
+  await sendEmail({ to: email, subject: "Verify your Zimazao email", html: verifyEmailHtml(name, link) });
 }
 
 // ── Register ─────────────────────────────────────────────────────────────────
@@ -150,6 +165,9 @@ router.post("/auth/register", async (req, res): Promise<void> => {
 
   const token = signToken({ userId: user.id, email: user.email, userType: user.userType, isAdmin: user.isAdmin });
   req.log.info({ userId: user.id }, "New user registered");
+
+  // Fire-and-forget verification email (never blocks signup).
+  sendVerification(user.id, user.name, user.email, req).catch((e) => req.log.warn({ err: e }, "verify email send failed"));
 
   res.status(201).json({ token, user: formatUser(user) });
 });
@@ -297,5 +315,33 @@ router.post("/auth/reset-password", async (req: Request, res: Response): Promise
 
   res.json({ ok: true, message: "Password updated. You can now sign in." });
 });
+
+// ── Verify email — consume the token ──────────────────────────────────────────
+router.post("/auth/verify-email", async (req: Request, res: Response): Promise<void> => {
+  const token: string = typeof req.body.token === "string" ? req.body.token : "";
+  if (!token) { res.status(400).json({ error: "token is required" }); return; }
+
+  const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+  const result: any = await db.execute(sql`SELECT user_id FROM email_verifications WHERE token_hash = ${tokenHash} AND expires_at > NOW() LIMIT 1`);
+  const row = (result.rows ?? result)[0];
+  if (!row) { res.status(400).json({ error: "This verification link is invalid or has expired." }); return; }
+
+  const userId = row.user_id as number;
+  await db.update(usersTable).set({ emailVerified: true }).where(eq(usersTable.id, userId));
+  await db.execute(sql`DELETE FROM email_verifications WHERE user_id = ${userId}`);
+  req.log.info({ userId }, "Email verified");
+
+  res.json({ ok: true, message: "Your email is verified. Thank you!" });
+});
+
+// ── Resend verification email ─────────────────────────────────────────────────
+router.post("/auth/resend-verification", requireAuth as RequestHandler, (async (req: AuthRequest, res) => {
+  const userId = req.user!.userId;
+  const [user] = await db.select().from(usersTable).where(eq(usersTable.id, userId));
+  if (!user) { res.status(404).json({ error: "User not found" }); return; }
+  if (user.emailVerified) { res.json({ ok: true, message: "Email already verified." }); return; }
+  await sendVerification(user.id, user.name, user.email, req);
+  res.json({ ok: true, message: "Verification email sent." });
+}) as RequestHandler);
 
 export default router;

@@ -77,6 +77,7 @@ export async function runMigrations(): Promise<void> {
       ALTER TABLE users ADD COLUMN IF NOT EXISTS buyer_rating       NUMERIC(3,2)  NOT NULL DEFAULT 0;
       ALTER TABLE users ADD COLUMN IF NOT EXISTS buyer_rating_count INTEGER       NOT NULL DEFAULT 0;
       ALTER TABLE users ADD COLUMN IF NOT EXISTS is_admin           BOOLEAN       NOT NULL DEFAULT false;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS email_verified     BOOLEAN       NOT NULL DEFAULT false;
       ALTER TABLE users ADD COLUMN IF NOT EXISTS is_banned          BOOLEAN       NOT NULL DEFAULT false;
       ALTER TABLE users ADD COLUMN IF NOT EXISTS banned_until       TIMESTAMP;
       ALTER TABLE users ADD COLUMN IF NOT EXISTS ban_reason         TEXT;
@@ -250,6 +251,18 @@ export async function runMigrations(): Promise<void> {
         created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
       );
       CREATE INDEX IF NOT EXISTS idx_password_resets_token ON password_resets(token_hash);
+    `);
+
+    // ── Email verification tokens ─────────────────────────────────────────────
+    await db.execute(sql`
+      CREATE TABLE IF NOT EXISTS email_verifications (
+        id         SERIAL PRIMARY KEY,
+        user_id    INTEGER NOT NULL REFERENCES users(id),
+        token_hash TEXT NOT NULL,
+        expires_at TIMESTAMPTZ NOT NULL,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      );
+      CREATE INDEX IF NOT EXISTS idx_email_verifications_token ON email_verifications(token_hash);
     `);
 
     logger.info("Database migrations completed");

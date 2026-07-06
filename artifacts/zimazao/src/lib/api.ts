@@ -65,6 +65,13 @@ export const api = {
         method: "POST",
         body: JSON.stringify({ token, password }),
       }),
+    verifyEmail: (token: string) =>
+      request<{ ok: boolean; message: string }>("/auth/verify-email", {
+        method: "POST",
+        body: JSON.stringify({ token }),
+      }),
+    resendVerification: () =>
+      request<{ ok: boolean; message: string }>("/auth/resend-verification", { method: "POST" }),
     updateProfile: (data: {
       name?: string;
       phone?: string;
@@ -261,6 +268,7 @@ export interface ApiUser {
   userType: "farmer" | "buyer";
   walletBalance: number;
   isAdmin?: boolean;
+  emailVerified?: boolean;
   createdAt: string;
 }
 

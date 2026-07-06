@@ -13,6 +13,7 @@ import LoginPage from "@/pages/login/page";
 import RegisterPage from "@/pages/register/page";
 import ForgotPasswordPage from "@/pages/forgot-password/page";
 import ResetPasswordPage from "@/pages/reset-password/page";
+import VerifyEmailPage from "@/pages/verify-email/page";
 import DashboardPage from "@/pages/dashboard/page";
 import MarketplacePage from "@/pages/marketplace/page";
 import NewListingPage from "@/pages/new-listing/page";
@@ -58,6 +59,7 @@ function Router() {
         <Route path="/register" component={RegisterPage} />
         <Route path="/forgot-password" component={ForgotPasswordPage} />
         <Route path="/reset-password" component={ResetPasswordPage} />
+        <Route path="/verify-email" component={VerifyEmailPage} />
         <Route path="/dashboard" component={DashboardPage} />
         <Route path="/marketplace" component={MarketplacePage} />
         <Route path="/livestock" component={LivestockPage} />

@@ -2,6 +2,7 @@ import { useAuth } from "@/lib/auth-context"
 import { useEffect, useRef, useState } from "react"
 import { api, type ApiDashboardStats, type ApiOrderDetail } from "@/lib/api"
 import { Navbar } from "@/components/navbar"
+import { EmailVerifyBanner } from "@/components/email-verify-banner"
 import { Footer } from "@/components/footer"
 import { AvatarUpload } from "@/components/avatar-upload"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -313,6 +314,7 @@ function BuyerDashboard({ orders }: { orders: ApiOrderDetail[] }) {
 
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <EmailVerifyBanner />
       {/* Welcome Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <div className="flex items-center gap-3">

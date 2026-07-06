@@ -10,6 +10,7 @@ interface User {
   userType: "farmer" | "buyer"
   walletBalance: number
   avatar?: string | null
+  emailVerified?: boolean
   createdAt?: string
 }
 
@@ -36,6 +37,7 @@ function apiUserToUser(u: ApiUser): User {
     userType: u.userType,
     walletBalance: u.walletBalance ?? 0,
     avatar: u.profilePicture ?? null,
+    emailVerified: u.emailVerified,
     createdAt: u.createdAt,
   }
 }
