@@ -11,6 +11,8 @@ import NotFound from "@/pages/not-found";
 import HomePage from "@/pages/home";
 import LoginPage from "@/pages/login/page";
 import RegisterPage from "@/pages/register/page";
+import ForgotPasswordPage from "@/pages/forgot-password/page";
+import ResetPasswordPage from "@/pages/reset-password/page";
 import DashboardPage from "@/pages/dashboard/page";
 import MarketplacePage from "@/pages/marketplace/page";
 import NewListingPage from "@/pages/new-listing/page";
@@ -54,6 +56,8 @@ function Router() {
         <Route path="/" component={HomePage} />
         <Route path="/login" component={LoginPage} />
         <Route path="/register" component={RegisterPage} />
+        <Route path="/forgot-password" component={ForgotPasswordPage} />
+        <Route path="/reset-password" component={ResetPasswordPage} />
         <Route path="/dashboard" component={DashboardPage} />
         <Route path="/marketplace" component={MarketplacePage} />
         <Route path="/livestock" component={LivestockPage} />

@@ -2,10 +2,12 @@ import { Router, type IRouter } from "express";
 import type { Request, Response, NextFunction, RequestHandler } from "express";
 import bcrypt from "bcryptjs";
 import multer from "multer";
+import crypto from "node:crypto";
 import { db, usersTable } from "@workspace/db";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { signToken } from "../lib/jwt";
 import { requireAuth, type AuthRequest } from "../middlewares/auth";
+import { sendEmail, resetEmailHtml } from "../lib/email";
 
 // ── Input sanitization ───────────────────────────────────────────────────────
 function sanitizeString(val: unknown): string {
@@ -250,5 +252,50 @@ router.post("/users/avatar", requireAuth as RequestHandler, avatarUpload.single(
   const [updated] = await db.update(usersTable).set({ profilePicture: dataUrl }).where(eq(usersTable.id, userId)).returning();
   res.json(formatUser(updated));
 }) as RequestHandler);
+
+// ── Forgot password — email a reset link ─────────────────────────────────────
+router.post("/auth/forgot-password", async (req: Request, res: Response): Promise<void> => {
+  const email = sanitizeString(req.body.email).toLowerCase();
+  if (!email) { res.status(400).json({ error: "email is required" }); return; }
+
+  const [user] = await db.select().from(usersTable).where(eq(usersTable.email, email));
+  // Always respond the same way — never reveal whether an email is registered.
+  if (user) {
+    const token = crypto.randomBytes(32).toString("hex");
+    const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+    const expires = new Date(Date.now() + 60 * 60 * 1000).toISOString();
+    await db.execute(sql`DELETE FROM password_resets WHERE user_id = ${user.id}`);
+    await db.execute(sql`INSERT INTO password_resets (user_id, token_hash, expires_at) VALUES (${user.id}, ${tokenHash}, ${expires})`);
+
+    const base = (process.env.APP_URL || `${req.headers["x-forwarded-proto"] || req.protocol}://${req.headers.host}`).replace(/\/$/, "");
+    const link = `${base}/reset-password?token=${token}`;
+    await sendEmail({ to: user.email, subject: "Reset your Zimazao password", html: resetEmailHtml(user.name, link) });
+    req.log.info({ userId: user.id }, "Password reset requested");
+  }
+  res.json({ ok: true, message: "If that email is registered, a reset link has been sent." });
+});
+
+// ── Reset password — consume the token, set a new password ────────────────────
+router.post("/auth/reset-password", async (req: Request, res: Response): Promise<void> => {
+  const token: string = typeof req.body.token === "string" ? req.body.token : "";
+  const password: string = req.body.password ?? "";
+  if (!token || !password) { res.status(400).json({ error: "token and password are required" }); return; }
+
+  const pwError = validatePassword(password);
+  if (pwError) { res.status(400).json({ error: pwError }); return; }
+
+  const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+  const result: any = await db.execute(sql`SELECT user_id FROM password_resets WHERE token_hash = ${tokenHash} AND expires_at > NOW() LIMIT 1`);
+  const row = (result.rows ?? result)[0];
+  if (!row) { res.status(400).json({ error: "This reset link is invalid or has expired." }); return; }
+
+  const userId = row.user_id as number;
+  const hashed = await bcrypt.hash(password, 12);
+  await db.update(usersTable).set({ password: hashed }).where(eq(usersTable.id, userId));
+  await db.execute(sql`DELETE FROM password_resets WHERE user_id = ${userId}`);
+  req.log.info({ userId }, "Password reset completed");
+
+  res.json({ ok: true, message: "Password updated. You can now sign in." });
+});
 
 export default router;

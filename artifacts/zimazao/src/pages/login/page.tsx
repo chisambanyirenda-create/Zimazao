@@ -157,6 +157,10 @@ function LoginForm() {
                   </div>
                 </div>
 
+                <div className="text-right -mt-1">
+                  <Link href="/forgot-password" className="text-sm text-primary hover:underline">Forgot password?</Link>
+                </div>
+
                 <Button type="submit" className="w-full h-12 text-lg" disabled={isLoading || locked}>
                   {isLoading ? (
                     <><Loader2 className="w-5 h-5 mr-2 animate-spin" />Signing in...</>
