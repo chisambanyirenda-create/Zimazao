@@ -427,10 +427,7 @@ export default function MessagesPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-bold text-white text-sm">{selected.userName}</p>
-                    <div className="flex items-center gap-1.5 mt-0.5">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                      <span className="text-[11px] text-emerald-400/80">Online</span>
-                    </div>
+                    <p className="text-[11px] text-white/40 mt-0.5">Direct message · replies may take time</p>
                   </div>
                 </div>
 
