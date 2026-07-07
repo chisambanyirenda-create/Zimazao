@@ -1,0 +1,32 @@
+# Render blueprint — hosts the Zimazao API server (backend).
+# In Render: New → Blueprint → connect this GitHub repo. Render reads this file
+# and prompts you for the secret values (marked sync: false).
+
+services:
+  - type: web
+    name: zimazao-api
+    runtime: node
+    plan: free
+    region: frankfurt            # close to your Supabase database (eu-central-1)
+    buildCommand: corepack enable && pnpm install --no-frozen-lockfile && pnpm --filter @workspace/api-server run build
+    startCommand: pnpm --filter @workspace/api-server run start
+    healthCheckPath: /api/healthz
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: DATABASE_URL          # your Supabase connection string (ROTATE first)
+        sync: false
+      - key: JWT_SECRET            # a fresh long random secret
+        sync: false
+      - key: GEMINI_API_KEY        # Google Gemini (AI Crop/Animal Doctor)
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: RESEND_API_KEY        # email (password reset, verification)
+        sync: false
+      - key: APP_URL               # your public Netlify site URL (for email links)
+        sync: false

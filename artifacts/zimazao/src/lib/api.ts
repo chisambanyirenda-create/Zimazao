@@ -1,5 +1,7 @@
 const BASE = import.meta.env.BASE_URL?.replace(/\/$/, "") || "";
-const API_BASE = `${BASE}/api`;
+// In production the site (Netlify) and API (Render) live on different hosts, so
+// VITE_API_URL points at the hosted API. Locally it falls back to the dev proxy.
+const API_BASE = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, "") || `${BASE}/api`;
 
 function getToken(): string | null {
   return localStorage.getItem("zimazao_token");

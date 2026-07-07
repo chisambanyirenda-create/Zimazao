@@ -1,0 +1,28 @@
+# Netlify config — hosts the Zimazao website (frontend).
+# The API runs separately on Render; /api/* is proxied there (set the URL below
+# after your Render service is live).
+
+[build]
+  base = "/"
+  command = "corepack enable && pnpm install --no-frozen-lockfile && pnpm --filter @workspace/zimazao run build"
+  publish = "artifacts/zimazao/dist/public"
+
+[build.environment]
+  NODE_VERSION = "20"
+  PORT = "3000"
+  BASE_PATH = "/"
+  API_PORT = "8080"
+
+# Forward API calls to the Render-hosted backend.
+# 👉 Replace the host below with your real Render URL after deploying the API.
+[[redirects]]
+  from = "/api/*"
+  to = "https://zimazao-api.onrender.com/api/:splat"
+  status = 200
+  force = true
+
+# Single-page-app fallback: every other path serves the app shell.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
