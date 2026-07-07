@@ -107,7 +107,7 @@ export default function PriceAlertsPage() {
     setTargetPrice("")
     setShowForm(false)
     toast({
-      title: newAlert.triggered ? "Alert Already Triggered! Ã°Å¸â€â€" : "Price Alert Set! Ã¢Å“â€¦",
+      title: newAlert.triggered ? "Alert Already Triggered! 🔔" : "Price Alert Set! ✅",
       description: newAlert.triggered
         ? `${cropName} is already ${direction} ZMW ${targetPrice} (current: ZMW ${newAlert.currentPrice}).`
         : `You'll be notified when ${cropName} goes ${direction} ZMW ${targetPrice}/${unit}.`,
@@ -198,7 +198,7 @@ export default function PriceAlertsPage() {
                   onChange={(e) => { setCropName(e.target.value); setShowSuggestions(true) }}
                   onFocus={() => setShowSuggestions(true)}
                   onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
-                  placeholder="e.g. Maize, Soybeans, GroundnutsÃ¢â‚¬Â¦"
+                  placeholder="e.g. Maize, Soybeans, Groundnuts…"
                   className="h-10"
                 />
                 {showSuggestions && filteredSuggestions.length > 0 && (
@@ -299,7 +299,7 @@ export default function PriceAlertsPage() {
             </div>
             <h2 className="text-xl font-bold text-foreground mb-2">No price alerts yet</h2>
             <p className="text-muted-foreground text-sm mb-6 max-w-sm">
-              Set up alerts and we'll notify you when a crop's market price hits your target Ã¢â‚¬â€ so you never miss the right moment to buy or sell.
+              Set up alerts and we'll notify you when a crop's market price hits your target — so you never miss the right moment to buy or sell.
             </p>
             <Button onClick={() => setShowForm(true)} className="gap-2">
               <Plus className="w-4 h-4" /> Create Your First Alert
@@ -341,7 +341,7 @@ export default function PriceAlertsPage() {
                         <div className="flex items-center gap-2 mb-1 flex-wrap">
                           <p className="font-bold text-foreground text-base">{alert.cropName}</p>
                           {isTriggered && (
-                            <Badge className="bg-amber-500 text-white border-0 text-xs animate-pulse">Ã°Å¸â€â€ Triggered!</Badge>
+                            <Badge className="bg-amber-500 text-white border-0 text-xs animate-pulse">🔔 Triggered!</Badge>
                           )}
                         </div>
                         <p className="text-sm text-muted-foreground">
@@ -388,9 +388,9 @@ export default function PriceAlertsPage() {
             </h3>
             <div className="grid sm:grid-cols-3 gap-4">
               {[
-                { step: "1", icon: "Ã°Å¸Å½Â¯", title: "Set Your Target", desc: "Choose a crop and the price you want to buy or sell at." },
-                { step: "2", icon: "Ã°Å¸â€˜ÂÃ¯Â¸Â", title: "We Watch Prices", desc: "Zimazao monitors market prices across all provinces in real time." },
-                { step: "3", icon: "Ã°Å¸â€â€", title: "Get Notified", desc: "When the price hits your target, you'll see a notification in-app." },
+                { step: "1", icon: "🎯", title: "Set Your Target", desc: "Choose a crop and the price you want to buy or sell at." },
+                { step: "2", icon: "👁️", title: "We Watch Prices", desc: "Zimazao monitors market prices across all provinces in real time." },
+                { step: "3", icon: "🔔", title: "Get Notified", desc: "When the price hits your target, you'll see a notification in-app." },
               ].map((item) => (
                 <div key={item.step} className="flex gap-3">
                   <div className="w-8 h-8 bg-primary/10 text-primary rounded-lg flex items-center justify-center shrink-0 font-bold text-sm">

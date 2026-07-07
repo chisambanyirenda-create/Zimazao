@@ -33,7 +33,7 @@ type Slide = {
 const slides: Slide[] = [
   {
     id: 1,
-    badge: "ðŸŒ½ #1 Farm Marketplace in Zambia",
+    badge: "🌽 #1 Farm Marketplace in Zambia",
     title: "Sell Your Harvest",
     titleHighlight: "Direct to Buyers",
     description:
@@ -45,12 +45,12 @@ const slides: Slide[] = [
     bg: "from-[#04170f] via-[#06281a] to-[#0a3a24]",
     glow1: "oklch(0.62 0.17 150 / 0.55)",
     glow2: "oklch(0.78 0.17 85 / 0.40)",
-    image: "ðŸŒ½",
+    image: "🌽",
     stat: { value: "ZMW 5M+", label: "sold this season" },
   },
   {
     id: 2,
-    badge: "ðŸ¤– AI-Powered Technology",
+    badge: "🤖 AI-Powered Technology",
     title: "Detect Crop Diseases",
     titleHighlight: "Before They Spread",
     description:
@@ -62,12 +62,12 @@ const slides: Slide[] = [
     bg: "from-[#040f1f] via-[#071d38] to-[#0a2c52]",
     glow1: "oklch(0.65 0.16 235 / 0.55)",
     glow2: "oklch(0.62 0.17 150 / 0.35)",
-    image: "ðŸ”¬",
+    image: "🔬",
     stat: { value: "95%", label: "detection accuracy" },
   },
   {
     id: 3,
-    badge: "ðŸ“Š Live Market Data",
+    badge: "📊 Live Market Data",
     title: "Know the Best Price",
     titleHighlight: "Before You Sell",
     description:
@@ -79,12 +79,12 @@ const slides: Slide[] = [
     bg: "from-[#1a0f04] via-[#2c1a06] to-[#3a2708]",
     glow1: "oklch(0.78 0.17 85 / 0.55)",
     glow2: "oklch(0.68 0.19 55 / 0.40)",
-    image: "ðŸ“ˆ",
+    image: "📈",
     stat: { value: "12", label: "crops tracked daily" },
   },
   {
     id: 4,
-    badge: "ðŸ‘¨â€ðŸŒ¾ 10,000+ Farmers Trust Us",
+    badge: "👨‍🌾 10,000+ Farmers Trust Us",
     title: "Join Zambia's",
     titleHighlight: "Farming Revolution",
     description:
@@ -96,7 +96,7 @@ const slides: Slide[] = [
     bg: "from-[#0c0718] via-[#160a2c] to-[#241042]",
     glow1: "oklch(0.60 0.20 300 / 0.50)",
     glow2: "oklch(0.78 0.17 85 / 0.35)",
-    image: "ðŸšœ",
+    image: "🚜",
     stat: { value: "10K+", label: "active farmers" },
   },
 ]
@@ -200,7 +200,7 @@ export function HeroSlideshow() {
       {/* Cursor spotlight + film grain + vignette */}
       <motion.div className="absolute inset-0 -z-10" style={{ background: spotlight }} />
       <div className="cine-grain -z-10" />
-      {/* 3D holographic globe â€” stronger on the right, fades behind the copy */}
+      {/* 3D holographic globe — stronger on the right, fades behind the copy */}
       <div
         className="absolute inset-0 -z-10 opacity-80"
         style={{ WebkitMaskImage: "linear-gradient(to right, transparent, black 45%)", maskImage: "linear-gradient(to right, transparent, black 45%)" }}
@@ -301,14 +301,14 @@ export function HeroSlideshow() {
                   animate={{ y: [0, -10, 0] }}
                   transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
                 >
-                  <span className="text-4xl">âœ¨</span>
+                  <span className="text-4xl">✨</span>
                 </motion.div>
                 <motion.div
                   className="absolute -bottom-4 -left-4 w-16 h-16 bg-white/12 rounded-xl flex items-center justify-center backdrop-blur-md border border-white/15"
                   animate={{ y: [0, 8, 0] }}
                   transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
                 >
-                  <span className="text-3xl">ðŸ‡¿ðŸ‡²</span>
+                  <span className="text-3xl">🇿🇲</span>
                 </motion.div>
               </motion.div>
             </AnimatePresence>

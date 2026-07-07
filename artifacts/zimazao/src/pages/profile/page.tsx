@@ -254,7 +254,7 @@ export default function ProfilePage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-medium text-sm">Account Type</p>
-                <p className="text-muted-foreground text-xs capitalize mt-0.5">{user.userType} account Â· Member since {new Date(user.createdAt ?? "").getFullYear() || "2025"}</p>
+                <p className="text-muted-foreground text-xs capitalize mt-0.5">{user.userType} account · Member since {new Date(user.createdAt ?? "").getFullYear() || "2025"}</p>
               </div>
               <Badge className="capitalize bg-primary/10 text-primary border-0">{user.userType}</Badge>
             </div>

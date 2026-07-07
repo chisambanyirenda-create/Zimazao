@@ -139,7 +139,7 @@ function DiseaseDetectorContent() {
                       <p className="text-sm text-amber-300 mb-3">Free plan allows 5 scans/month. Upgrade to Pro for unlimited scans.</p>
                       <Link href="/subscription">
                         <Button className="bg-amber-500 hover:bg-amber-600 text-white gap-2">
-                          <Crown className="w-4 h-4" /> Upgrade to Pro â€” ZMW 80/month
+                          <Crown className="w-4 h-4" /> Upgrade to Pro — ZMW 80/month
                         </Button>
                       </Link>
                     </div>
@@ -166,10 +166,10 @@ function DiseaseDetectorContent() {
                   <div>
                     <p className="font-medium text-foreground mb-1">Tips for best results</p>
                     <ul className="text-sm text-muted-foreground space-y-1">
-                      <li>â€¢ Take photos in good natural lighting</li>
-                      <li>â€¢ Focus on the affected area of the plant</li>
-                      <li>â€¢ Include both healthy and diseased parts if possible</li>
-                      <li>â€¢ Avoid blurry or out-of-focus images</li>
+                      <li>• Take photos in good natural lighting</li>
+                      <li>• Focus on the affected area of the plant</li>
+                      <li>• Include both healthy and diseased parts if possible</li>
+                      <li>• Avoid blurry or out-of-focus images</li>
                     </ul>
                   </div>
                 </div>
@@ -250,7 +250,7 @@ function DiseaseDetectorContent() {
                   <Card className="border-amber-500/25 bg-amber-500/15/50">
                     <CardHeader className="pb-3">
                       <CardTitle className="text-lg flex items-center gap-2">
-                        ðŸ›’ Recommended Products
+                        🛒 Recommended Products
                         <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/25 text-xs font-normal">Sponsored</Badge>
                       </CardTitle>
                     </CardHeader>
@@ -261,7 +261,7 @@ function DiseaseDetectorContent() {
                             {p.productImage ? (
                               <img src={p.productImage} alt={p.productName} className="w-14 h-14 object-cover rounded-lg shrink-0" />
                             ) : (
-                              <div className="w-14 h-14 bg-amber-500/20 rounded-lg flex items-center justify-center shrink-0 text-2xl">ðŸ§ª</div>
+                              <div className="w-14 h-14 bg-amber-500/20 rounded-lg flex items-center justify-center shrink-0 text-2xl">🧪</div>
                             )}
                             <div className="flex-1">
                               <div className="flex items-center justify-between gap-2">
@@ -279,7 +279,7 @@ function DiseaseDetectorContent() {
                           </div>
                         ))}
                       </div>
-                      <p className="text-xs text-muted-foreground mt-2 text-center">Sponsored agricultural products â€” always consult an agronomist</p>
+                      <p className="text-xs text-muted-foreground mt-2 text-center">Sponsored agricultural products — always consult an agronomist</p>
                     </CardContent>
                   </Card>
                 )}
@@ -287,7 +287,7 @@ function DiseaseDetectorContent() {
                 {diagnosis.prevention.length > 0 && (
                   <Card>
                     <CardHeader>
-                      <CardTitle className="text-lg">ðŸ›¡ï¸ Prevention Tips</CardTitle>
+                      <CardTitle className="text-lg">🛡️ Prevention Tips</CardTitle>
                     </CardHeader>
                     <CardContent>
                       <ul className="space-y-2">
@@ -331,9 +331,9 @@ function DiseaseDetectorContent() {
           <CardContent>
             <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
               {[
-                { name: "Maize", emoji: "ðŸŒ½" }, { name: "Groundnuts", emoji: "ðŸ¥œ" },
-                { name: "Soybeans", emoji: "ðŸ«˜" }, { name: "Cassava", emoji: "ðŸ¥”" },
-                { name: "Tomatoes", emoji: "ðŸ…" }, { name: "Cotton", emoji: "ðŸ§¶" },
+                { name: "Maize", emoji: "🌽" }, { name: "Groundnuts", emoji: "🥜" },
+                { name: "Soybeans", emoji: "🫘" }, { name: "Cassava", emoji: "🥔" },
+                { name: "Tomatoes", emoji: "🍅" }, { name: "Cotton", emoji: "🧶" },
               ].map((crop) => (
                 <div key={crop.name} className="p-4 bg-muted/50 rounded-xl text-center hover:bg-muted transition-colors">
                   <span className="text-4xl block mb-2">{crop.emoji}</span>
