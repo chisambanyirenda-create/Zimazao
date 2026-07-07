@@ -86,7 +86,7 @@ export default function RefundPage() {
             <li>The Zimazao team will review your dispute and contact both parties within 24–48 hours</li>
           </ul>
           <p>
-            If you need to contact us directly about a refund, email hello@zimazao.zm with your order number and a description of the problem.
+            If you need to contact us directly about a refund, email zimazao1@gmail.com with your order number and a description of the problem.
           </p>
         </Section>
 
@@ -127,13 +127,13 @@ export default function RefundPage() {
           <p>For refund enquiries or disputes, contact the Zimazao support team:</p>
           <ul className="list-disc list-inside space-y-1 ml-2">
             <li>In-app: Go to your order and tap "Report a Problem"</li>
-            <li>Email: hello@zimazao.zm</li>
+            <li>Email: zimazao1@gmail.com</li>
             <li>Phone: +260 966 224 853</li>
           </ul>
         </Section>
 
         <div className="text-center pt-6 border-t border-border">
-          <p className="text-xs text-muted-foreground mb-4">Questions about your refund? Contact us at hello@zimazao.zm or raise a dispute from your orders page.</p>
+          <p className="text-xs text-muted-foreground mb-4">Questions about your refund? Contact us at zimazao1@gmail.com or raise a dispute from your orders page.</p>
           <div className="flex items-center justify-center gap-4 text-sm">
             <Link href="/terms" className="text-primary underline font-medium">Terms & Conditions</Link>
             <Link href="/privacy" className="text-primary underline font-medium">Privacy Policy</Link>

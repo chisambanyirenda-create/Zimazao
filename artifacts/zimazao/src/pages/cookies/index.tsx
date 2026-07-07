@@ -104,7 +104,7 @@ export default function CookiesPage() {
             If you have questions about cookies or your privacy on Zimazao, contact us:
           </p>
           <ul className="list-disc list-inside space-y-1 ml-2">
-            <li>Email: hello@zimazao.zm</li>
+            <li>Email: zimazao1@gmail.com</li>
             <li>Phone: +260 966 224 853</li>
           </ul>
         </Section>

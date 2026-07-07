@@ -89,7 +89,7 @@ export default function PrivacyPage() {
           <ul className="list-disc list-inside space-y-1 ml-2">
             <li><strong>Access:</strong> You can view your personal data from your Account Settings page at any time</li>
             <li><strong>Correction:</strong> You can update your name, phone, location, and other details from your profile</li>
-            <li><strong>Deletion:</strong> You can request deletion of your account and all associated data by contacting us at hello@zimazao.zm</li>
+            <li><strong>Deletion:</strong> You can request deletion of your account and all associated data by contacting us at zimazao1@gmail.com</li>
             <li><strong>Opt-out:</strong> You can disable in-app notifications from your profile settings</li>
           </ul>
         </Section>
@@ -102,7 +102,7 @@ export default function PrivacyPage() {
 
         <Section title="8. Children's Privacy">
           <p>
-            Zimazao is not intended for users under the age of 18. We do not knowingly collect personal information from children. If you believe a child has provided us with their information, please contact us immediately at hello@zimazao.zm so we can delete the account.
+            Zimazao is not intended for users under the age of 18. We do not knowingly collect personal information from children. If you believe a child has provided us with their information, please contact us immediately at zimazao1@gmail.com so we can delete the account.
           </p>
         </Section>
 
@@ -117,7 +117,7 @@ export default function PrivacyPage() {
             If you have questions about this Privacy Policy or how we handle your data, please contact us:
           </p>
           <ul className="list-disc list-inside space-y-1 ml-2">
-            <li>Email: hello@zimazao.zm</li>
+            <li>Email: zimazao1@gmail.com</li>
             <li>Phone: +260 966 224 853</li>
             <li>Address: Lusaka, Zambia</li>
           </ul>

@@ -87,7 +87,7 @@ export function Footer() {
                 <Phone className="h-5 w-5 text-amber-300" /> +260 966 224 853
               </li>
               <li className="flex items-center gap-3 text-white/60">
-                <Mail className="h-5 w-5 text-amber-300" /> hello@zimazao.zm
+                <Mail className="h-5 w-5 text-amber-300" /> zimazao1@gmail.com
               </li>
               <li className="flex items-start gap-3 text-white/60">
                 <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-amber-300" />
