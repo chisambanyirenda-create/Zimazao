@@ -105,7 +105,7 @@ export default function CookiesPage() {
           </p>
           <ul className="list-disc list-inside space-y-1 ml-2">
             <li>Email: hello@zimazao.zm</li>
-            <li>Phone: +260 97 123 4567</li>
+            <li>Phone: +260 966 224 853</li>
           </ul>
         </Section>
 

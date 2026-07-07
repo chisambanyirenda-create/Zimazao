@@ -84,14 +84,14 @@ export function Footer() {
             <h3 className="mb-4 font-display text-lg font-semibold text-white">Contact Us</h3>
             <ul className="space-y-4">
               <li className="flex items-center gap-3 text-white/60">
-                <Phone className="h-5 w-5 text-amber-300" /> +260 97 123 4567
+                <Phone className="h-5 w-5 text-amber-300" /> +260 966 224 853
               </li>
               <li className="flex items-center gap-3 text-white/60">
                 <Mail className="h-5 w-5 text-amber-300" /> hello@zimazao.zm
               </li>
               <li className="flex items-start gap-3 text-white/60">
                 <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-amber-300" />
-                <span>Plot 1234, Cairo Road<br />Lusaka, Zambia</span>
+                <span>Lusaka, Zambia</span>
               </li>
             </ul>
           </div>

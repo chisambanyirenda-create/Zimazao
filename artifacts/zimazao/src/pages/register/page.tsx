@@ -179,7 +179,7 @@ function RegisterForm() {
                   <Input
                     id="phone"
                     type="tel"
-                    placeholder="+260 97 123 4567"
+                    placeholder="+260 966 224 853"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     className="h-11"
