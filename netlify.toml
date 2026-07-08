@@ -4,7 +4,7 @@
 
 [build]
   base = "/"
-  command = "corepack enable && pnpm install --no-frozen-lockfile && pnpm --filter @workspace/zimazao run build"
+  command = "corepack enable && pnpm install --no-frozen-lockfile --config.dangerouslyAllowAllBuilds=true && pnpm --filter @workspace/zimazao run build"
   publish = "artifacts/zimazao/dist/public"
 
 [build.environment]
