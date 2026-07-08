@@ -8,7 +8,7 @@
   publish = "artifacts/zimazao/dist/public"
 
 [build.environment]
-  NODE_VERSION = "20"
+  NODE_VERSION = "22"
   PORT = "3000"
   BASE_PATH = "/"
   API_PORT = "8080"

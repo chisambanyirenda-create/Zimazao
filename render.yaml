@@ -13,7 +13,7 @@ services:
     healthCheckPath: /api/healthz
     envVars:
       - key: NODE_VERSION
-        value: "20"
+        value: "22"
       - key: DATABASE_URL          # your Supabase connection string (ROTATE first)
         sync: false
       - key: JWT_SECRET            # a fresh long random secret
