@@ -28,5 +28,5 @@ services:
         sync: false
       - key: RESEND_API_KEY        # email (password reset, verification)
         sync: false
-      - key: APP_URL               # your public Netlify site URL (for email links)
-        sync: false
+      - key: APP_URL               # your public Netlify site URL (update in Step 4)
+        value: https://zimazao.netlify.app
