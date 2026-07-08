@@ -8,7 +8,7 @@ services:
     runtime: node
     plan: free
     region: frankfurt            # close to your Supabase database (eu-central-1)
-    buildCommand: corepack enable && pnpm install --no-frozen-lockfile --config.dangerouslyAllowAllBuilds=true && pnpm --filter @workspace/api-server run build
+    buildCommand: corepack enable && pnpm install --no-frozen-lockfile --config.dangerouslyAllowAllBuilds=true && BASE_PATH=/ PORT=3000 API_PORT=8080 pnpm --filter @workspace/zimazao run build && pnpm --filter @workspace/api-server run build
     startCommand: pnpm --filter @workspace/api-server run start
     healthCheckPath: /api/healthz
     envVars:
@@ -28,5 +28,5 @@ services:
         sync: false
       - key: RESEND_API_KEY        # email (password reset, verification)
         sync: false
-      - key: APP_URL               # your public Netlify site URL (update in Step 4)
-        value: https://zimazao.netlify.app
+      - key: APP_URL               # public site URL (same Render service serves site + API)
+        value: https://zimazao-api.onrender.com
